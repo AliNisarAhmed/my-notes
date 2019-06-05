@@ -1,15 +1,34 @@
-### Objects 
-  The `new` keyword automates 4 things
-  1. creates a new empty object.
-  2. Sets the instance \[[Prototype]] (an internal reference) to Constructor.prototype, so that Object.getPrototypeOf(instance) === Constructor.prototype and instance.__proto__ === Constructor.prototype.
-  3. assigns `this` to the new object
-  4. returns the new object (if function itself does not return any object, that is).
+### Objects
 
-* constructors do not have a return statement, But if there is a `return` statement, then the rule is simple:
+The `new` keyword automates 4 things
 
--    If return is called with object, then it is returned instead of this.
--   If return is called with a primitive, it’s ignored.
- 
+1. creates a new empty object.
+2. Sets the instance \[[Prototype]] (an internal reference) to Constructor.prototype, so that Object.getPrototypeOf(instance) === Constructor.prototype and instance.**proto** === Constructor.prototype.
+3. assigns `this` to the new object
+4. returns the new object (if function itself does not return any object, that is).
+
+---
+
+The `new` keyword is used to invoke a constructor. What it actually does is:
+
+- Create a new instance
+- Bind `this` to the new instance
+- Reference the new object’s delegate [[Prototype]] to the object referenced by the constructor function’s `prototype` property.
+- Reference the new object’s `.constructor` property to the constructor that was invoked.
+- Names the object type after the constructor, which you’ll notice mostly in the debugging console. You’ll see `[Object Foo]`, for example, instead of `[Object object]`.
+- Allows `instanceof` to check whether or not an object’s prototype reference is the same object referenced by the `.prototype` property of the constructor.
+
+`new` is weird
+
+WAT? `new` also does some weird stuff to return values. If you try to return a primitive, it won’t work. If you return any other arbitrary object, that does work, but `this` gets thrown away, breaking all references to it (including `.call()` and `.apply()`), and breaking the link to the constructor’s `.prototype` reference.
+
+---
+
+- constructors do not have a return statement, But if there is a `return` statement, then the rule is simple:
+
+* If return is called with object, then it is returned instead of this.
+* If return is called with a primitive, it’s ignored.
+
 Parentheses after `new User()` can also be ommitted, like `new User`, thought it is nor considered a good style.
 
 ---
@@ -32,7 +51,8 @@ new User(); // function User { ... }
 
 ```js
 function User(name) {
-  if (!new.target) { // if you run me without new
+  if (!new.target) {
+    // if you run me without new
     return new User(name); // ...I will add new for you
   }
 
@@ -46,14 +66,15 @@ alert(john.name); // John
 <br>
 
 ---
-<br>
-
-- Objects are built by "constructor" calls `=> ` a function with a `new` keyword
-- A *constructor* is a function called with the `new` keyword
 
 <br>
 
---- 
+- Objects are built by "constructor" calls `=>` a function with a `new` keyword
+- A _constructor_ is a function called with the `new` keyword
+
+<br>
+
+---
 
 - Instantiation of classical "classes" is a "copy" operation (like heredity in children, or blueprint), changing one does not alter the other.
 - But in JS, a constructor makes an object linked to its own `prototype`.
@@ -67,9 +88,10 @@ alert(john.name); // John
 \[[Prototype]] - affects the behaviour of an obj, how? `=>` we can call methods up the proto chain
 
 Three ways to find out the \[[Prototype]]
- 1. `__proto__` (dunder proto)
- 2. `Object.getPrototypeOf`
- 3. `Object.constructor.prototype`
+
+1.  `__proto__` (dunder proto)
+2.  `Object.getPrototypeOf`
+3.  `Object.constructor.prototype`
 
 ---
 
@@ -78,6 +100,7 @@ Three ways to find out the \[[Prototype]]
 ---
 
 #### Behaviour Delegation
+
 When an object finds a method inside of an object it it protypcally linked to.
 
 ---
@@ -85,28 +108,32 @@ When an object finds a method inside of an object it it protypcally linked to.
 OLOO -> Objects linked to other objects (embraces true "Object Oriented Programming", without `classes`)
 
 ---
+
 The power of `JS` is to created objects, link them together, and use behaviour delegation between them, w/o bothering with classes and paraphernalia.
 
 ---
 
 ##### How is JS's \[[Prototype]] chain different than traditional/classical inheritence
 
-Instead of copying things down the `class` instance, we have *live* links up the proto chain.
+Instead of copying things down the `class` instance, we have _live_ links up the proto chain.
 
 ---
 
 #### What does \[[Prototype]] delegation means and how does it describe object linking in JS?
 
-Prototype chain is a delegation link from one object to another that allows those objects to share context at call-time *aka* virtual composition.
-
+Prototype chain is a delegation link from one object to another that allows those objects to share context at call-time _aka_ virtual composition.
 
 ###### Advantages
- - Independent testablility
+
+- Independent testablility
+
 ###### Disadvantages
- - Loss of encapsulation (everything is public)
- - more complex code
+
+- Loss of encapsulation (everything is public)
+- more complex code
 
 ---
+
 #### Object to Primitive Conversion
 
 When an Object is used in a context where a primitve is required, internal `ToPrimitive` algortihm is used.
@@ -114,21 +141,24 @@ When an Object is used in a context where a primitve is required, internal `ToPr
 the algorith uses a "hint", which can be "string", "number" or default.
 
 Algorithm
+
 1. Call `obj[Symbol.toPrimitive](hint)` function, if it exists on `obj`.
-2. Otherwise, if "hint" is "string": 
-    - Try `obj.toString()` 
-    - then `obj.valueOf()`
+2. Otherwise, if "hint" is "string":
+   - Try `obj.toString()`
+   - then `obj.valueOf()`
 3. if hint is "number" or default:
-    - Try `obj.valueOf`, 
-    - then try `obj.toString()`.
+   - Try `obj.valueOf`,
+   - then try `obj.toString()`.
 
 ##### Symbol.toPrimitive
+
 ```JS
 obj[Symbol.toPrimitive] = function(hint) {
   // return a primitive value
   // hint = one of "string", "number", "default"
 }
 ```
+
 ##### toString(), or valueOf()
 
 ```JS
@@ -160,12 +190,13 @@ let user = {
 #### Object Property Descriptors
 
 Added in ES5
+
 ```js
 var myObject = {
-	a: 2
+  a: 2
 };
 
-Object.getOwnPropertyDescriptor( myObject, "a" );
+Object.getOwnPropertyDescriptor(myObject, "a");
 // {
 //    value: 2,
 //    writable: true,
@@ -173,6 +204,7 @@ Object.getOwnPropertyDescriptor( myObject, "a" );
 //    configurable: true
 // }
 ```
+
 ##### Writable
 
 The ability for you to change the value of a property is controlled by writable.
@@ -182,12 +214,12 @@ Consider:
 ```js
 var myObject = {};
 
-Object.defineProperty( myObject, "a", {
-	value: 2,
-	writable: false, // not writable!
-	configurable: true,
-	enumerable: true
-} );
+Object.defineProperty(myObject, "a", {
+  value: 2,
+  writable: false, // not writable!
+  configurable: true,
+  enumerable: true
+});
 
 myObject.a = 3;
 
@@ -196,34 +228,35 @@ myObject.a; // 2 (fails silently in sloppy-mode, TypeError in strict-mode)
 
 ##### Configurable
 
-As long as a property is currently configurable, we can modify its descriptor definition, using the same` defineProperty(..)` utility.
+As long as a property is currently configurable, we can modify its descriptor definition, using the same`defineProperty(..)` utility.
 
 ```js
 var myObject = {
-	a: 2
+  a: 2
 };
 
 myObject.a = 3;
-myObject.a;					// 3
+myObject.a; // 3
 
-Object.defineProperty( myObject, "a", {
-	value: 4,
-	writable: true,
-	configurable: false,	// not configurable!
-	enumerable: true
-} );
+Object.defineProperty(myObject, "a", {
+  value: 4,
+  writable: true,
+  configurable: false, // not configurable!
+  enumerable: true
+});
 
-myObject.a;					// 4
+myObject.a; // 4
 myObject.a = 5;
-myObject.a;					// 5
+myObject.a; // 5
 
-Object.defineProperty( myObject, "a", {
-	value: 6,
-	writable: true,
-	configurable: true,
-	enumerable: true
-} ); // TypeError (strict mode or not)
+Object.defineProperty(myObject, "a", {
+  value: 6,
+  writable: true,
+  configurable: true,
+  enumerable: true
+}); // TypeError (strict mode or not)
 ```
+
 **Be careful: as you can see, changing configurable to false is a one-way action, and cannot be undone!**
 
 **Note:** There's a nuanced exception to be aware of: even if the property is already `configurable:false`, writable can always be changed from `true` to `false` without error, but not back to `true` if already `false`.
@@ -232,24 +265,25 @@ Object.defineProperty( myObject, "a", {
 
 ```js
 var myObject = {
-	a: 2
+  a: 2
 };
 
-myObject.a;				// 2
+myObject.a; // 2
 delete myObject.a;
-myObject.a;				// undefined
+myObject.a; // undefined
 
-Object.defineProperty( myObject, "a", {
-	value: 2,
-	writable: true,
-	configurable: false,
-	enumerable: true
-} );
+Object.defineProperty(myObject, "a", {
+  value: 2,
+  writable: true,
+  configurable: false,
+  enumerable: true
+});
 
-myObject.a;				// 2
+myObject.a; // 2
 delete myObject.a;
-myObject.a;				// 2
+myObject.a; // 2
 ```
+
 As you can see, the last delete call failed (silently) because we made the a property non-configurable.
 
 #### Enumerable
@@ -269,26 +303,28 @@ By combining writable:false and configurable:false, you can essentially create a
 ```js
 var myObject = {};
 
-Object.defineProperty( myObject, "FAVORITE_NUMBER", {
-	value: 42,
-	writable: false,
-	configurable: false
-} );
+Object.defineProperty(myObject, "FAVORITE_NUMBER", {
+  value: 42,
+  writable: false,
+  configurable: false
+});
 ```
 
 ##### Prevent Extensions
 
 If you want to prevent an object from having new properties added to it, but otherwise leave the rest of the object's properties alone, call `Object.preventExtensions(..)`
+
 ```js
 var myObject = {
-	a: 2
+  a: 2
 };
 
-Object.preventExtensions( myObject );
+Object.preventExtensions(myObject);
 
 myObject.b = 3;
 myObject.b; // undefined
 ```
+
 In non-strict mode, the creation of b fails silently. In strict mode, it throws a TypeError.
 
 ##### Seal
@@ -313,22 +349,25 @@ When you define a property to have either a getter or a setter or both, its defi
 
 ```js
 var myObject = {
-	// define a getter for `a`
-	get a() {
-		return 2;
-	}
+  // define a getter for `a`
+  get a() {
+    return 2;
+  }
 };
 
 Object.defineProperty(
-	myObject,	// target
-	"b",		// property name
-	{			// descriptor
-		// define a getter for `b`
-		get: function(){ return this.a * 2 },
+  myObject, // target
+  "b", // property name
+  {
+    // descriptor
+    // define a getter for `b`
+    get: function() {
+      return this.a * 2;
+    },
 
-		// make sure `b` shows up as an object property
-		enumerable: true
-	}
+    // make sure `b` shows up as an object property
+    enumerable: true
+  }
 );
 
 myObject.a; // 2
@@ -340,50 +379,54 @@ Either through object-literal syntax with get a() { .. } or through explicit def
 
 ```js
 var myObject = {
-	// define a getter for `a`
-	get a() {
-		return 2;
-	}
+  // define a getter for `a`
+  get a() {
+    return 2;
+  }
 };
 
 myObject.a = 3;
 
 myObject.a; // 2
 ```
+
 Since we only defined a getter for a, if we try to set the value of a later, the set operation won't throw an error but will just silently throw the assignment away. Even if there was a valid setter, our custom getter is hard-coded to return only 2, so the set operation would be moot.
 
 ```js
 var myObject = {
-	// define a getter for `a`
-	get a() {
-		return this._a_;
-	},
+  // define a getter for `a`
+  get a() {
+    return this._a_;
+  },
 
-	// define a setter for `a`
-	set a(val) {
-		this._a_ = val * 2;
-	}
+  // define a setter for `a`
+  set a(val) {
+    this._a_ = val * 2;
+  }
 };
 
 myObject.a = 2;
 
 myObject.a; // 4
 ```
+
 #### Existence of a property
 
 We can ask an object if it has a certain property without asking to get that property's value:
+
 ```js
 var myObject = {
-	a: 2
+  a: 2
 };
 
-("a" in myObject);				// true
-("b" in myObject);				// false
+"a" in myObject; // true
+"b" in myObject; // false
 
-myObject.hasOwnProperty( "a" );	// true
-myObject.hasOwnProperty( "b" );	// false
+myObject.hasOwnProperty("a"); // true
+myObject.hasOwnProperty("b"); // false
 ```
-The in operator will check to see if the property is in the object, or if it exists at any higher level of the [[Prototype]] chain object traversal. By contrast, hasOwnProperty(..) checks to see if only myObject has the property or not, and will not consult the [[Prototype]] chain. 
+
+The in operator will check to see if the property is in the object, or if it exists at any higher level of the [[Prototype]] chain object traversal. By contrast, hasOwnProperty(..) checks to see if only myObject has the property or not, and will not consult the [[Prototype]] chain.
 
 `hasOwnProperty(..)` is accessible for all normal objects via delegation to Object.prototype. But it's possible to create an object that does not link to Object.prototype (via `Object.create(null)`). In this case, a method call like `myObject.hasOwnProperty(..)` would fail.
 
@@ -429,23 +472,23 @@ Note: Case #2 may be the most surprising of the three. The presence of a read-on
 
 ```js
 var anotherObject = {
-	a: 2
+  a: 2
 };
 
-var myObject = Object.create( anotherObject );
+var myObject = Object.create(anotherObject);
 
 anotherObject.a; // 2
 myObject.a; // 2
 
-anotherObject.hasOwnProperty( "a" ); // true
-myObject.hasOwnProperty( "a" ); // false
+anotherObject.hasOwnProperty("a"); // true
+myObject.hasOwnProperty("a"); // false
 
 myObject.a++; // oops, implicit shadowing!
 
 anotherObject.a; // 2
 myObject.a; // 3
 
-myObject.hasOwnProperty( "a" ); // true
+myObject.hasOwnProperty("a"); // true
 ```
 
 Though it may appear that myObject.a++ should (via delegation) look-up and just increment the anotherObject.a property itself in place, instead the ++ operation corresponds to myObject.a = myObject.a + 1. The result is [[Get]] looking up a property via [[Prototype]] to get the current value 2 from `anotherObject.a`, incrementing the value by one, then [[Put]] assigning the 3 value to a new shadowed property a on myObject. **Oops!**
