@@ -201,3 +201,64 @@ using ( type variable = initialization)
 }
 
 ```
+
+---
+
+### Invariant, Covariant and Contravariant Interfaces
+
+An Interface is said to be invariant when we cannot assign an `IWrapper<A>` object to a reference of type `IWrapper<B>`, even if type `A` is derived from type `B`. So, `IWrapper<object>` cannot be assigned to `IWrapper<string>`.
+
+Following definitions hold: 
+
+##### Covariance
+
+Enables you to use a more derived type than originally specified.
+
+You can assign an instance of `IEnumerable<Derived>` to a variable of type `IEnumerable<Base>`.
+
+##### Contravariance
+
+Enables you to use a more generic (less derived) type than originally specified.
+
+You can assign an instance of `Action<Base>` to a variable of type `Action<Derived>`.
+
+##### Invariance
+
+Means that you can use only the type originally specified; so an invariant generic type parameter is neither covariant nor contravariant.
+
+You cannot assign an instance of `List<Base>` to a variable of type `List<Derived>` or vice versa.
+
+#### Covariance
+
+In situations where the type parameter occurs only as the `return` value of the methods in a generic interface, you can inform the compiler that some implicit conversions are legal and that it does not have to enforce strict type safety. You do this by specifying the `out` keyword
+when you declare the type parameter, like this: 
+
+```csharp
+interface IRetrieveWrapper<out T>
+{
+  T GetData();
+}
+
+```
+
+This feature is called ***covariance***. You can assign an `IRetrieveWrapper<A>` object to an `IRetrieve-Wrapper<B>` reference as long as there is a valid conversion from type `A` to type `B`, or type `A` derives from type `B`. You can specify the out qualifier with a type parameter only if the type parameter occurs as the return type of methods. If you use the type parameter to specify the type of any method parameters, the out qualifier is illegal, and your code will not compile. Also, covariance works only with reference types. This is because value types cannot form inheritance hierarchies.
+
+#### Contravariance
+
+Contravariance follows a similar principle to covariance except that it works in the opposite direction; it enables you to use a generic interface to reference an object of type `B` through a reference to type `A` as long as type B derives from type `A`. This is done by using the `in` qualifier before the type parameter. The `in` keyword tells the C# compiler that you can either pass the type `T` as the parameter type to methods or pass any type that derives from `T`. You cannot use `T` as the return type from any methods. 
+
+The way I remember, based on the examples in this section, is as follows:
+- **Covariance example** If the methods in a generic interface can return `strings`, they can also return `objects`. (All strings are objects.)
+- **Contravariance example** If the methods in a generic interface can take `object` parameters, they can take string parameters. (If you can perform an operation by using an object, you can perform the same operation by using a string because all strings are objects.)
+
+---
+
+### Comparing arrays and collections
+
+- An array instance has a fixed size and cannot grow or shrink. A collection can dynamically resize itself as required.
+- An array can have more than one dimension. A collection is linear. However, the items in a collection can be collections themselves, so you
+can imitate a multidimensional array as a collection of collections.
+- You store and retrieve an item in an array by using an index. Not all collections support this notion. For example, to store an item in a `List<T>`
+collection, you use the `Add` or `Insert` method, and to retrieve an item, you use the `Find` method.
+- Many of the collection classes provide a `ToArray` method that creates and populates an array containing the items in the collection. The items are
+copied to the array and are not removed from the collection. Additionally, these collections provide constructors that can populate a collection directly from an array.
