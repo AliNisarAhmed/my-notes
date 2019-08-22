@@ -262,3 +262,65 @@ can imitate a multidimensional array as a collection of collections.
 collection, you use the `Add` or `Insert` method, and to retrieve an item, you use the `Find` method.
 - Many of the collection classes provide a `ToArray` method that creates and populates an array containing the items in the collection. The items are
 copied to the array and are not removed from the collection. Additionally, these collections provide constructors that can populate a collection directly from an array.
+
+---
+
+### `IEnumerable` Interface
+
+The `IEnumerable` interface contains a single method called `GetEnumerator`:
+
+```csharp
+
+IEnumerator GetEnumerator();
+
+```
+
+The `GetEnumerator` method should return an `enumerator` object that implements the `System.Collections.IEnumerator` interface. The enumerator
+object is used for stepping through (enumerating) the elements of the collection.
+
+The `IEnumerator` interface specifies the following property and methods:
+
+```csharp
+object Current { get; }
+bool MoveNext();
+void Reset();
+```
+
+Think of an enumerator as a pointer indicating elements in a list. Initially, the pointer points before the first element. You call the `MoveNext` method to move the pointer down to the next (first) item in the list; the `MoveNext` method should return `true` if there actually is another item and false if there isn’t. You use the `Current` property to access the item currently pointed to, and you use the `Reset`
+method to return the pointer back to before the first item in the list.
+
+By using the `GetEnumerator` method of a collection to create an enumerator, repeatedly calling the `MoveNext` method, and using the enumerator to retrieve the value of the `Current` property, you can move forward through the elements of a collection one item at a time. This is exactly what the foreach statement does. So, if you want to create your own enumerable collection class, you must implement the
+`IEnumerable` interface in your collection class and also provide an implementation of the `IEnumerator` interface to be returned by the
+`GetEnumerator` method of the collection class.
+
+##### NOTE:  
+
+The `Current` property of the `IEnumerator` interface exhibits non–type-safe behavior in that it returns an `object` rather than a specific type. However, you should be pleased to know that the Microsoft .NET Framework class library also provides the generic
+`IEnumerator<T>` interface, which has a Current property that returns a `T` instead. Likewise, there is also an `IEnumerable<T>` interface containing a `GetEnumerator` method that returns an `Enumerator<T>` object. Both of these interfaces are defined in the `System.Collections.Generic` namespace, and if you are building applications for the .NET Framework version 2.0 or later, you should make use of these generic interfaces rather than the nongeneric versions when you define enumerable collections.
+
+---
+
+### Initializing a variable defined with a type parameter using `default`
+
+``` csharp
+
+private TItem currentItem = default(TItem);
+
+```
+
+The `currentItem` variable is defined by using the type parameter `TItem`. When the program is written and compiled, the actual type that will be substituted for `TItem` might not be known; this issue is resolved only when the code is executed. This makes it difficult to specify how the variable should be initialized. The temptation is to set it to `null`. However, if the type substituted for `TItem` is a `value` type, this is an illegal assignment. (You cannot set value types to `null`, only reference types.) Similarly, if you set it to `0` with the expectation that the type will be numeric, this will be illegal if the type used is actually a `reference` type. There are other possibilities as well; `TItem` could be a boolean, for example. 
+
+The default keyword solves this problem. The value used to initialize the variable will be determined when the statement is executed. If `TItem` is a reference type, `default(TItem)` returns null; if TItem is numeric, `default(TItem)` returns 0; if `TItem` is a boolean, `default(TItem)` returns `false`. If TItem is a struct, the individual fields in the struct are initialized in the same way. (Reference fields are set
+to null, numeric fields are set to 0, and boolean fields are set to false.)
+
+### `Func<T, ...>` vs `Action<T, ...>`
+
+`Func<T1, T2, ..., TResult>` takes 0 or more arguments (`T1`, `T2` and so on) and `return` a result of type `TResult`
+
+`Action<T1, T2, ...>` takes 0 or more arguments, performs some action and returns `void`. Thus, `Action` is more like a subroutine.
+
+### Delegates
+
+References to methods, basically.
+
+In a `class`, make a `delegate` type, that create an instance of the `delegate`, and then in the class constructor, add methods to the delegate using `+=` operator. We can also remove methods from a `delegate` using `-=`.
