@@ -25,7 +25,7 @@ Extension methods can be defined on `interfaces`, `classes`, `sealed` classes, `
 A `deconstructor` enables us to examine an object and extract the value of its fields.
 
 ```csharp
-class Point 
+class Point
 {
   private int x, y;  // private fields
 
@@ -313,14 +313,43 @@ The `currentItem` variable is defined by using the type parameter `TItem`. When 
 The default keyword solves this problem. The value used to initialize the variable will be determined when the statement is executed. If `TItem` is a reference type, `default(TItem)` returns null; if TItem is numeric, `default(TItem)` returns 0; if `TItem` is a boolean, `default(TItem)` returns `false`. If TItem is a struct, the individual fields in the struct are initialized in the same way. (Reference fields are set
 to null, numeric fields are set to 0, and boolean fields are set to false.)
 
+---
+
 ### `Func<T, ...>` vs `Action<T, ...>`
 
 `Func<T1, T2, ..., TResult>` takes 0 or more arguments (`T1`, `T2` and so on) and `return` a result of type `TResult`
 
 `Action<T1, T2, ...>` takes 0 or more arguments, performs some action and returns `void`. Thus, `Action` is more like a subroutine.
 
+---
+
 ### Delegates
 
 References to methods, basically.
 
-In a `class`, make a `delegate` type, that create an instance of the `delegate`, and then in the class constructor, add methods to the delegate using `+=` operator. We can also remove methods from a `delegate` using `-=`.
+In a `class`, make a `delegate` type, that create an instance of the `delegate`, and then in the class constructor, add methods to the delegate using `+=` operator. We can also remove methods from a `delegate` using `-=`. 
+
+We can also add methods outside of a constructor of a specific `class`, to make the whole thing more generalized. For example, we can make separate `Add` or `Remove` methods to add or remove delegates.
+
+---
+
+### Method Adapters
+
+Method Adapters are just functions that when executed, execute other functions.
+
+```csharp
+
+void FinishFolding () 
+{
+  folder.StopFolding(0);
+}
+
+```
+
+---
+
+### Events
+
+You declare an event in a class intended to act as an event source. An event source is usually a class that monitors its environment and raises an event when something significant happens.
+
+`event delegateTypeName eventName`
