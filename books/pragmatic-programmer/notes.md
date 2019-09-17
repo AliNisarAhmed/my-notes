@@ -1,5 +1,7 @@
 # Pragmatic Programmer
 
+---
+
 ## Chapter 1
 
 #### What is a Pragmatic Programmer
@@ -106,6 +108,81 @@ what you’ve produced is good enough for their needs.
 - The scope and quality of the system you produce should be discussed as part
 of that system’s requirements.
 
+#### Know when to stop
+
+- Don’t spoil a perfectly good program by overembellishment and
+overrefinement. Move on, and let your code stand in its own
+right for a while. It may not be perfect. Don’t worry: it could
+never be perfect
+
+### Challenges
+
+- Look at the software tools and operating systems that you use
+regularly. Can you find any evidence that these organizations
+and/or developers are comfortable shipping software they know is
+not perfect? As a user, would you rather (1) wait for them to get all
+the bugs out, (2) have complex software and accept some bugs, or
+(3) opt for simpler software with fewer defects?
+
+- Consider the effect of modularization on the delivery of software.
+Will it take more or less time to get a tightly coupled monolithic
+block of software to the required quality compared with a system
+designed as very loosely coupled modules or microservices? What
+are the advantages or disadvantages of each approach?
+
+- Can you think of popular software that suffers from feature bloat?
+That is, software containing far more features than you would ever
+use, each feature introducing more opportunity for bugs and
+security vulnerabilities, and making the features you do use harder
+to find and manage. Are you in danger of falling into this trap
+yourself?
+
+#### Your Knowledge Portfolio
+
+*An investment in knowledge always pays the best interest. - Benjamin Franklin*
+
+- Your knowledge and experience are your most important day-to-day professional assets.
+
+- Unfortunately, they’re ***expiring assets***. Your knowledge becomes out of date as new techniques, languages, and environments are developed. Changing market forces may render your experience obsolete or irrelevant. Given the everincreasing pace of change in our technological society, this can
+happen pretty quickly.
+
+- As the value of your knowledge declines, so does your value to
+your company or client. We want to prevent this from ever
+happening.
+
+- We like to think of all the facts programmers know about computing, the application domains they work in, and all their experience as their knowledge portfolios. Managing a knowledge portfolio is very similar to managing a financial portfolio:
+
+  1. Serious investors invest regularly—as a habit.
+  2. Diversification is the key to long-term success.
+  3. Smart investors balance their portfolios between conservative and
+  high-risk, high-reward investments.
+  4. Investors try to buy low and sell high for maximum return.
+  5. Portfolios should be reviewed and rebalanced periodically.
+
+#### GOALS
+
+- Learn at least one new language every year
+- Read a technical book each month
+- Also focus on soft skills (people skills) !important
+- Participate in local user groups and meetups
+- Experiment with dif erent environments
+- Stay current
+
+#### Communication
+
+- Know what you want to say.
+- Know your audience.
+- Choose your moment.
+- Choose a style.
+- Make it look good.
+- Involve your audience.
+- Be a listener.
+- Get back to people.
+- Keep code and documentation together.
+
+
+---
+
 ---
 
   ##### Tip 1: Care about your work
@@ -115,3 +192,9 @@ of that system’s requirements.
   ##### Tip 5: Don't Live with broken windows: Don’t leave “broken windows’’ (bad designs, wrong decisions, or poor code) unrepaired.
   ##### Tip 6: Be a Catalyst for change
   ##### Tip 7: Remember the big picture.
+  ##### Tip 8: Make Quality a Requirements Issue
+  ##### Tip 9: Invest Regularly in Your Knowledge Portfolio
+  #### Tip 10: Critically Analyze What You Read and Hear
+  #### Tip 11: English (or whatever your daily langugae is) is Just Another Programming Language
+  #### Tip 12: It’s Both What You Say and the Way You Say It
+  #### Tip 13 Build Documentation In, Don’t Bolt It On
