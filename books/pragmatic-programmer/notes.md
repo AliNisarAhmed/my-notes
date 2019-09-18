@@ -172,13 +172,103 @@ happening.
 
 - Know what you want to say.
 - Know your audience.
-- Choose your moment.
-- Choose a style.
+- Choose your moment - know what to speak at what time.
+- Choose a style - adjust to the needs of your audience
 - Make it look good.
 - Involve your audience.
 - Be a listener.
 - Get back to people.
 - Keep code and documentation together.
+
+## Chapter 2
+
+### The Essence of Good Design - Easy To Change (ETC)
+
+**A thing is well designed if it adapts to the people who use it. For code, that means it must adapt by changing. So we believe in the ETC principle: Easier to Change. ETC**
+
+#### ETC is a value, Not a rule
+
+- Values are things that help you make decisions: should I do this, or that? When it comes to thinking about software, ETC is a guide, helping you choose between paths. Just like all your other values, it should be floating just behind your conscious thought, subtly nudging you in the right direction.
+
+### DRY Principle
+
+- Every piece of knowledge must have a single, unambiguous, authoritative
+representation within a system.
+
+- But DRY applies to more than code. DRY is about the duplication of knowledge, of intent. It’s about expressing the same thing in two different places, possibly in two totally different ways.
+
+#### Inter-Developer Duplication
+
+- Perhaps the hardest type of duplication to detect and handle occurs between different developers on a project. Entire sets of functionality may be inadvertently duplicated, and that duplication could go undetected for years, leading to maintenance problems. 
+
+- The best way to deal with this is to encourage active and frequent
+communication between developers. 
+
+- Maybe run a daily scrum standup meeting. Set up forums (such as Slack
+channels) to discuss common problems. This provides a nonintrusive way of
+communicating—even across multiple sites—while retaining a permanent
+history of everything said.
+
+- Appoint a team member as the project librarian, whose job is to facilitate the
+exchange of knowledge. 
+
+- Have a central place in the source tree where utility routines and scripts can be deposited. 
+
+- And make a point of reading other people’s source code and documentation, either informally or during code reviews. 
+
+#### Make it easy to re-use
+
+- What you’re trying to do is foster an environment where it’s easier to find and
+reuse existing stuff than to write it yourself. If it isn’t easy, people won’t do
+it. And if you fail to reuse, you risk duplicating knowledge.
+
+### Orthogonality
+
+- Term borrowed from geometry and axes, where movemeent in the direction of x-axis does not affect y-axis, and vice versa.
+
+- A Helicopter's controls are non-orthogonal, 4 control mechanisms all dependent on each other, all responding and changing when 1 changes.
+
+- We want to design components that are self-contained: independent, and
+with a single, well-defined purpose 
+
+- You get two major benefits if you write orthogonal systems: increased productivity and reduced risk.
+
+- With DRY, you’re looking to minimize duplication within a system, whereas with
+orthogonality you reduce the interdependency among the system’s components
+
+#### Design
+
+- Most developers are familiar with the need to design orthogonal systems,
+although they may use words such as modular, component-based, and layered
+to describe the process. 
+
+- Systems should be composed of a set of cooperating modules, each of which implements functionality independent of the others.
+
+- Sometimes these components are organized into layers, each providing a
+level of abstraction. This layered approach is a powerful way to design
+orthogonal systems.
+
+- SPA are a good example of this, imo.
+
+#### Testing
+
+- Orthogonal code is easier to test.
+
+##### Exercise 2 - What are the differences in orthogonality between object-oriented and functional languages? Are these differences inherent in the languages themselves, or just in the way people use them?
+
+- In OO languages, features such as multiple inheritance, exceptions, operator
+overloading, and parent-method overriding (via subclassing) provide ample
+opportunity to increase coupling (decrease orthogonality) in nonobvious ways. 
+
+- There is also a kind of coupling because a class couples code to data. 
+
+- This is normally a good thing (when coupling is good, we call it cohesion). But if you don’t make your classes focused enough, it can lead to some pretty ugly interfaces.
+
+- In functional languages, you’re encouraged to write lots of small, decoupled
+functions, and to combine them in different ways to solve your problem. In
+theory this sounds good. In practice it often is.
+
+- But there’s a form of coupling that can happen here, too. These functions typically transform data, which means the result of one function can become the input to another. If you’re not careful, making a change to the data format a function generates can result in a failure somewhere down the transformational stream. Languages with good type systems can help mitigate this.
 
 
 ---
@@ -198,3 +288,7 @@ happening.
   #### Tip 11: English (or whatever your daily langugae is) is Just Another Programming Language
   #### Tip 12: It’s Both What You Say and the Way You Say It
   #### Tip 13 Build Documentation In, Don’t Bolt It On
+  ##### Tip 14: Good Design Is Easier to Change Than Bad Design
+  ##### Tip 15: DRY—Don’t Repeat Yourself
+  ##### Tip 16: Make It Easy to Reuse
+  ##### Tip 17: Eliminate Effects Between Unrelated Things

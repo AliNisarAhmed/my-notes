@@ -1,6 +1,58 @@
 # C# Notes
 
+## Access Modifiers: Accessibility of `methods` and `fields`
+
+- ***private***: a method or field is accessible only from **within the class or struct**.
+- ***public***: a method or field is accessible from anywhere inside the namespace.
+- ***protected***: method or field accessible from **inside the class** and **in all classes that derive from that class**.
+- ***internal***: method or field is accessible from inside its own assembly, but not in other assemblies.
+- ***protected internal***: member access in the same assembly, or derived classes in other assemblies.
+- ***private protected***: member access inside the containing class, deriving class, but only in the same assembly.
+
+---
+
+## Fields
+
+### Static Fields - Shared fields
+
+- Defining a field as static makes it possible for you to create a single instance of a field that is shared among all objects created from a single class. (Nonstatic fields are local to each instance of an object.)
+
+### Creating a static field using `const` keyword
+
+- By prefixing the field with the `const` keyword, you can declare that a field is `static` but that its value can never change. The keyword `const` is short for constant. A `const` field does not use the `static` keyword in its declaration but is nevertheless static.
+
+---
+
+## Contructors
+
+- A `constructor` is a special method that runs automatically when you create an instance of a `class`. It has the same name as the class, and it can take parameters, but it cannot return a value (not even `void`). Every `class` must have a `constructor`.
+
+- If you don’t write one, the compiler automatically generates a default constructor for you. (However, the compiler-generated default constructor doesn’t actually do anything.)
+
+- In C# parlance, the default constructor is a constructor that does not take any parameters. Regardless of whether, the compiler generates the
+default construtor or you write it yourself, a constructor that does not take any parameters is still the default constructor. You can also write
+nondefault constructors (constructors that do take parameters).
+
+- If `public` keyword is ommitted, the constructor is `private` by default.
+
+- If a `class` has one or more `private` constructors and no `public` constructors, other classes (except nested classes) cannot create instances of this `class`.
+
+#### Overloading contructors
+
+- A constructor is just a special kind of method, and it—like all methods—can be overloaded.
+
+- When you build the application, the compiler works out which constructor it should call based on the parameters that you specify to the new operator.
+
+--- 
+
 ## **Methods**
+
+### __`static` Method__
+
+- if you declare a method or a field as static, you can call the method or access the field by using the name of the class. No instance is required.
+
+- A `static` method does not depend on an instance of the `class`, and it cannot access any instance fields or instance methods defined in the class; it can use only fields and other methods that are marked as `static`.
+
 
 ### __`virtual` Method__
 
@@ -57,7 +109,7 @@ Destructors (opposite of `constructors`) is a special method which is called by 
 
 e.g. `~Class`
 
-#### Rules: 
+#### Rules:
 
 - Destructors apply only to `reference` types only. Not for `value` types, like `struct`
 - Access modifiers are not allowed.
@@ -94,8 +146,7 @@ class FileProcessor
 }
 ```
 
-**It’s important to understand that only the compiler can make this translation. You can’t write your own method to override `Finalize`, and you can’t call
-`Finalize` yourself.**
+**It’s important to understand that only the compiler can make this translation. You can’t write your own method to override `Finalize`, and you can’t call `Finalize` yourself.**
 
 ### Garbage Collection
 
@@ -138,7 +189,6 @@ you just don’t know when. Consequently, you should never write code that
 depends on destructors running in a particular sequence or at a specific point in
 your application.
 
-
 ---
 
 ## **Classes**
@@ -146,7 +196,14 @@ your application.
 - `abstract` classes: A class that is meant to be a Base class to other classes, and not be instantiated from (but can be inherited from).
 - Normal or Concrete `clases` may have virtual methods.
 - `sealed` classes: prevents other classes from inheriting from it.
-- `static` classes: class that cannot be instantiated, nor can be inherited from (hence they cannot be `Base` Class to other classes)
+- `static` classes: 
+    - class that cannot be instantiated, nor can be inherited from (hence they cannot be `Base` Class to other classes). 
+    - A static class can contain only static members.  
+    - The purpose of a static class is purely to act as a holder of utility methods and fields.
+    - A static class cannot contain any instance data or methods, and it does not make sense to try to create an object from a static class by using the new operator. 
+    - In fact, you can’t actually use new to create an instance of an object using a static class even if you want to. (The compiler will report an error if you try.) 
+
+- `partial` classes: When you split a class across multiple files, you define the parts of the class by using the partial keyword in each file
 
 ---
 
