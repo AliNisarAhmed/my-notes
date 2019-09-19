@@ -270,6 +270,97 @@ theory this sounds good. In practice it often is.
 
 - But there’s a form of coupling that can happen here, too. These functions typically transform data, which means the result of one function can become the input to another. If you’re not careful, making a change to the data format a function generates can result in a failure somewhere down the transformational stream. Languages with good type systems can help mitigate this.
 
+### Reversibility
+
+- Make decisions that are easy to reverse, because we dont always make good desicions the first time.
+
+#### Flexible Architecture
+
+- While many people try to keep their code flexible, you also need to think about maintaining flexibility in the areas of architecture, deployment, and vendor integration.
+
+### Tracer Bullets 
+
+- Tracer bullets are loaded at intervals alongside regular
+ammunition. When they’re fired, their phosphorus ignites and
+leaves a pyrotechnic trail from the gun to whatever they hit. 
+
+- If the tracers are hitting the target, then so are the regular bullets.
+Soldiers use these tracer rounds to refine their aim: it’s
+pragmatic, real-time feedback under actual conditions.
+
+- That same principle applies to projects, particularly when you’re
+building something that hasn’t been built before.
+
+- Like the gunners, you’re trying to hit a target in the dark.
+Because your users have never seen a system like this before,
+their requirements may be vague. Because you may be using
+algorithms, techniques, languages, or libraries you aren’t
+familiar with, you face a large number of unknowns. And
+because projects take time to complete, you can pretty much
+guarantee the environment you’re working in will change before
+you’re done.
+
+- The classic response is to specify the system to death. Produce
+reams of paper itemizing every requirement, tying down every
+unknown, and constraining the environment.  One big calculation up front, then shoot and hope.
+
+- To get the same effect in code as tracer bullets, we look for something that gets us from a requirement to some aspect of the final system
+*quickly*, *visibly*, and *repeatably*.
+
+- Look for the important requirements, the ones that define the system. Look for the areas where you have doubts, and where you see the biggest risks. Then prioritize your development so that these are the first areas you code.
+
+- Tracer development is consistent with the idea that a project is
+never finished: there will always be changes required and
+functions to add. It is an incremental approach.
+
+- Tracer bullets show what you’re hitting. This may not always be
+the target. You then adjust your aim until they’re on target.
+That’s the point.
+
+- It’s the same with tracer code. You use the technique in
+situations where you’re not 100% certain of where you’re going.
+You shouldn’t be surprised if your first couple of attempts miss:
+the user says “that’s not what I meant,’’
+
+#### Tracer code vs Prototyping
+
+- With a prototype, you’re aiming to explore specific
+aspects of the final system. With a true prototype, you will
+throw away whatever you lashed together when trying out the
+concept, and recode it properly using the lessons you’ve learned.
+
+- The tracer code approach addresses a different problem. You
+need to know how the application as a whole hangs together.
+You want to show your users how the interactions will work in
+practice, and you want to give your developers an architectural
+skeleton on which to hang code.
+
+- To sum up, Prototyping generates disposable code. Tracer code is lean but complete, and forms part of the skeleton of the final system.
+
+- Prototypes gloss over details, and focus in on specific aspects of
+the system being considered, so you may want to implement
+them using a high-level scripting language.
+
+- Prototypes are small disposable piece of software, needed to test out different features of a project to decide on future course of action.
+
+### Estimating
+
+- By learning to estimate, and by developing this skill to the point where you have an intuitive feel for the magnitudes of things, you will be able to show an apparent magical ability to determine their feasibility. 
+
+#### HOw Accurate is accurate enough?
+
+- The first question you have to ask yourself when someone asks you for an estimate is the context in which your answer will be taken. Do they need high accuracy, or are they looking for a ballpark figure?
+
+- Smaller units imply a higher degree of accuracy. 125 days may mean +- 10 days, but same duration in months is 6 months, which means 6 +- 1 months.
+
+- a basic estimating trick that always gives good answers: ask someone who’s already done it.
+
+- When the U.S. Navy needed to plan the Polaris submarine project, they adopted this style of estimating with a methodology they called the Program Evaluation Review Technique, or **PERT**.
+
+- Every PERT task has an optimistic, a most likely, and a pessimistic estimate. The tasks are arranged into a dependency network, and then you use some simple statistics to identify likely best and worst times for the overall project.
+
+- WHAT TO SAY WHEN ASKED FOR AN ESTIMATE - You say “I’ll get back to you.”
+
 
 ---
 
@@ -292,3 +383,10 @@ theory this sounds good. In practice it often is.
   ##### Tip 15: DRY—Don’t Repeat Yourself
   ##### Tip 16: Make It Easy to Reuse
   ##### Tip 17: Eliminate Effects Between Unrelated Things
+  ##### Tip 18: There Are No Final Decisions
+  ##### Tip 19: Forgo Following Fads
+  ##### Tip 20: Use Tracer Bullets to Find the Target
+  ##### Tip 21: Prototype to Learn
+  ##### Tip 22: Program Close to the Problem Domain
+  ##### Tip 23: Estimate to Avoid Surprises
+  ##### Tip 24: Iterate the Schedule with the Code
