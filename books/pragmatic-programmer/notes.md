@@ -361,9 +361,54 @@ them using a high-level scripting language.
 
 - WHAT TO SAY WHEN ASKED FOR AN ESTIMATE - You say “I’ll get back to you.”
 
-
 ---
 
+## Chapter 3 - The Basic Tools
+
+### Power of Plaintext
+
+- We like our plain text to be understandable to humans.
+
+- The Power of Text Plain text doesn’t mean that the text is unstructured; HTML, JSON, YAML, and so on are all plain text. So are the majority of the fundamental protocols on the net, such as HTTP, SMTP, IMAP, and so on. And that’s for some good
+reasons:
+
+  - Insurance against obsolescence
+  - Leverage existing tools
+  - Easier testing
+
+### Power of Command Shells
+
+-  A benefit of GUIs is **WYSIWYG** —what you see is what you get. The disadvantage is **WYSIAYG** — what you see is all you get.
+
+### Debugging
+
+#### Rubber Ducking
+
+- A very simple but particularly useful technique for finding the cause of a problem is simply to explain it to someone else.
+
+-  the simple act of explaining, step by step, what the code is supposed to do often causes the problem to leap off the screen and announce itself.
+
+- It sounds simple, but in explaining the problem to another person you must
+explicitly state things that you may take for granted when going through the code yourself. By having to verbalize some of these assumptions, you may
+suddenly gain new insight into the problem. And if you don’t have a person,
+a rubber duck, or teddy bear, or potted plant will do.
+
+#### Debugging Checklist
+
+• Is the problem being reported a direct result of the underlying bug, or
+merely a symptom?
+• Is the bug really in the framework you’re using? Is it in the OS? Or is it
+in your code?
+• If you explained this problem in detail to a coworker, what would you
+say?
+• If the suspect code passes its unit tests, are the tests complete enough?
+What happens if you run the tests with this data?
+• Do the conditions that caused this bug exist anywhere else in the system?
+Are there other bugs still in the larval stage, just waiting to hatch?
+
+### Engineering Daybooks
+
+- Keep small notebooks, and write daily notes, manually by hand.
 ---
 
   ##### Tip 1: Care about your work
@@ -390,3 +435,13 @@ them using a high-level scripting language.
   ##### Tip 22: Program Close to the Problem Domain
   ##### Tip 23: Estimate to Avoid Surprises
   ##### Tip 24: Iterate the Schedule with the Code
+  ##### Tip 25: Keep Knowledge in Plain Text
+  ##### Tip 26: Use the Power of Command Shells
+  ##### Tip 27: Achieve Editor Fluency
+  ##### Tip 28: Always Use Version Control
+  ##### Tip 29: Fix the Problem, Not the Blame
+  ##### Tip 31: Failing Test Before Fixing Code
+  ##### Tip 32: Read the Damn Error Message
+  ##### Tip 33: “select” Isn’t Broken
+  ##### Tip 34: Don’t Assume It—Prove It
+

@@ -19,7 +19,35 @@
 
 ### Creating a static field using `const` keyword
 
-- By prefixing the field with the `const` keyword, you can declare that a field is `static` but that its value can never change. The keyword `const` is short for constant. A `const` field does not use the `static` keyword in its declaration but is nevertheless static.
+- By prefixing the field with the `const` keyword, you can declare that a field is `static` but that its value can never change. The keyword `const` is short for constant. 
+
+- A `const` field does not use the `static` keyword in its declaration but is nevertheless static.
+
+---
+
+## Static `using` statements
+
+- Whenever you call a static method or reference a static field, you must specify
+the class to which the method or field belongs, such as `Math.Sqrt` or
+`Console.WriteLine`. 
+
+- Static `using` statements enable you to bring a class into scope and omit the class name when accessing static members. 
+
+- They operate in much the same way as ordinary using statements that bring namespaces into scope.
+
+```csharp
+
+using static System.Math;
+using static System.Console;
+...
+var root = Sqrt(99.9);
+WriteLine($"The square root of 99.9 is ");
+
+```
+
+- Although you are typing less code, you have to balance this with the additional
+effort required when someone else has to maintain your code, because it is no
+longer clear to which class each method belongs
 
 ---
 
@@ -204,6 +232,34 @@ your application.
     - In fact, you can’t actually use new to create an instance of an object using a static class even if you want to. (The compiler will report an error if you try.) 
 
 - `partial` classes: When you split a class across multiple files, you define the parts of the class by using the partial keyword in each file
+
+- Anonymous Classes: You create an anonymous class simply by using the `new` keyword and a pair of braces defining the fields and values that you want the class to contain.
+  
+    ```csharp
+      var myAnonymousObject = new { Name = "John ", Age = 47 };
+
+      var anotherAnonymousObject = new { Name = "Diana ", Age = 53 };
+    ```
+
+  - The C# compiler uses the names, types, number, and order of the fields to
+  determine whether two instances of an anonymous class have the same type. 
+
+  - In the case above, the variables myAnonymousObject and anotherAnonymousObject have the same number of fields, with the same name and type, in the same order, so both variables are instances of the same anonymous class. This means that you
+  can perform assignment statements such as this:
+
+    ```csharp
+
+    anotherAnonymousObject = myAnonymousObject;
+
+    ```
+
+  - There are quite a few restrictions on the contents of an anonymous class. 
+
+    - anonymous classes can contain only public fields,
+    - the fields must all be initialized,
+    - they cannot be static,
+    - and you cannot define any methods for them.
+
 
 ---
 
