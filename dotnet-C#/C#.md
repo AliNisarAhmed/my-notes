@@ -51,7 +51,7 @@ longer clear to which class each method belongs
 
 ---
 
-## Contructors
+## Constructors
 
 - A `constructor` is a special method that runs automatically when you create an instance of a `class`. It has the same name as the class, and it can take parameters, but it cannot return a value (not even `void`). Every `class` must have a `constructor`.
 
@@ -260,10 +260,164 @@ your application.
     - they cannot be static,
     - and you cannot define any methods for them.
 
+- The string type in C# is actually a class. This is because there is no standard size for a string (different strings can contain different numbers of characters), and allocating memory for a string dynamically when the program runs is far more efficient than doing so statically at compile time. In fact, the string keyword in C# is just an alias for the `System.String` class.
 
 ---
 
-### `new` modifier
+## Reference vs Value types
+
+- When a value type is copied, the value in the variable is copied as a whole.
+
+- The value in the reference variable is also copied as a whole, but that value in itself is actually a reference. So, in effect, a reference (to the actual value) is copied from one variable to another.
+
+- In C#, you can assign the null value to any reference variable.
+
+- C# defines a modifier that you can use to declare that a variable is a "nullable value type". A nullable value type behaves similarly to the original value type, but you can assign the null value to it. You use the question mark (?, e.g. int?) to indicate that a value type is nullable.
+
+- You can assign an expression of the appropriate value type directly to a nullable variable. The following code is legal
+  ```csharp
+    int? i = null;
+    int j = 99;
+    i = 100; // Copy a value type constant to a nullable type
+    i = j; // Copy a value type variable to a nullable type
+
+    // but the converse is illegal
+    j = i; // Illegal
+  ```
+- This makes sense when you consider that the variable `i` might contain `null`, and `j` is a value type that cannot contain `null`.
+
+- This also means that you cannot use a nullable variable as a parameter to a method that expects an ordinary value type
+
+#### `HasValue` and `.Value` for nullable types
+
+- The `HasValue` property indicates whether a nullable type contains a value or is `null`.
+
+- You can retrieve the value of a nonnull nullable type by reading the Valueproperty
+
+  ```csharp
+    int? i = null;
+    
+    if (!i.HasValue)
+    {
+      // If i is null, then assign it the value 99
+      i = 99;
+    }
+    else
+    {
+      // If i is not null, then display its value
+      Console.WriteLine(i.Value);
+    }
+  ```
+
+### `ref` and `out` parameters
+
+- Ordinarily, when you pass an argument to a method, the corresponding parameter is initialized with a copy of the argument. This is true regardless of whether the parameter is a value type (such as an `int`), a nullable type (such as `int?`), or a reference type.
+
+- This arrangement means that it’s impossible for any change to the parameter to affect the value of the argument passed in
+
+  ```csharp
+    static void doIncrement(int param)
+    {
+      param++;
+    }
+    
+    static void Main()
+    {
+      int arg = 42;
+      doIncrement(arg);
+      Console.WriteLine(arg); // writes 42, not 43
+    }
+  ```
+
+- However, if the parameter to a method is a reference type, any changes made by using that parameter ***change*** the data referenced by the argument passed in.
+
+- The key point is this: Although the data that was referenced changed, the argument passed in as the parameter did not—it still references the same object
+
+- In other words, although it is possible to modify the object that the argument refers to through the parameter, it’s not possible to modify the argument itself (for example, to set it to refer to a completely different object). 
+
+- Occasionally, however, you might wantto write a method that actually needs to modify an argument. C# provides the `ref` and `out` keywords so that you can do this.
+
+- If you prefix a parameter with the `ref` keyword, the C# compiler generates code that passes a reference to the actual argument rather than a copy of the argument.When using a `ref` parameter, anything you do to the parameter you also do to the original argument because the parameter and the argument both reference the same data.
+
+- When you pass an argument as a `ref` parameter, you must also prefix the argument with the `ref` keyword.
+
+  ```csharp
+    static void doIncrement(ref int param) // using ref
+    {
+      param++;
+    }
+    static void Main()
+    {
+      int arg = 42;
+      doIncrement(ref arg); // using ref
+      Console.WriteLine(arg); // writes 43
+    }
+  ```
+
+- This time, the `doIncrement` method receives a reference to the original argument rather than a copy, so any changes the method makes by using this reference actually change the original value. That’s why the value 43 is displayed on the console.
+
+- Remember that C# enforces the rule that you must assign a value to a variable before you can read it. This rule also applies to method arguments; you cannot pass an uninitialized value as an argument to a method even if an argument is defined as a `ref` argument
+
+  ```csharp 
+    static void doIncrement(ref int param)
+    {
+      param++;
+    }
+    static void Main()
+    {
+      int arg; // not initialized
+      doIncrement(ref arg); // Error
+      Console.WriteLine(arg);
+    }
+  ```
+
+- The `out` keyword is syntactically similar to the `ref` keyword. You can prefix a parameter with the `out` keyword so that the parameter becomes an alias for the argument.
+
+- When you pass an `out` parameter to a method, the method must assign a value to it before it finishes or returns.
+
+  ```csharp
+    static void doInitialize(out int param)
+    {
+      param = 42; // Initialize param before finishing
+      // if param is not initialized, it will be an Error
+    }
+  ```
+
+- Because an `out` parameter must be assigned a value by the method, you’re allowed to call the method without initializing its argument.
+
+  ```csharp
+    static void doInitialize(out int param)
+    {
+      param = 42;
+    }
+    static void Main()
+    {
+      int arg; // not initialized
+      doInitialize(out arg); // legal
+      Console.WriteLine(arg); // writes 42
+    }
+  ```
+
+- **Note** You can use the `ref` and `out` modifiers on reference type parameters as well as on value type parameters. The effect is the same: the parameter becomes an alias for the argument.
+
+---
+
+## Stack vs Heap
+
+- All value types are created on the stack. All reference types(objects) are created on the heap (although the reference itself is onthe stack). Nullable types are actually reference types, and they arecreated on the heap.
+
+- When you call a method, the memory required for its parameters and its local variables is always acquired from the stack. When the method finishes (because it either returns or throws an exception), the memory acquired for the parameters and local variables is automatically released back to the stack and is available again when another method is called.
+
+- Method parameters and local variables on the stack have a well-defined  lifespan: they come into existence when the method starts, and they disappear as soon as the method completes.
+
+- When you create an object (an instance of a class) by using the `new` keyword, the memory required to build the object is always acquired from the heap.
+
+- When the last reference to an object disappears, the memory used by the object becomes available again (although it might not be reclaimed immediately).
+
+
+---
+
+## `new` modifier
 
 When used as a declaration modifier, the `new` keyword explicitly hides a member that is inherited from a `base` class. When you hide an inherited member, the derived version of the member replaces the `base` class version. Although you can hide members without using the new modifier, you get a compiler warning. If you use new to explicitly hide a member, it suppresses this warning.
 
