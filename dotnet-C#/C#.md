@@ -1,6 +1,6 @@
 # C# Notes
 
-## Access Modifiers: Accessibility of `methods` and `fields`
+## **Access Modifiers: Accessibility of `methods` and `fields`**
 
 - ***private***: a method or field is accessible only from **within the class or struct**.
 - ***public***: a method or field is accessible from anywhere inside the namespace.
@@ -11,7 +11,7 @@
 
 ---
 
-## Fields
+## **Fields**
 
 ### Static Fields - Shared fields
 
@@ -25,7 +25,7 @@
 
 ---
 
-## Static `using` statements
+## **Static `using` statements**
 
 - Whenever you call a static method or reference a static field, you must specify
 the class to which the method or field belongs, such as `Math.Sqrt` or
@@ -51,7 +51,7 @@ longer clear to which class each method belongs
 
 ---
 
-## Constructors
+## **Constructors**
 
 - A `constructor` is a special method that runs automatically when you create an instance of a `class`. It has the same name as the class, and it can take parameters, but it cannot return a value (not even `void`). Every `class` must have a `constructor`.
 
@@ -264,7 +264,7 @@ your application.
 
 ---
 
-## Reference vs Value types
+## **Reference vs Value types**
 
 - When a value type is copied, the value in the variable is copied as a whole.
 
@@ -402,7 +402,7 @@ your application.
 
 ---
 
-## Stack vs Heap
+## **Stack vs Heap**
 
 - All value types are created on the stack. All reference types(objects) are created on the heap (although the reference itself is onthe stack). Nullable types are actually reference types, and they arecreated on the heap.
 
@@ -414,12 +414,169 @@ your application.
 
 - When the last reference to an object disappears, the memory used by the object becomes available again (although it might not be reclaimed immediately).
 
+---
+
+## **`System.Object` OR `object` Class**
+
+- all classes are specialized types of `System.Object` and that you can use `System.Object` to create a variable that can refer to any reference type. `System.Object` is such an important class that C# provides the `object` keyword as an alias for `System.Object`. In your code, you can use `object`, or you can write `System.Object` — they mean the same thing.
 
 ---
 
-## `new` modifier
+## **Boxing, Un-Boxing, Casting, `is` operator, `as` operator**
+
+  ```csharp
+    int i = 42;
+    object o = i;
+  ```
+
+- Remember that `i` is a value type and that it lives on the stack.If the reference inside `o` referred directly to `i`, the reference would refer to the stack. However, all references must refer to objects on the heap; creating references to items on the stack could seriously compromise the robustness of the runtime and create a potential security flaw, so it is not allowed. Therefore,the runtime allocates a piece of memory from the heap, copies the value of integer `i` to this piece of memory, and then refers the object `o` to this copy. This automatic copying of an item from the stack to the heap is called **Boxing**.
+
+![Boxing](./boxing.PNG)
+
+- **NOTE**: If you modify the original value of the variable `i`, the value on the heap referenced through `o` will not change. Likewise, if you modify the value on the heap, the original value of the variable will not change.
+
+-  You might expect to be able to access the boxed `int` value that a variable `o` refers toby using a simple assignment statement such as `int i = o;` However, if you try this syntax, you’ll get a compile-time error. After all, `o` could be referencing absolutely anything and not just an int.
+
+- To obtain the value of the boxed copy, you must use what is known as a **cast**.This is an operation that checks whether converting an item of one type to another is safe before actually making the copy.
+
+  ```csharp
+    int i = 42;
+    object o = i; // boxes
+    i = (int)o; // compiles okay
+  ```
+
+- The effect of this cast is subtle. The compiler notices that you’ve specified the type `int` in the cast. Next, the compiler generates code to check what `o` actually refers to at runtime. It could be absolutely anything. Just because your cast says `o` refers to an int, that doesn’t mean it actually does. If `o` really does refer to a boxed `int` and everything matches, the cast succeeds, and the compiler-generated code extracts the value from the boxed int and copies it to i. This is called **unboxing**.
+
+![Un-Boxing](./unboxing.PNG)
+
+- On the other hand, if `o` does not refer to a boxed `int`, there is a type mismatch, causing the cast to fail. The compiler-generated code throws an `InvalidCastException` exception at runtime.
+
+- **NOTE**: Keep in mind that boxing and unboxing are expensive operations because of the amount of checking required and the need to allocate additional heap memory. Boxing has its uses, but injudicious use can severely impair the performance of a program.
+
+### `is` operator
+
+- You can use the is operator to verify that the type of an object is what you expectit to be.
+
+  ```csharp
+    WrappedInt wi = new WrappedInt();
+    object o = wi;
+    if (o is WrappedInt)
+    {
+      WrappedInt temp = (WrappedInt)o; // This is safe; o is a WrappedInt...
+    }
+  ```
+
+- The `is` operator takes two operands: a reference to an object on the left, andthe name of a type on the right.
+
+- If the type of the object referenced on the heap has the specified type, is evaluates to `true`; otherwise, is evaluates to `false`. 
+
+- Another form of the is operator enables you to abbreviate this code by combining the type check and the assignment
+
+  ```csharp
+    WrappedInt wi = new WrappedInt();
+    object o = wi;
+    if (o is WrappedInt temp)
+    {
+      // Use temp here
+    }
+  ```
+
+- In this example, if the test for the `WrappedInt` type is successful, the `is` operator creates a new reference variable (called `temp`), and assigns it a referenceto the `WrappedInt` object.
+
+### `as` operator
+
+- The `as` operator fulfills a similar role to `is` but in a slightly truncated manner.
+
+  ```csharp
+    WrappedInt wi = new WrappedInt();
+    object o = wi;
+    WrappedInt temp = o as WrappedInt;
+    if (temp != null)
+    {
+      // Cast was successful
+    }
+  ```
+
+---
+
+## Enums
+
+- You define an enumeration by using the `enum` keyword, followed by a set of symbols identifying the legal values that the type can have, enclosing them between braces.
+
+  ```csharp 
+    enum Season { Spring, Summer, Fall, Winter }
+    class Example
+    {
+      public void Method(Season parameter) // method parameter example
+      {
+        Season localVariable = Season.Fall; // local variable example...
+        Console.WriteLine(localVariable);
+        // writes out 'Fall', converted automatically by the compiler
+        Season? colorful = null;  // Enums are value types
+      }
+      private Season currentSeason; // field example
+    }
+  ```
+
+- Many of the standard operators that you can use on integer variables you can also use on enumeration variables (except the bitwise and shift operators)
+
+- Internally, an enumeration type associates an integer value with each element of the enumeration. By default, the numbering starts at `0` for the first element and goes up in steps of `1`.
+
+-  It’s possible to retrieve the underlying integer value of anenumeration variable, by casting it to an int using `(int)`
+
+- you can associate a specific integer constant (such as 1) with an enumeration literal
+
+  ```csharp 
+    enum Season { Sping = 1, Summer, Fall, Winter }  // Summer will be 2 and so on...
+  ```
+
+- You can base an enumeration on any of the eight integer types: `byte`, `sbyte`, `short`, `ushort`, `int`, `uint`, `long`, or `ulong`.
+
+  ```csharp
+    enum Season : short { Spring, Summer, Fall, Winter }
+  ```
+
+---
+
+## **`new` modifier**
 
 When used as a declaration modifier, the `new` keyword explicitly hides a member that is inherited from a `base` class. When you hide an inherited member, the derived version of the member replaces the `base` class version. Although you can hide members without using the new modifier, you get a compiler warning. If you use new to explicitly hide a member, it suppresses this warning.
+
+---
+
+## Generics
+
+### Benefits of Generic Types 
+
+Generics (like `List<T>`), solve
+
+- You don’t need to know the size of the collection beforehand, unlike with arrays.
+
+- The exposed API uses `T` everywhere it needs to refer to the element type, so you know  that  a  `List<string>`  will  contain  only  string  references.  You’ll  get  a compile-time error if you try to add anything else, unlike with `ArrayList`.
+
+- You  can  use  it  with  any  element  type  without  worrying  about  generating  code and managing the result, unlike with `StringCollection` and similar types.
+
+### Type Parameters and Type Arguments
+
+- Same concept as function paramteres and arguments, but for types
+
+  ```csharp 
+    public class List<T>  // T is type parameter
+    {  
+      // ...
+    }
+    List<string> list = new List<string>();  // string is Type argument
+  ```
+
+### Generic Arity 
+
+- The generic arity of a declaration is the number of type parameters it has.
+
+  ```csharp 
+    public class Dictionary<TKey, TValue> // Generic Arity of 2
+  ```
+
+- You can think of a non-generic declaration as one with generic arity 0.
 
 ---
 

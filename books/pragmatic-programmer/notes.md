@@ -444,4 +444,6 @@ Are there other bugs still in the larval stage, just waiting to hatch?
   ##### Tip 32: Read the Damn Error Message
   ##### Tip 33: “select” Isn’t Broken
   ##### Tip 34: Don’t Assume It—Prove It
+  ##### Tip 36: You Can’t Write Perfect Software
+  ##### Tip 37: Design with Contracts
 
