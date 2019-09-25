@@ -143,3 +143,90 @@ Because we often need simple lists of key/value pairs, Elixir gives us a shortcu
   ```
 
 - **NOTE**: You’ll get a `KeyError` if there’s no matching key when you use the dot notation.
+
+## Truthy and Falsy Values
+
+- Elixir has three special values related to Boolean operations: `true`, `false`, and `nil`. `nil` is treated as false in Boolean contexts.
+
+## Operators 
+
+  ```elixir 
+    a === b    ​# strict equality   (so 1 === 1.0 is false)​
+​ 
+    a !== b    ​# strict inequality (so 1 !== 1.0 is true)​
+​ 
+    a ==  b    ​# value equality    (so 1 ==  1.0 is true)​
+​ 
+    a !=  b    ​# value inequality  (so 1 !=  1.0 is false)​
+​ 
+    a  >  b    ​# normal comparison​
+​ 
+    a >=  b    ​#   :​
+​ 
+    a  <  b    ​#   :​
+​ 
+    a <=  b    ​#   :
+  ```
+
+- The ordering comparisons in Elixir are less strict than in many languages, as you can compare values of different types. If the types are the same or are compatible (for example, 3 > 2 or 3.0 < 5), the comparison uses natural ordering. Otherwise comparison is based on type according to this rule: 
+
+  - number < atom < reference < function < port < pid < tuple < map < list < binary
+
+### Boolean Operators 
+
+Boolean operators (These operators expect true or false as their first argument.)
+  
+  ```elixir
+ 
+  a ​or​ b     ​# true if a is true; otherwise b​
+  ​
+  a ​and​ b    ​# false if a is false; otherwise b​
+  ​
+  ​not​ a      ​# false if a is true; true otherwise
+  
+  ```​
+
+### Relaxed Boolean Operators
+
+- These operators take arguments of any type. Any value apart from `nil` or `false` is interpreted as `true`.
+​ 
+  ```elixir 
+    a || b    ​# a if a is truthy; otherwise b​
+    ​ 
+    a && b    ​# b if a is truthy; otherwise a​
+    ​ 
+    ​!​a        ​# false if a is truthy; otherwise true
+  ```
+
+### Arithmetic operators
+`+ - * / div rem`
+
+### Join operators
+
+  ```elixir ​
+    binary1 <> binary2   ​# concatenates two binaries (Later we'll​
+    ​ 
+                        ​# see that binaries include strings.)​
+    ​ 
+    list1 ++ list2       ​# concatenates two lists​
+    ​ 
+    list1 -- list2       ​# removes elements of list 2 from a copy of list 1
+  ``` 
+
+### `in` operator
+​
+  ```elixir 
+    a ​in​ enum            ​# tests if a is included in enum (for example,​
+    ​ 
+                        ​# a list, a range, or a map). For maps, a should​
+    ​ 
+                        ​# be a {key, value} tuple.
+  ```
+
+### The `with` Expression
+
+- The with expression serves double duty. 
+
+- First, it allows you to define a local scope for variables. If you need a couple of temporary variables when calculating something, and you don’t want those variables to leak out into the wider scope, use `with`.
+
+- Second, it gives you some control over pattern-matching failures.

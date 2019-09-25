@@ -466,7 +466,7 @@ your application.
     }
   ```
 
-- The `is` operator takes two operands: a reference to an object on the left, andthe name of a type on the right.
+- The `is` operator takes two operands: a reference to an object on the left, and the name of a type on the right, and returns a `bool`
 
 - If the type of the object referenced on the heap has the specified type, is evaluates to `true`; otherwise, is evaluates to `false`. 
 
@@ -485,7 +485,7 @@ your application.
 
 ### `as` operator
 
-- The `as` operator fulfills a similar role to `is` but in a slightly truncated manner.
+- The `as` operator fulfills a similar role to `is` but in a slightly truncated manner. If the cast is successful, the value exists, else the value becomes `null`, so we can simply null check after using `as` operator
 
   ```csharp
     WrappedInt wi = new WrappedInt();
@@ -535,6 +535,44 @@ your application.
   ```csharp
     enum Season : short { Spring, Summer, Fall, Winter }
   ```
+---
+
+## Structs
+
+-  A `structure` is a value type. Because structures are stored on the stack, as long as the `structure` is reasonably small, the memory management overhead is often reduced, compared to classes which are stored on the heap.
+
+- Like a class, a structure can have its own fields, methods, and constructors.
+
+- Tuples are actually examples of the `System.ValueTuple` structure. Rather more interestingly, in C#, the primitive numeric types `int`, `long`, and `float` are aliases for the structures `System.Int32`, `System.Int64`, and `System.Single`, respectively.
+
+- Apart fromm `System.Object` and `System.String`, primitive types are mostly structs.
+
+  ```csharp 
+    struct Time
+    {
+      public int hours, minutes, seconds;
+    }
+  ```
+- you cannot use operators such as the equality operator (==) and the inequality operator (!=) on your own structure type variables. However, you can use the built-in `Equals()` method exposed by all structures to compare structure type variables, and you can also explicitly declare and implement operators for your own structure types.
+
+- A structure and a class are syntactically similar, but they have a few important differences.
+  - You can’t declare a default constructor (a constructor with no parameters)for a structure, the reason being that the compiler always generates one
+  - In a class, you can initialize instance fields at their point of declaration. Ina structure, you cannot
+    ```csharp 
+      struct Time
+      {
+        private int hours = 0; // compile-time error, compiles if class
+        private int minutes;
+        private int seconds;
+      }
+    ```
+
+- As with enumerations, you can create a nullable version of a structure variable by using the ? modifier. You can then assign the null value to the variable:
+  ```csharp 
+    Time? currentTime = null;
+  ```
+
+- because structures are value types, you can also create structure variables without calling a constructor, but the fields would be left un-initialiezed, and any attempt to get their value is a compile time error.
 
 ---
 
@@ -577,6 +615,47 @@ Generics (like `List<T>`), solve
   ```
 
 - You can think of a non-generic declaration as one with generic arity 0.
+
+### What can be Generic 
+
+- some members may look like they’re generic because they use other generic types. Remember that a declaration is generic only if it introduces new type parameters. 
+
+- Methods and nested types can be generic, but all of the following have to be non-generic:
+  - Fields
+  - Properties 
+  - Indexers
+  - Constructors
+  - Events
+  - Finalizers
+
+```csharp 
+  public class ValidatingList<TItem>
+  {    
+    private readonly List<TItem> items = new List<TItem>();   
+    
+  }
+```
+
+- Here,  the  items  field  is  of  type  `List<TItem>`.  It  uses  the  type parameter `TItem` as a type argument for `List<T>`, but that’s a type parameter introduced by the class declaration, not by the field declaration.
+
+### Type Inference
+
+- Although type inference applies only to methods, it can be used to more easily construct instances of generic types. For example, consider the `Tuple` family of types introduced in .NET 4.0. This consists of a nongeneric static `Tuple` class and multiple generic classes: `Tuple<T1>`, `Tuple<T1,T2>`, `Tuple<T1,T2,T3>`, and so forth. The static class has a set of overloaded `Create` factory methods like this
+
+  ```csharp 
+    public static Tuple<T1> Create<T1>(T1 item1)
+    {    
+      return new Tuple<T1>(item1);
+    }
+
+    public static Tuple<T1, T2> Create<T1, T2>(T1 item1, T2 item2)
+    {    
+      return new Tuple<T1, T2>(item1, item2);
+    }
+  ```
+
+  These look pointlessly trivial, but they allow type inference to be used where otherwise the type arguments would have to be explicitly specified when creating tuples. Instead of this `new Tuple<int, string, int>(10, "x", 20)` you can write this: `Tuple.Create(10, "x", 20)`
+
 
 ---
 

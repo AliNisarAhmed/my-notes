@@ -409,6 +409,43 @@ Are there other bugs still in the larval stage, just waiting to hatch?
 ### Engineering Daybooks
 
 - Keep small notebooks, and write daily notes, manually by hand.
+
+## Chapter 4
+
+### Design by Contract
+
+- It is a simple yet powerful technique that focuses on documenting (and agreeing to) the rights and responsibilities of software modules to ensure program correctness. 
+
+- What is a correct program? One that does no more and no less than it claims to do. Documenting and verifying that claim is the heart of Design by Contract(DBC, for short)
+
+  - **Preconditions**: What  must  be  true  in  order  for  the  routine  to  be  called;  the  routine’srequirements.
+  - **Postconditions**: What  the  routine  is  guaranteed  to  do;  the  state  of  the  world  when  theroutine is done.
+  - **Class invariants**: A class ensures that this condition is always true from the perspective of a caller. During internal processing of a routine, the invariant may nothold, but by the time the routine exits and control returns to the caller,the invariant must be true.  
+
+- If all the routine’s preconditions are met by the caller, the routine shall guarantee that all postconditions and invariants will be true when it completes.
+
+- If  either  party  fails  to  live  up  to  the  terms  of  the  contract,  then  a  remedy(which was previously agreed to) is invoked—maybe an exception is raised,or the program terminates.
+
+- Crashing Early: By using an assert or DBC mechanism to validate  the  preconditions,  postconditions,  and  invariants,  you  can  crash early and report more accurate information about the problem.
+
+### Dead Program tell no lies
+
+- when your code discovers that something that was supposed to be impossible just happened, your program is no longer viable. Anything it does from this point forward becomes suspect,so terminate it as soon as possible. A dead program normally does a lot less damage than a crippled one.
+
+### Assertive Programming
+
+- Whenever you find yourself thinking “but of course that could never happen,”add code to check it. The easiest way to do this is with assertions.
+
+- **Heisenberg** - debugging that changes the behaviour of the system being debugged. From the Heisenberg Effect from physics where the act of observing something changes it.
+
+- Leave assertions in production code, to detect more errors.
+
+### How to Balance Resources
+
+- Finish What you start -  It  simply  means  that  thefunction or object that allocates a resource should be responsible for deallo-cating  it. 
+
+
+
 ---
 
   ##### Tip 1: Care about your work
@@ -446,4 +483,6 @@ Are there other bugs still in the larval stage, just waiting to hatch?
   ##### Tip 34: Don’t Assume It—Prove It
   ##### Tip 36: You Can’t Write Perfect Software
   ##### Tip 37: Design with Contracts
-
+  #### Tip 38: Crash early
+  #### Tip 39: Use Assertions to Prevent the Impossible
+  #### Tip 40: Finish What You Start
