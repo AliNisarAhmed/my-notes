@@ -410,6 +410,8 @@ Are there other bugs still in the larval stage, just waiting to hatch?
 
 - Keep small notebooks, and write daily notes, manually by hand.
 
+---
+
 ## Chapter 4
 
 ### Design by Contract
@@ -443,6 +445,46 @@ Are there other bugs still in the larval stage, just waiting to hatch?
 ### How to Balance Resources
 
 - Finish What you start -  It  simply  means  that  thefunction or object that allocates a resource should be responsible for deallo-cating  it. 
+
+### Dont outrun your headlights
+
+- Always  take  small,  deliberate  steps,  checking  for  feedback  and  adjusting before proceeding. Consider that the rate of feedback is your speed limit. You never take on a step or a task that’s “too big.”
+
+#### Black Swan
+
+- Nassim Nicholas Taleb posits that all significant events in history have come from high-profile, hard-to-predict, and rare events that are beyond the realm of normal expectations. These outliers, while statistically rare, have disproportionate effects. In addition, our own cognitive biases tend to blind us to changes  creeping  up  on  the edges of our work.
+
+- Much of the time, tomorrow looks a lot like today. But don’t count on it.
+
+--- 
+
+## Chapter 5
+
+### Decoupling
+
+- Coupling is the enemy of change, because it links together things that must change in parallel. This makes change more difficult: either you spend time tracking down  all  the  parts  that  need  changing,  or  you  spend  time  wondering  why things broke when you changed “just one thing” and not the other things to which it was coupled.
+
+#### Train Wrecks
+
+- Wacky dependencies between unrelated modules or libraries.
+
+- “Simple” changes to one module that propagate through unrelated modules in the system or break stuff elsewhere in the system.
+
+- Tell, Dont Ask (TDA).
+
+#### Globalization 
+
+- Globally accessible data is an insidious source of coupling between application components. Each piece of global data acts as if every method in your application suddenly gained an additional parameter: after all, that global data is available inside every method.
+
+### Inheritence tax 
+
+- Inheritence creates strong coupling
+
+- Three  techniques  instead of inheritance 
+  • Interfaces and protocols
+    - Interfaces and protocols give us polymorphism without inheritance
+  • Delegation
+  • Mixins and traits
 
 
 
@@ -486,3 +528,5 @@ Are there other bugs still in the larval stage, just waiting to hatch?
   #### Tip 38: Crash early
   #### Tip 39: Use Assertions to Prevent the Impossible
   #### Tip 40: Finish What You Start
+  #### Tip 42: Always take small deliberate steps
+  #### Tip 44: Decoupled Code Is Easier to Change

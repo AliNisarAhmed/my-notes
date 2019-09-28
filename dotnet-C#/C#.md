@@ -574,6 +574,106 @@ your application.
 
 - because structures are value types, you can also create structure variables without calling a constructor, but the fields would be left un-initialiezed, and any attempt to get their value is a compile time error.
 
+- You’re allowed to initialize or assign one `structure` variable to another `structure` variable, but only if the `structure` variable on the right side is completely initialized (that is, if all its fields are populated with valid data rather than undefined values).
+
+---
+
+## Arrays
+
+- An array is an unordered sequence of items. 
+
+- All the items in an array have the same type, unlike the fields in a structure or class, which can have different types. 
+
+- The items in an array live in a contiguous block of memory and areaccessed by using an index, unlike fields in a structure or class, which are accessed by name.
+
+- Arrays are reference types, regardless of the type of their elements.
+
+- Creating an array also initializes its elements by using the default values (`0`, `null`, or `false`, depending on whether the type is numeric, a reference, or a Boolean, respectively).
+
+
+
+  ```csharp
+    int[] pins;  // Array declaration - no memory is allocated
+    pins = new int[4];  // now memory is allocated, all four values are default values
+    pins = new int[4]{ 9, 3, 7, 2 };
+  ```
+
+- When you’re initializing an array, you can actually omit the `new` expression and the size of the array. The compiler calculates the size from the number of initializers and generates code to create the array.
+
+  ```csharp
+    int[] pins = { 9, 3, 7, 2 };
+  ```
+
+- Implicitly typed arrays - the C# compiler determines that the names variable is an array of strings.  you must specify the new operator and square brackets before the initializer list.
+  
+  ```csharp
+    var names = new[]{ "John", "Diana", "James", "Francesca" }
+
+    // Implicitly typed arrays are most useful when you are working withanonymous types
+
+    var names = new[]
+    {
+      new { Name = "John", Age = 53 },
+      new { Name = "Diana", Age = 53 },
+      new { Name = "James", Age = 26 },
+      new { Name = "Francesca", Age = 23 }
+    };
+  ```
+
+- All array element access is bounds-checked. If you specify an index that is less than `0` or greater than or equal to the `length` of the array, the compiler throws an `IndexOutOfRangeException` exception.
+
+- **Copying an Array** - `CopyTo` method copies the contents of one array into another array given a specified starting index. Another way to copy the values is to use the `System.Array` static method named `Copy`
+
+  ```csharp 
+    int[] pins = { 9, 3, 7, 2 };
+    int[] copy = new int[pins.Length];
+    pins.CopyTo(copy, 0);
+
+    // OR
+    
+    int[] pins = { 9, 3, 7, 2 };
+    int[] copy = new int[pins.Length];
+    Array.Copy(pins, copy, copy.Length);
+
+    // Yet another alternative is to use the System.Array instance method named Clone.
+
+    int[] pins = { 9, 3, 7, 2 };
+    int[] copy = (int[])pins.Clone();
+
+    // The Clone method of the Array class returns an object rather than Array, which is why you must cast it to an array of the appropriate type when you use it.
+
+    // Furthermore, the Clone, CopyTo, and Copy methods all create a shallow copy of an array
+  ```
+
+- **Multi-dimensional Arrays** aka rectangular arrays - The following code creates a two-dimensional array of 24 integers called items.
+
+  ```csharp 
+    int[,] items = new int[4, 6];
+
+    // To access an element in the array, you provide two index values to specify the “cell” (the intersection of a row and a column) holding the element.
+
+    items[2, 3] = 99; // set the element at cell(2,3) to 99
+    items[2, 4] = items [2,3]; // copy the element in cell(2, 3) to cell(2,4)
+    items[2, 4]++; // increment the integer value at cell(2, 4)
+
+  ```
+
+- **Jagged Arrays** or array of Arrays - where each column has a different length
+
+  ```csharp 
+
+    int[][] items = new int[4][];
+    // 3 elements in the first column, 10 elements in the second column, 40 elements in the third column, and 25 elements in the final column. 
+    int[] columnForRow0 = new int[3];
+    int[] columnForRow1 = new int[10];
+    int[] columnForRow2 = new int[40];
+    int[] columnForRow3 = new int[25];
+    items[0] = columnForRow0;
+    items[1] = columnForRow1;
+    items[2] = columnForRow2;
+    items[3] = columnForRow3;
+  ```
+
 ---
 
 ## **`new` modifier**
@@ -630,9 +730,8 @@ Generics (like `List<T>`), solve
 
 ```csharp 
   public class ValidatingList<TItem>
-  {    
-    private readonly List<TItem> items = new List<TItem>();   
-    
+  {
+    private readonly List<TItem> items = new List<TItem>();
   }
 ```
 
@@ -644,12 +743,12 @@ Generics (like `List<T>`), solve
 
   ```csharp 
     public static Tuple<T1> Create<T1>(T1 item1)
-    {    
+    {
       return new Tuple<T1>(item1);
     }
 
     public static Tuple<T1, T2> Create<T1, T2>(T1 item1, T2 item2)
-    {    
+    {
       return new Tuple<T1, T2>(item1, item2);
     }
   ```
