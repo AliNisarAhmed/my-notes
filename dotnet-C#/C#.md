@@ -2,12 +2,12 @@
 
 ## **Access Modifiers: Accessibility of `methods` and `fields`**
 
-- ***private***: a method or field is accessible only from **within the class or struct**.
-- ***public***: a method or field is accessible from anywhere inside the namespace.
-- ***protected***: method or field accessible from **inside the class** and **in all classes that derive from that class**.
-- ***internal***: method or field is accessible from inside its own assembly, but not in other assemblies.
-- ***protected internal***: member access in the same assembly, or derived classes in other assemblies.
-- ***private protected***: member access inside the containing class, deriving class, but only in the same assembly.
+- **_private_**: a method or field is accessible only from **within the class or struct**.
+- **_public_**: a method or field is accessible from anywhere inside the namespace.
+- **_protected_**: method or field accessible from **inside the class** and **in all classes that derive from that class**.
+- **_internal_**: method or field is accessible from inside its own assembly, but not in other assemblies.
+- **_protected internal_**: member access in the same assembly, or derived classes in other assemblies.
+- **_private protected_**: member access inside the containing class, deriving class, but only in the same assembly.
 
 ---
 
@@ -19,7 +19,7 @@
 
 ### Creating a static field using `const` keyword
 
-- By prefixing the field with the `const` keyword, you can declare that a field is `static` but that its value can never change. The keyword `const` is short for constant. 
+- By prefixing the field with the `const` keyword, you can declare that a field is `static` but that its value can never change. The keyword `const` is short for constant.
 
 - A `const` field does not use the `static` keyword in its declaration but is nevertheless static.
 
@@ -28,10 +28,10 @@
 ## **Static `using` statements**
 
 - Whenever you call a static method or reference a static field, you must specify
-the class to which the method or field belongs, such as `Math.Sqrt` or
-`Console.WriteLine`. 
+  the class to which the method or field belongs, such as `Math.Sqrt` or
+  `Console.WriteLine`.
 
-- Static `using` statements enable you to bring a class into scope and omit the class name when accessing static members. 
+- Static `using` statements enable you to bring a class into scope and omit the class name when accessing static members.
 
 - They operate in much the same way as ordinary using statements that bring namespaces into scope.
 
@@ -46,8 +46,8 @@ WriteLine($"The square root of 99.9 is ");
 ```
 
 - Although you are typing less code, you have to balance this with the additional
-effort required when someone else has to maintain your code, because it is no
-longer clear to which class each method belongs
+  effort required when someone else has to maintain your code, because it is no
+  longer clear to which class each method belongs
 
 ---
 
@@ -58,8 +58,8 @@ longer clear to which class each method belongs
 - If you don’t write one, the compiler automatically generates a default constructor for you. (However, the compiler-generated default constructor doesn’t actually do anything.)
 
 - In C# parlance, the default constructor is a constructor that does not take any parameters. Regardless of whether, the compiler generates the
-default construtor or you write it yourself, a constructor that does not take any parameters is still the default constructor. You can also write
-nondefault constructors (constructors that do take parameters).
+  default construtor or you write it yourself, a constructor that does not take any parameters is still the default constructor. You can also write
+  nondefault constructors (constructors that do take parameters).
 
 - If `public` keyword is ommitted, the constructor is `private` by default.
 
@@ -71,22 +71,21 @@ nondefault constructors (constructors that do take parameters).
 
 - When you build the application, the compiler works out which constructor it should call based on the parameters that you specify to the new operator.
 
---- 
+---
 
 ## **Methods**
 
-### __`static` Method__
+### **`static` Method**
 
 - if you declare a method or a field as static, you can call the method or access the field by using the name of the class. No instance is required.
 
 - A `static` method does not depend on an instance of the `class`, and it cannot access any instance fields or instance methods defined in the class; it can use only fields and other methods that are marked as `static`.
 
-
-### __`virtual` Method__
+### **`virtual` Method**
 
 A method with its own (default) implementation in the `Base` Class, but can be `override` in the `Derived` Class.
 
-### __`abstarct` Method__
+### **`abstarct` Method**
 
 A method that does not have an implementation in the `Base` Class, and therefore, must be `override` in the `Derived` Class.
 
@@ -94,7 +93,7 @@ A method that does not have an implementation in the `Base` Class, and therefore
 
 A method which a `Derived` Class cannot `override`. You can seal only a method declared with `override` keyword. Hence the method is declared as `sealed override`.
 
-### __Extension Method__
+### **Extension Method**
 
 Extension methods enable you to "add" methods to existing types without creating a new derived type, recompiling, or otherwise modifying the original type. We use the `this` keyword, in front of the **FIRST** parameter of a method, to indicate which type is being extended. To enable extension methods for a particular type, just add a using directive for the namespace in which the methods are defined.
 
@@ -131,7 +130,7 @@ Point point = new Point();
 - The parameters are marked with the `out` modifier. This means that if you assign values to them, these values will be passed back to the caller.
 - The code in the body of the method assigns the values to be returned to the parameters.
 
-### __`Destructor`__
+### **`Destructor`**
 
 Destructors (opposite of `constructors`) is a special method which is called by CLR after the reference to an object has disappeared. It is written by prepending the Class name with `~`.
 
@@ -178,30 +177,32 @@ class FileProcessor
 
 ### Garbage Collection
 
-Without Garbage collector, following problems coudl arise:
+Without Garbage collector, following problems could arise:
 
 - We'd forget to destroy the object, meaning it's `destructor` would not be run, hence important tidying up operations could be missed and the memory would not be returned to heap.
-- An active object could mistakenly be destroyed, but one or more variables could still hold a reference to that deleted object, resulting in ***dangling reference***. A dangling reference refers either to unused memory or possibly to a completely different object that now happens to occupy the same piece of memory. Either way, the outcome of using a dangling reference would be undefined at best or a security risk at worst.
+
+- An active object could mistakenly be destroyed, but one or more variables could still hold a reference to that deleted object, resulting in **_dangling reference_**. A dangling reference refers either to unused memory or possibly to a completely different object that now happens to occupy the same piece of memory. Either way, the outcome of using a dangling reference would be undefined at best or a security risk at worst.
+
 - We might try to destroy an object multiple times.
 
 ##### Garbage Collector algo
 
 1. It builds a map of all reachable objects. It does this by repeatedly following
-reference fields inside objects. The garbage collector builds this map very
-carefully and ensures that circular references do not cause infinite
-recursion. Any object not in this map is deemed to be unreachable.
+   reference fields inside objects. The garbage collector builds this map very
+   carefully and ensures that circular references do not cause infinite
+   recursion. Any object not in this map is deemed to be unreachable.
 2. It checks whether any of the unreachable objects has a destructor that needs
-to be run (a process called finalization). Any unreachable object that
-requires finalization is placed in a special queue called the freachable queue
-(pronounced “F-reachable”).
+   to be run (a process called finalization). Any unreachable object that
+   requires finalization is placed in a special queue called the freachable queue
+   (pronounced “F-reachable”).
 3. It deallocates the remaining unreachable objects (those that don’t require
-finalization) by moving the reachable objects down the heap, thus
-defragmenting the heap and freeing memory at its top. When the garbage
-collector moves a reachable object, it also updates any references to the
-object.
+   finalization) by moving the reachable objects down the heap, thus
+   defragmenting the heap and freeing memory at its top. When the garbage
+   collector moves a reachable object, it also updates any references to the
+   object.
 4. At this point, it allows other threads to resume.
 5. It finalizes the unreachable objects that require finalization (now in the
-freachable queue) by running the Finalize methods on its own thread
+   freachable queue) by running the Finalize methods on its own thread
 
 The garbage collector runs in its own thread and can execute only at certain
 times—typically when your application reaches the end of a method. While it
@@ -224,28 +225,29 @@ your application.
 - `abstract` classes: A class that is meant to be a Base class to other classes, and not be instantiated from (but can be inherited from).
 - Normal or Concrete `clases` may have virtual methods.
 - `sealed` classes: prevents other classes from inheriting from it.
-- `static` classes: 
-    - class that cannot be instantiated, nor can be inherited from (hence they cannot be `Base` Class to other classes). 
-    - A static class can contain only static members.  
-    - The purpose of a static class is purely to act as a holder of utility methods and fields.
-    - A static class cannot contain any instance data or methods, and it does not make sense to try to create an object from a static class by using the new operator. 
-    - In fact, you can’t actually use new to create an instance of an object using a static class even if you want to. (The compiler will report an error if you try.) 
+- `static` classes:
+
+  - class that cannot be instantiated, nor can be inherited from (hence they cannot be `Base` Class to other classes).
+  - A static class can contain only static members.
+  - The purpose of a static class is purely to act as a holder of utility methods and fields.
+  - A static class cannot contain any instance data or methods, and it does not make sense to try to create an object from a static class by using the new operator.
+  - In fact, you can’t actually use new to create an instance of an object using a static class even if you want to. (The compiler will report an error if you try.)
 
 - `partial` classes: When you split a class across multiple files, you define the parts of the class by using the partial keyword in each file
 
 - Anonymous Classes: You create an anonymous class simply by using the `new` keyword and a pair of braces defining the fields and values that you want the class to contain.
-  
-    ```csharp
-      var myAnonymousObject = new { Name = "John ", Age = 47 };
 
-      var anotherAnonymousObject = new { Name = "Diana ", Age = 53 };
-    ```
+  ```csharp
+    var myAnonymousObject = new { Name = "John ", Age = 47 };
+
+    var anotherAnonymousObject = new { Name = "Diana ", Age = 53 };
+  ```
 
   - The C# compiler uses the names, types, number, and order of the fields to
-  determine whether two instances of an anonymous class have the same type. 
+    determine whether two instances of an anonymous class have the same type.
 
   - In the case above, the variables myAnonymousObject and anotherAnonymousObject have the same number of fields, with the same name and type, in the same order, so both variables are instances of the same anonymous class. This means that you
-  can perform assignment statements such as this:
+    can perform assignment statements such as this:
 
     ```csharp
 
@@ -253,7 +255,7 @@ your application.
 
     ```
 
-  - There are quite a few restrictions on the contents of an anonymous class. 
+  - There are quite a few restrictions on the contents of an anonymous class.
 
     - anonymous classes can contain only public fields,
     - the fields must all be initialized,
@@ -275,6 +277,7 @@ your application.
 - C# defines a modifier that you can use to declare that a variable is a "nullable value type". A nullable value type behaves similarly to the original value type, but you can assign the null value to it. You use the question mark (?, e.g. int?) to indicate that a value type is nullable.
 
 - You can assign an expression of the appropriate value type directly to a nullable variable. The following code is legal
+
   ```csharp
     int? i = null;
     int j = 99;
@@ -284,6 +287,7 @@ your application.
     // but the converse is illegal
     j = i; // Illegal
   ```
+
 - This makes sense when you consider that the variable `i` might contain `null`, and `j` is a value type that cannot contain `null`.
 
 - This also means that you cannot use a nullable variable as a parameter to a method that expects an ordinary value type
@@ -296,7 +300,7 @@ your application.
 
   ```csharp
     int? i = null;
-    
+
     if (!i.HasValue)
     {
       // If i is null, then assign it the value 99
@@ -320,7 +324,7 @@ your application.
     {
       param++;
     }
-    
+
     static void Main()
     {
       int arg = 42;
@@ -329,11 +333,11 @@ your application.
     }
   ```
 
-- However, if the parameter to a method is a reference type, any changes made by using that parameter ***change*** the data referenced by the argument passed in.
+- However, if the parameter to a method is a reference type, any changes made by using that parameter **_change_** the data referenced by the argument passed in.
 
 - The key point is this: Although the data that was referenced changed, the argument passed in as the parameter did not—it still references the same object
 
-- In other words, although it is possible to modify the object that the argument refers to through the parameter, it’s not possible to modify the argument itself (for example, to set it to refer to a completely different object). 
+- In other words, although it is possible to modify the object that the argument refers to through the parameter, it’s not possible to modify the argument itself (for example, to set it to refer to a completely different object).
 
 - Occasionally, however, you might wantto write a method that actually needs to modify an argument. C# provides the `ref` and `out` keywords so that you can do this.
 
@@ -358,7 +362,7 @@ your application.
 
 - Remember that C# enforces the rule that you must assign a value to a variable before you can read it. This rule also applies to method arguments; you cannot pass an uninitialized value as an argument to a method even if an argument is defined as a `ref` argument
 
-  ```csharp 
+  ```csharp
     static void doIncrement(ref int param)
     {
       param++;
@@ -408,11 +412,14 @@ your application.
 
 - When you call a method, the memory required for its parameters and its local variables is always acquired from the stack. When the method finishes (because it either returns or throws an exception), the memory acquired for the parameters and local variables is automatically released back to the stack and is available again when another method is called.
 
-- Method parameters and local variables on the stack have a well-defined  lifespan: they come into existence when the method starts, and they disappear as soon as the method completes.
+- Method parameters and local variables on the stack have a well-defined lifespan: they come into existence when the method starts, and they disappear as soon as the method completes.
 
 - When you create an object (an instance of a class) by using the `new` keyword, the memory required to build the object is always acquired from the heap.
 
 - When the last reference to an object disappears, the memory used by the object becomes available again (although it might not be reclaimed immediately).
+
+- Returning reference data from a method (as a `ref`) is a powerful technique, but you must treat it with care. You can only return a reference to data that still exists when the method has finished, such as an element in an array. For
+  example, you cannot return a reference to a local variable created on the stack.
 
 ---
 
@@ -424,10 +431,10 @@ your application.
 
 ## **Boxing, Un-Boxing, Casting, `is` operator, `as` operator**
 
-  ```csharp
-    int i = 42;
-    object o = i;
-  ```
+```csharp
+  int i = 42;
+  object o = i;
+```
 
 - Remember that `i` is a value type and that it lives on the stack.If the reference inside `o` referred directly to `i`, the reference would refer to the stack. However, all references must refer to objects on the heap; creating references to items on the stack could seriously compromise the robustness of the runtime and create a potential security flaw, so it is not allowed. Therefore,the runtime allocates a piece of memory from the heap, copies the value of integer `i` to this piece of memory, and then refers the object `o` to this copy. This automatic copying of an item from the stack to the heap is called **Boxing**.
 
@@ -435,7 +442,7 @@ your application.
 
 - **NOTE**: If you modify the original value of the variable `i`, the value on the heap referenced through `o` will not change. Likewise, if you modify the value on the heap, the original value of the variable will not change.
 
--  You might expect to be able to access the boxed `int` value that a variable `o` refers toby using a simple assignment statement such as `int i = o;` However, if you try this syntax, you’ll get a compile-time error. After all, `o` could be referencing absolutely anything and not just an int.
+- You might expect to be able to access the boxed `int` value that a variable `o` refers toby using a simple assignment statement such as `int i = o;` However, if you try this syntax, you’ll get a compile-time error. After all, `o` could be referencing absolutely anything and not just an int.
 
 - To obtain the value of the boxed copy, you must use what is known as a **cast**.This is an operation that checks whether converting an item of one type to another is safe before actually making the copy.
 
@@ -468,7 +475,7 @@ your application.
 
 - The `is` operator takes two operands: a reference to an object on the left, and the name of a type on the right, and returns a `bool`
 
-- If the type of the object referenced on the heap has the specified type, is evaluates to `true`; otherwise, is evaluates to `false`. 
+- If the type of the object referenced on the heap has the specified type, is evaluates to `true`; otherwise, is evaluates to `false`.
 
 - Another form of the is operator enables you to abbreviate this code by combining the type check and the assignment
 
@@ -503,7 +510,7 @@ your application.
 
 - You define an enumeration by using the `enum` keyword, followed by a set of symbols identifying the legal values that the type can have, enclosing them between braces.
 
-  ```csharp 
+  ```csharp
     enum Season { Spring, Summer, Fall, Winter }
     class Example
     {
@@ -522,11 +529,11 @@ your application.
 
 - Internally, an enumeration type associates an integer value with each element of the enumeration. By default, the numbering starts at `0` for the first element and goes up in steps of `1`.
 
--  It’s possible to retrieve the underlying integer value of anenumeration variable, by casting it to an int using `(int)`
+- It’s possible to retrieve the underlying integer value of anenumeration variable, by casting it to an int using `(int)`
 
 - you can associate a specific integer constant (such as 1) with an enumeration literal
 
-  ```csharp 
+  ```csharp
     enum Season { Sping = 1, Summer, Fall, Winter }  // Summer will be 2 and so on...
   ```
 
@@ -535,11 +542,12 @@ your application.
   ```csharp
     enum Season : short { Spring, Summer, Fall, Winter }
   ```
+
 ---
 
 ## Structs
 
--  A `structure` is a value type. Because structures are stored on the stack, as long as the `structure` is reasonably small, the memory management overhead is often reduced, compared to classes which are stored on the heap.
+- A `structure` is a value type. Because structures are stored on the stack, as long as the `structure` is reasonably small, the memory management overhead is often reduced, compared to classes which are stored on the heap.
 
 - Like a class, a structure can have its own fields, methods, and constructors.
 
@@ -547,18 +555,20 @@ your application.
 
 - Apart fromm `System.Object` and `System.String`, primitive types are mostly structs.
 
-  ```csharp 
+  ```csharp
     struct Time
     {
       public int hours, minutes, seconds;
     }
   ```
+
 - you cannot use operators such as the equality operator (==) and the inequality operator (!=) on your own structure type variables. However, you can use the built-in `Equals()` method exposed by all structures to compare structure type variables, and you can also explicitly declare and implement operators for your own structure types.
 
 - A structure and a class are syntactically similar, but they have a few important differences.
+
   - You can’t declare a default constructor (a constructor with no parameters)for a structure, the reason being that the compiler always generates one
   - In a class, you can initialize instance fields at their point of declaration. Ina structure, you cannot
-    ```csharp 
+    ```csharp
       struct Time
       {
         private int hours = 0; // compile-time error, compiles if class
@@ -568,7 +578,8 @@ your application.
     ```
 
 - As with enumerations, you can create a nullable version of a structure variable by using the ? modifier. You can then assign the null value to the variable:
-  ```csharp 
+
+  ```csharp
     Time? currentTime = null;
   ```
 
@@ -580,9 +591,9 @@ your application.
 
 ## Arrays
 
-- An array is an unordered sequence of items. 
+- An array is an unordered sequence of items.
 
-- All the items in an array have the same type, unlike the fields in a structure or class, which can have different types. 
+- All the items in an array have the same type, unlike the fields in a structure or class, which can have different types.
 
 - The items in an array live in a contiguous block of memory and areaccessed by using an index, unlike fields in a structure or class, which are accessed by name.
 
@@ -590,13 +601,11 @@ your application.
 
 - Creating an array also initializes its elements by using the default values (`0`, `null`, or `false`, depending on whether the type is numeric, a reference, or a Boolean, respectively).
 
-
-
-  ```csharp
-    int[] pins;  // Array declaration - no memory is allocated
-    pins = new int[4];  // now memory is allocated, all four values are default values
-    pins = new int[4]{ 9, 3, 7, 2 };
-  ```
+```csharp
+  int[] pins;  // Array declaration - no memory is allocated
+  pins = new int[4];  // now memory is allocated, all four values are default values
+  pins = new int[4]{ 9, 3, 7, 2 };
+```
 
 - When you’re initializing an array, you can actually omit the `new` expression and the size of the array. The compiler calculates the size from the number of initializers and generates code to create the array.
 
@@ -604,8 +613,8 @@ your application.
     int[] pins = { 9, 3, 7, 2 };
   ```
 
-- Implicitly typed arrays - the C# compiler determines that the names variable is an array of strings.  you must specify the new operator and square brackets before the initializer list.
-  
+- Implicitly typed arrays - the C# compiler determines that the names variable is an array of strings. you must specify the new operator and square brackets before the initializer list.
+
   ```csharp
     var names = new[]{ "John", "Diana", "James", "Francesca" }
 
@@ -624,13 +633,13 @@ your application.
 
 - **Copying an Array** - `CopyTo` method copies the contents of one array into another array given a specified starting index. Another way to copy the values is to use the `System.Array` static method named `Copy`
 
-  ```csharp 
+  ```csharp
     int[] pins = { 9, 3, 7, 2 };
     int[] copy = new int[pins.Length];
     pins.CopyTo(copy, 0);
 
     // OR
-    
+
     int[] pins = { 9, 3, 7, 2 };
     int[] copy = new int[pins.Length];
     Array.Copy(pins, copy, copy.Length);
@@ -647,7 +656,7 @@ your application.
 
 - **Multi-dimensional Arrays** aka rectangular arrays - The following code creates a two-dimensional array of 24 integers called items.
 
-  ```csharp 
+  ```csharp
     int[,] items = new int[4, 6];
 
     // To access an element in the array, you provide two index values to specify the “cell” (the intersection of a row and a column) holding the element.
@@ -660,10 +669,10 @@ your application.
 
 - **Jagged Arrays** or array of Arrays - where each column has a different length
 
-  ```csharp 
+  ```csharp
 
     int[][] items = new int[4][];
-    // 3 elements in the first column, 10 elements in the second column, 40 elements in the third column, and 25 elements in the final column. 
+    // 3 elements in the first column, 10 elements in the second column, 40 elements in the third column, and 25 elements in the final column.
     int[] columnForRow0 = new int[3];
     int[] columnForRow1 = new int[10];
     int[] columnForRow2 = new int[40];
@@ -676,6 +685,14 @@ your application.
 
 ---
 
+## Overloading and Parameter arrays
+
+- **Overloading** - is the technical term for declaring two or more mehods with the same name in the same scope, but with different signatures.
+
+- Overloading a method is very useful for cases in which you want to perform the same action on arguments of different types.
+
+---
+
 ## **`new` modifier**
 
 When used as a declaration modifier, the `new` keyword explicitly hides a member that is inherited from a `base` class. When you hide an inherited member, the derived version of the member replaces the `base` class version. Although you can hide members without using the new modifier, you get a compiler warning. If you use new to explicitly hide a member, it suppresses this warning.
@@ -684,64 +701,64 @@ When used as a declaration modifier, the `new` keyword explicitly hides a member
 
 ## Generics
 
-### Benefits of Generic Types 
+### Benefits of Generic Types
 
 Generics (like `List<T>`), solve
 
 - You don’t need to know the size of the collection beforehand, unlike with arrays.
 
-- The exposed API uses `T` everywhere it needs to refer to the element type, so you know  that  a  `List<string>`  will  contain  only  string  references.  You’ll  get  a compile-time error if you try to add anything else, unlike with `ArrayList`.
+- The exposed API uses `T` everywhere it needs to refer to the element type, so you know that a `List<string>` will contain only string references. You’ll get a compile-time error if you try to add anything else, unlike with `ArrayList`.
 
-- You  can  use  it  with  any  element  type  without  worrying  about  generating  code and managing the result, unlike with `StringCollection` and similar types.
+- You can use it with any element type without worrying about generating code and managing the result, unlike with `StringCollection` and similar types.
 
 ### Type Parameters and Type Arguments
 
 - Same concept as function paramteres and arguments, but for types
 
-  ```csharp 
+  ```csharp
     public class List<T>  // T is type parameter
-    {  
+    {
       // ...
     }
     List<string> list = new List<string>();  // string is Type argument
   ```
 
-### Generic Arity 
+### Generic Arity
 
 - The generic arity of a declaration is the number of type parameters it has.
 
-  ```csharp 
+  ```csharp
     public class Dictionary<TKey, TValue> // Generic Arity of 2
   ```
 
 - You can think of a non-generic declaration as one with generic arity 0.
 
-### What can be Generic 
+### What can be Generic
 
-- some members may look like they’re generic because they use other generic types. Remember that a declaration is generic only if it introduces new type parameters. 
+- some members may look like they’re generic because they use other generic types. Remember that a declaration is generic only if it introduces new type parameters.
 
 - Methods and nested types can be generic, but all of the following have to be non-generic:
   - Fields
-  - Properties 
+  - Properties
   - Indexers
   - Constructors
   - Events
   - Finalizers
 
-```csharp 
+```csharp
   public class ValidatingList<TItem>
   {
     private readonly List<TItem> items = new List<TItem>();
   }
 ```
 
-- Here,  the  items  field  is  of  type  `List<TItem>`.  It  uses  the  type parameter `TItem` as a type argument for `List<T>`, but that’s a type parameter introduced by the class declaration, not by the field declaration.
+- Here, the items field is of type `List<TItem>`. It uses the type parameter `TItem` as a type argument for `List<T>`, but that’s a type parameter introduced by the class declaration, not by the field declaration.
 
 ### Type Inference
 
 - Although type inference applies only to methods, it can be used to more easily construct instances of generic types. For example, consider the `Tuple` family of types introduced in .NET 4.0. This consists of a nongeneric static `Tuple` class and multiple generic classes: `Tuple<T1>`, `Tuple<T1,T2>`, `Tuple<T1,T2,T3>`, and so forth. The static class has a set of overloaded `Create` factory methods like this
 
-  ```csharp 
+  ```csharp
     public static Tuple<T1> Create<T1>(T1 item1)
     {
       return new Tuple<T1>(item1);
@@ -754,7 +771,6 @@ Generics (like `List<T>`), solve
   ```
 
   These look pointlessly trivial, but they allow type inference to be used where otherwise the type arguments would have to be explicitly specified when creating tuples. Instead of this `new Tuple<int, string, int>(10, "x", 20)` you can write this: `Tuple.Create(10, "x", 20)`
-
 
 ---
 
@@ -810,7 +826,7 @@ using ( type variable = initialization)
 
 An Interface is said to be invariant when we cannot assign an `IWrapper<A>` object to a reference of type `IWrapper<B>`, even if type `A` is derived from type `B`. So, `IWrapper<object>` cannot be assigned to `IWrapper<string>`.
 
-Following definitions hold: 
+Following definitions hold:
 
 ##### Covariance
 
@@ -833,7 +849,7 @@ You cannot assign an instance of `List<Base>` to a variable of type `List<Derive
 #### Covariance
 
 In situations where the type parameter occurs only as the `return` value of the methods in a generic interface, you can inform the compiler that some implicit conversions are legal and that it does not have to enforce strict type safety. You do this by specifying the `out` keyword
-when you declare the type parameter, like this: 
+when you declare the type parameter, like this:
 
 ```csharp
 interface IRetrieveWrapper<out T>
@@ -843,13 +859,14 @@ interface IRetrieveWrapper<out T>
 
 ```
 
-This feature is called ***covariance***. You can assign an `IRetrieveWrapper<A>` object to an `IRetrieve-Wrapper<B>` reference as long as there is a valid conversion from type `A` to type `B`, or type `A` derives from type `B`. You can specify the out qualifier with a type parameter only if the type parameter occurs as the return type of methods. If you use the type parameter to specify the type of any method parameters, the out qualifier is illegal, and your code will not compile. Also, covariance works only with reference types. This is because value types cannot form inheritance hierarchies.
+This feature is called **_covariance_**. You can assign an `IRetrieveWrapper<A>` object to an `IRetrieve-Wrapper<B>` reference as long as there is a valid conversion from type `A` to type `B`, or type `A` derives from type `B`. You can specify the out qualifier with a type parameter only if the type parameter occurs as the return type of methods. If you use the type parameter to specify the type of any method parameters, the out qualifier is illegal, and your code will not compile. Also, covariance works only with reference types. This is because value types cannot form inheritance hierarchies.
 
 #### Contravariance
 
-Contravariance follows a similar principle to covariance except that it works in the opposite direction; it enables you to use a generic interface to reference an object of type `B` through a reference to type `A` as long as type B derives from type `A`. This is done by using the `in` qualifier before the type parameter. The `in` keyword tells the C# compiler that you can either pass the type `T` as the parameter type to methods or pass any type that derives from `T`. You cannot use `T` as the return type from any methods. 
+Contravariance follows a similar principle to covariance except that it works in the opposite direction; it enables you to use a generic interface to reference an object of type `B` through a reference to type `A` as long as type B derives from type `A`. This is done by using the `in` qualifier before the type parameter. The `in` keyword tells the C# compiler that you can either pass the type `T` as the parameter type to methods or pass any type that derives from `T`. You cannot use `T` as the return type from any methods.
 
 The way I remember, based on the examples in this section, is as follows:
+
 - **Covariance example** If the methods in a generic interface can return `strings`, they can also return `objects`. (All strings are objects.)
 - **Contravariance example** If the methods in a generic interface can take `object` parameters, they can take string parameters. (If you can perform an operation by using an object, you can perform the same operation by using a string because all strings are objects.)
 
@@ -859,11 +876,11 @@ The way I remember, based on the examples in this section, is as follows:
 
 - An array instance has a fixed size and cannot grow or shrink. A collection can dynamically resize itself as required.
 - An array can have more than one dimension. A collection is linear. However, the items in a collection can be collections themselves, so you
-can imitate a multidimensional array as a collection of collections.
+  can imitate a multidimensional array as a collection of collections.
 - You store and retrieve an item in an array by using an index. Not all collections support this notion. For example, to store an item in a `List<T>`
-collection, you use the `Add` or `Insert` method, and to retrieve an item, you use the `Find` method.
+  collection, you use the `Add` or `Insert` method, and to retrieve an item, you use the `Find` method.
 - Many of the collection classes provide a `ToArray` method that creates and populates an array containing the items in the collection. The items are
-copied to the array and are not removed from the collection. Additionally, these collections provide constructors that can populate a collection directly from an array.
+  copied to the array and are not removed from the collection. Additionally, these collections provide constructors that can populate a collection directly from an array.
 
 ---
 
@@ -895,7 +912,7 @@ By using the `GetEnumerator` method of a collection to create an enumerator, rep
 `IEnumerable` interface in your collection class and also provide an implementation of the `IEnumerator` interface to be returned by the
 `GetEnumerator` method of the collection class.
 
-##### NOTE:  
+##### NOTE:
 
 The `Current` property of the `IEnumerator` interface exhibits non–type-safe behavior in that it returns an `object` rather than a specific type. However, you should be pleased to know that the Microsoft .NET Framework class library also provides the generic
 `IEnumerator<T>` interface, which has a Current property that returns a `T` instead. Likewise, there is also an `IEnumerable<T>` interface containing a `GetEnumerator` method that returns an `Enumerator<T>` object. Both of these interfaces are defined in the `System.Collections.Generic` namespace, and if you are building applications for the .NET Framework version 2.0 or later, you should make use of these generic interfaces rather than the nongeneric versions when you define enumerable collections.
@@ -904,13 +921,13 @@ The `Current` property of the `IEnumerator` interface exhibits non–type-safe b
 
 ### Initializing a variable defined with a type parameter using `default`
 
-``` csharp
+```csharp
 
 private TItem currentItem = default(TItem);
 
 ```
 
-The `currentItem` variable is defined by using the type parameter `TItem`. When the program is written and compiled, the actual type that will be substituted for `TItem` might not be known; this issue is resolved only when the code is executed. This makes it difficult to specify how the variable should be initialized. The temptation is to set it to `null`. However, if the type substituted for `TItem` is a `value` type, this is an illegal assignment. (You cannot set value types to `null`, only reference types.) Similarly, if you set it to `0` with the expectation that the type will be numeric, this will be illegal if the type used is actually a `reference` type. There are other possibilities as well; `TItem` could be a boolean, for example. 
+The `currentItem` variable is defined by using the type parameter `TItem`. When the program is written and compiled, the actual type that will be substituted for `TItem` might not be known; this issue is resolved only when the code is executed. This makes it difficult to specify how the variable should be initialized. The temptation is to set it to `null`. However, if the type substituted for `TItem` is a `value` type, this is an illegal assignment. (You cannot set value types to `null`, only reference types.) Similarly, if you set it to `0` with the expectation that the type will be numeric, this will be illegal if the type used is actually a `reference` type. There are other possibilities as well; `TItem` could be a boolean, for example.
 
 The default keyword solves this problem. The value used to initialize the variable will be determined when the statement is executed. If `TItem` is a reference type, `default(TItem)` returns null; if TItem is numeric, `default(TItem)` returns 0; if `TItem` is a boolean, `default(TItem)` returns `false`. If TItem is a struct, the individual fields in the struct are initialized in the same way. (Reference fields are set
 to null, numeric fields are set to 0, and boolean fields are set to false.)
@@ -929,7 +946,7 @@ to null, numeric fields are set to 0, and boolean fields are set to false.)
 
 References to methods, basically.
 
-In a `class`, make a `delegate` type, that create an instance of the `delegate`, and then in the class constructor, add methods to the delegate using `+=` operator. We can also remove methods from a `delegate` using `-=`. 
+In a `class`, make a `delegate` type, that create an instance of the `delegate`, and then in the class constructor, add methods to the delegate using `+=` operator. We can also remove methods from a `delegate` using `-=`.
 
 We can also add methods outside of a constructor of a specific `class`, to make the whole thing more generalized. For example, we can make separate `Add` or `Remove` methods to add or remove delegates.
 
@@ -941,7 +958,7 @@ Method Adapters are just functions that when executed, execute other functions.
 
 ```csharp
 
-void FinishFolding () 
+void FinishFolding ()
 {
   folder.StopFolding(0);
 }

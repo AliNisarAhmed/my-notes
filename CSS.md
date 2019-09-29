@@ -19,6 +19,7 @@ img {
   /* +50% pushes it to the right, adding half of its own width as margin */
 }
 ```
+
 ---
 
 #### Viewport units use the space below the scroll bar in calculations
@@ -30,6 +31,7 @@ body {
   overflow-x: hidden;
 }
 ```
+
 ---
 
 #### `em` vs `rem`
@@ -39,3 +41,44 @@ for `font-size`, `em` looks at the parent's font-size, bubbling up to `body` if 
 for `margin` & `padding`, `em` looks at the font-size of the element, (not the parent).
 
 `rem` always looks at the font size of the root element `html`
+
+---
+
+## Margin Collapsing
+
+- By default, margins collapse into one another
+
+- So, if one element has `margin-bottom` of `50px`, and the next one has `margin-top` of `50px`, the space between them will be `50px` and not `100px`
+
+- Margins will collapse any time they touch each other, so, if the first child in an element has a margin-top, that can merge with the parent's margin top. (This is the reason we see `body` moving "downward" when the first element, usually the `h1`, is given a margin-top.)
+
+- Example
+
+  ```html
+  <div class="card">
+    <h1 class="main-heading">I am the main heading</h1>
+  </div>
+  ```
+
+  ```css
+  .card {
+  }
+
+  .main-heading {
+    margin-top: 100px;
+  }
+  ```
+
+  The above `100px` margin merges with margin of `.card` (even though it does not have a margin at all !!!), and the whole card will have a `margin-top` of `100px`. This is because `h1` margin top is touching the margin of `.card`.
+
+  The solution is to give the parent a `padding-top`.
+
+## Inline Elements
+
+- `<span>` `<em>` `<strong>`
+
+- Follow these rules
+  - Can't put a block element inside one
+  - setting width, height, margin-top and margin-bottom has no effect.
+  - setting padding-top, padding-bottom just "overrides" the neighboring elements, as if the other elements are ignoring the padding.
+  - So, they only respect margin, padding and border which are placed on the left or the right side, and not the top or bottom.
