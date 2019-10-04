@@ -75,6 +75,35 @@ WriteLine($"The square root of 99.9 is ");
 
 ## **Methods**
 
+### Method Signature and hiding
+
+- The method signature refers to the name of the method and the number and types of its parameters, but not its return type. Two methods that have the same name and that take the same list of parameters have the same signature, even if they return different types.
+
+- If a base class and a derived class happen to declare two methods that have the same signature, you will receive a warning when you compile the application.
+
+- A method in a derived class masks (or hides) a method in a base class that has the same signature. However, we can use the `new` keyword before a method.
+
+  ```csharp
+    class Mammal
+    {
+        //...
+        public void Talk()
+        {
+            //...
+        }
+    }
+    class Horse : Mammal
+    {
+        // ...
+        new public void Talk()
+        {
+              //...
+        }
+    }
+  ```
+
+- Using the `new` keyword like this does not change the fact that the two methods are completely unrelated and that hiding still occurs. It just turns the warning off. In effect, the new keyword says, “I know what I’m doing, so stopshowing me these warnings.”
+
 ### **`static` Method**
 
 - if you declare a method or a field as static, you can call the method or access the field by using the name of the class. No instance is required.
@@ -83,7 +112,50 @@ WriteLine($"The square root of 99.9 is ");
 
 ### **`virtual` Method**
 
-A method with its own (default) implementation in the `Base` Class, but can be `override` in the `Derived` Class.
+- A method with its own (default) implementation in the `Base` Class, but can be `override` in the `Derived` Class.
+
+- A method that is intended to be overridden is called a virtual method.
+
+  #### over-riding vs hiding
+
+  - Overriding a method is a mechanism for providing different implementations of the same method—the methods are all related because they are intended to perform the same task, but in a class-specific manner.
+
+  - Hiding amethod is a means of replacing one method with another—the methods are usually unrelated and might perform totally different tasks.
+
+  - Overriding a method is a useful programming concept; hiding a method is often an error.
+
+  ```csharp
+    namespace System
+    {
+      class Object
+      {
+        public virtual string ToString()
+        {
+          //...
+        }
+        //...
+      }
+      //...
+    }
+
+    class Horse : Mammal
+    {
+      ...
+      public override string ToString()
+      {
+        ...
+        string temp = base.ToString(); // calling the original implementation in the base class.
+      }
+    }
+
+  ```
+
+  - Points to Note about Virtual methods
+    - A `virtual` method cannot be `private`; it is intended to be exposed to other classes through inheritance. Similarly, `override` methods cannot be `private` because a class cannot change the protection level of a method that it inherits. However, override methods can be `protected`.
+    - The signatures of the `virtual` and `override` methods must be identical; they must have the same name, number, and types of parameters. Also, both methods must return the same type.
+    - You can only `override` a `virtual` method. If the base class method is not `virtual` and you try to override it, you’ll get a compile-time error.
+    - If the `derived` class does not declare the method by using the `override` keyword, it does not `override` the base class method; it hides the method. In other words, it becomes an implementation of a completely different method that happens to have the same name.
+    - An `override` method is implicitly `virtual` and can itself be overridden in a further derived class. However, you are not allowed to explicitly declare that an `override` method is virtual by using the `virtual` keyword.
 
 ### **`abstarct` Method**
 
@@ -95,9 +167,64 @@ A method which a `Derived` Class cannot `override`. You can seal only a method d
 
 ### **Extension Method**
 
-Extension methods enable you to "add" methods to existing types without creating a new derived type, recompiling, or otherwise modifying the original type. We use the `this` keyword, in front of the **FIRST** parameter of a method, to indicate which type is being extended. To enable extension methods for a particular type, just add a using directive for the namespace in which the methods are defined.
+- Add a `static` `public` method to a `static` class. The first parameter must be of the type being extended, preceded by the `this` keyword.
+
+Extension methods enable you to "add" methods to existing types (a `class` or `struct`) without creating a new derived type, recompiling, or otherwise modifying the original type. We use the `this` keyword, in front of the **FIRST** parameter of a method, to indicate which type is being extended. To enable extension methods for a particular type, just add a using directive for the namespace in which the methods are defined.
 
 Extension methods can be defined on `interfaces`, `classes`, `sealed` classes, `System.Object`, but cannot hide an already existing instance method.
+
+### `virtual` methods and Polymorphism
+
+- Consider
+
+  ```csharp
+    class Mammal
+    {
+      ...
+      public virtual string GetTypeName()
+      {
+        return "This is a mammal" ;
+
+    }
+    class Horse : Mammal
+    {
+      ...
+      public override string GetTypeName()
+      {
+        return "This is a horse";
+      }
+    }
+
+    class Whale : Mammal
+    {
+      ...
+      public override string GetTypeName()
+      {
+        return "This is a whale";
+      }
+    }
+
+    class Aardvark : Mammal
+    {
+      ...
+    }
+
+    // Now
+
+    Mammal myMammal;
+    Horse myHorse = new Horse(...);
+    Whale myWhale = new Whale(...);
+    Aardvark myAardvark = new Aardvark(...);
+
+    myMammal = myHorse;
+    Console.WriteLine(myMammal.GetTypeName()); // Horse
+    myMammal = myWhale;
+    Console.WriteLine(myMammal.GetTypeName()); // Whale
+    myMammal = myAardvark;
+    Console.WriteLine(myMammal.GetTypeName()); // Mammal
+  ```
+
+- This phenomenon of the same statement invoking a different method depending on its context is called "Polymorphism", which literally means“many forms.”
 
 ### `Deconstructor`s
 
@@ -263,6 +390,37 @@ your application.
     - and you cannot define any methods for them.
 
 - The string type in C# is actually a class. This is because there is no standard size for a string (different strings can contain different numbers of characters), and allocating memory for a string dynamically when the program runs is far more efficient than doing so statically at compile time. In fact, the string keyword in C# is just an alias for the `System.String` class.
+
+### Calling base-class constructors
+
+```csharp
+class Mammal // base class
+{
+    public Mammal(string name) // constructor for base class
+    {
+      // ...
+    }
+  //...
+}
+class Horse : Mammal // derived class
+{
+    public Horse(string name): base(name) // calls Mammal(name)
+    {
+      // ...
+    }
+    //...
+}
+```
+
+- If you don’t explicitly call a base-class constructor in a derived-class constructor, the compiler attempts to silently insert a call to the base class’s default constructor before executing the code in the derived-class constructor.
+
+- This works if base class has a public default constructor. However, not all classes have a public default constructor (for example, remember that the compiler generates a default constructor only if you don’t write any non-default constructors), in which case, forgetting to call the correct base-class constructor results in a compile-time error.
+
+### `System.Object` and `ToString()` Method
+
+- The `System.Object` class is the root class of all classes. All classes implicitly derive from `System.Object`. This means that all classes that you define automatically inherit all the features of the `System.Object` class. This includes methods such as `ToString`.
+
+- You are not expected to call the `ToString` method defined by `System.Object`; it is simply a placeholder. Instead, you might find it more useful to provide your own version of the `ToString` method in each class you define, overriding the default implementation in `System.Object`. The version in `System.Object` is there only as a safety net, in case a class does not implement or require its own specific version of the `ToString` method.
 
 ---
 
@@ -707,14 +865,14 @@ your application.
 
   - You can’t use the params keyword with multidimensional arrays. The code in the following example will not compile:
 
-    ```csharp 
+    ```csharp
       // compile-time error
       public static int Min(params int[,] table)
     ```
 
   - You can’t overload a method based solely on the `params` keyword. The `params` keyword does not form part of a method’s signature, as shown in this example. Here, the compiler would not be able to distinguish between these methods in code that calls them:
 
-    ```csharp 
+    ```csharp
       // compile-time error: duplicate declaration
       public static int Min(int[] paramList)
       // ...
@@ -757,7 +915,7 @@ your application.
 
   - You can use a `params` array of type `object` to declare a method that accepts any number of `object` arguments, allowing the arguments passed in to be of any type. (Thanks to boxing)
 
-  ```csharp 
+  ```csharp
 
     class Black
     {
@@ -785,6 +943,16 @@ your application.
     Black.Hole(new object[]{"forty two", 42});
 
   ```
+
+- `params` array vs optional parameters
+
+  - A method that takes optional parameters still has a fixed parameter list,and you cannot pass an arbitrary list of arguments.
+
+  - A method that uses a parameter array effectively has a completely arbitrary list of parameters, and none of them has a default value. Furthermore, the method can determine exactly how many arguments the caller provided.
+
+  - There is one further situation worth pondering. If you define a method thattakes a parameter list and provide an overload that takes optional parameters, itis not always immediately apparent which version of the method will be called ifthe argument list in the calling statement matches both method signatures.
+
+    - So in a function with two overloads, one with 4 optional parameters, vs, the one with `params` array, with 4 or less arguments, the first version is called, and with 5 or more arguments the latter version is called.
 
 ---
 
@@ -866,6 +1034,138 @@ Generics (like `List<T>`), solve
   ```
 
   These look pointlessly trivial, but they allow type inference to be used where otherwise the type arguments would have to be explicitly specified when creating tuples. Instead of this `new Tuple<int, string, int>(10, "x", 20)` you can write this: `Tuple.Create(10, "x", 20)`
+
+### `default` keyword
+
+- The `default` operator can be used with type parameters and with generic types with appropriate type arguments supplied (where those arguments can be typeparameters, too). e.g
+
+  - `default(T)`
+  - `default(int)`
+  - `default(string)`
+  - `default(List<T>)`
+  - `default(List<List<string>>)`
+
+- The type of the `default` operator is the type that’s named inside it.
+
+  ```csharp
+    public T LastOrDefault(IEnumerable<T> source)
+    {
+      T ret = default(T);  // Declare a local variable and assign the default value of T to it.
+      foreach (T item in source)
+      {
+        ret = item;
+      }
+      return ret;
+    }
+  ```
+
+### `typeof` Operator
+
+- `typeof(string)` - System.String
+- `typeof(List<int>)` - returns the Type representing `List<T>` with a type argument of `int`
+- `typeof(T)` or `typeof(List<T>)` - returns whatever the type argument for `T` is at that point in the code. This will always be a closed, constructed type ( it’s a real type with no type parameters involved anywhere)
+- `typeof(List<>)` - That appears to be missing a type argument altogether. This syntax is valid only in the `typeof` operator and refers to the generic type definition. The syntax for types with generic arity 1 is just `TypeName<>`; for each additional type parameter, you add a comma within the angle brackets. To get the generic type definition for `Dictionary<TKey,TValue>`, you’d use `typeof(Dictionary<,>)`. To get the definition for `Tuple<T1,T2,T3>`, you’d use `typeof(Tuple<,,>)`.
+
+  ```csharp
+    public static void Print<T>()
+    {
+      Console.WriteLine(typeof(string));
+      Console.WriteLine(typeof(List<int>));
+      Console.WriteLine(typeof(List<T>));
+      Console.WriteLine(typeof(Dictionary<,>));
+
+    }
+
+    // somewhere
+    Print<string>()
+
+    /*
+
+    System.String
+    System.Collections.Generic.List`1[System.Int32]
+    System.Collections.Generic.List`1[System.String]
+    System.Collections.Generic.Dictionary`2[TKey,TValue]
+
+    */
+
+  ```
+
+---
+
+## `Nullable<T>`
+
+- Represents a value type that can be assigned `null`. (defined like this)
+
+  ```csharp
+    public struct Nullable<T> where T : struct
+    {
+      private readonly T value;
+      private readonly bool hasValue;
+
+      public Nullable(T value)
+      {
+        this.value = value;
+        this.hasValue = true;
+      }
+      public bool HasValue { get { return hasValue; } }
+      public T Value
+      {
+        get
+        {
+          if (!hasValue)
+          {
+            throw new InvalidOperationException();
+          }
+          return value;
+        }
+      }
+    }
+  ```
+
+#### Boxing behavior
+
+- `Nullable` value types behave differently than non-nullable value types when it comes to boxing.
+
+- When a value of a non-nullable value type is boxed, the result is a reference to an object of a type that’s the boxed form of the original type.
+
+- Say, for example, you write this:
+
+  ```csharp
+    int x = 5;
+    object o = x;
+  ```
+
+  The value of o is a reference to an object of type “boxed int.” The difference between boxed int and int isn’t normally visible via C#. If you call `o.GetType()`, the Type returned will be equal to `typeof(int)`.
+
+- But, Nullable value types have no boxed equivalent, however.
+
+- The result of boxing avalue of type `Nullable<T>` depends on the `HasValue` property:
+
+  - If `HasValue` is `false`, the result is a `null` reference.
+  - If `HasValue` is true, the result is a reference to an object of type “boxed T".
+
+- Calling `GetType` on nullable values leads to surprising results
+
+  ```csharp
+    Nullable<int> noValue = new Nullable<int>();
+    // Console.WriteLine(noValue.GetType());  => wOULD THROW NULL REFERENCE EXCEPTION
+    Nullable<int> someValue = new Nullable<int>(5);
+    Console.WriteLine(someValue.GetType());  // Prints System.Int32, the same as you'd typed typeof(int)
+  ```
+
+- If you add a `?` to the end of the name of a non-nullable value type, that’s precisely equivalent to using `Nullable<T>` for the same type.
+
+  - Nullable<int> x;
+  - Nullable<Int32> x;
+  - int? x;
+  - Int32? x;
+
+- The `null` literal refers to - either a `null` reference or a value of a nullable value type where `HasValue` is `false`.
+
+  - for value types the following two are equivalent
+    - `int? x = new int?();`
+    - `int? x = null;`
+
 
 ---
 

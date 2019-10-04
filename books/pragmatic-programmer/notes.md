@@ -464,6 +464,14 @@ Are there other bugs still in the larval stage, just waiting to hatch?
 
 - Coupling is the enemy of change, because it links together things that must change in parallel. This makes change more difficult: either you spend time tracking down  all  the  parts  that  need  changing,  or  you  spend  time  wondering  why things broke when you changed “just one thing” and not the other things to which it was coupled.
 
+#### Finite State Machines 
+
+- FSMs are just a bunch of States of a program, and the information on how the system moves from one State to another in response to which events. Only one state of the system can be active at one time.
+
+- The neat thing about FSMs is that they can be described purely as data, such as a table.
+
+- we can use stacks to store the history of states for our machine.
+
 #### Train Wrecks
 
 - Wacky dependencies between unrelated modules or libraries.
