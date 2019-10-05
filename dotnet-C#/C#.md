@@ -962,213 +962,6 @@ When used as a declaration modifier, the `new` keyword explicitly hides a member
 
 ---
 
-## Generics
-
-### Benefits of Generic Types
-
-Generics (like `List<T>`), solve
-
-- You don’t need to know the size of the collection beforehand, unlike with arrays.
-
-- The exposed API uses `T` everywhere it needs to refer to the element type, so you know that a `List<string>` will contain only string references. You’ll get a compile-time error if you try to add anything else, unlike with `ArrayList`.
-
-- You can use it with any element type without worrying about generating code and managing the result, unlike with `StringCollection` and similar types.
-
-### Type Parameters and Type Arguments
-
-- Same concept as function paramteres and arguments, but for types
-
-  ```csharp
-    public class List<T>  // T is type parameter
-    {
-      // ...
-    }
-    List<string> list = new List<string>();  // string is Type argument
-  ```
-
-### Generic Arity
-
-- The generic arity of a declaration is the number of type parameters it has.
-
-  ```csharp
-    public class Dictionary<TKey, TValue> // Generic Arity of 2
-  ```
-
-- You can think of a non-generic declaration as one with generic arity 0.
-
-### What can be Generic
-
-- some members may look like they’re generic because they use other generic types. Remember that a declaration is generic only if it introduces new type parameters.
-
-- Methods and nested types can be generic, but all of the following have to be non-generic:
-  - Fields
-  - Properties
-  - Indexers
-  - Constructors
-  - Events
-  - Finalizers
-
-```csharp
-  public class ValidatingList<TItem>
-  {
-    private readonly List<TItem> items = new List<TItem>();
-  }
-```
-
-- Here, the items field is of type `List<TItem>`. It uses the type parameter `TItem` as a type argument for `List<T>`, but that’s a type parameter introduced by the class declaration, not by the field declaration.
-
-### Type Inference
-
-- Although type inference applies only to methods, it can be used to more easily construct instances of generic types. For example, consider the `Tuple` family of types introduced in .NET 4.0. This consists of a nongeneric static `Tuple` class and multiple generic classes: `Tuple<T1>`, `Tuple<T1,T2>`, `Tuple<T1,T2,T3>`, and so forth. The static class has a set of overloaded `Create` factory methods like this
-
-  ```csharp
-    public static Tuple<T1> Create<T1>(T1 item1)
-    {
-      return new Tuple<T1>(item1);
-    }
-
-    public static Tuple<T1, T2> Create<T1, T2>(T1 item1, T2 item2)
-    {
-      return new Tuple<T1, T2>(item1, item2);
-    }
-  ```
-
-  These look pointlessly trivial, but they allow type inference to be used where otherwise the type arguments would have to be explicitly specified when creating tuples. Instead of this `new Tuple<int, string, int>(10, "x", 20)` you can write this: `Tuple.Create(10, "x", 20)`
-
-### `default` keyword
-
-- The `default` operator can be used with type parameters and with generic types with appropriate type arguments supplied (where those arguments can be typeparameters, too). e.g
-
-  - `default(T)`
-  - `default(int)`
-  - `default(string)`
-  - `default(List<T>)`
-  - `default(List<List<string>>)`
-
-- The type of the `default` operator is the type that’s named inside it.
-
-  ```csharp
-    public T LastOrDefault(IEnumerable<T> source)
-    {
-      T ret = default(T);  // Declare a local variable and assign the default value of T to it.
-      foreach (T item in source)
-      {
-        ret = item;
-      }
-      return ret;
-    }
-  ```
-
-### `typeof` Operator
-
-- `typeof(string)` - System.String
-- `typeof(List<int>)` - returns the Type representing `List<T>` with a type argument of `int`
-- `typeof(T)` or `typeof(List<T>)` - returns whatever the type argument for `T` is at that point in the code. This will always be a closed, constructed type ( it’s a real type with no type parameters involved anywhere)
-- `typeof(List<>)` - That appears to be missing a type argument altogether. This syntax is valid only in the `typeof` operator and refers to the generic type definition. The syntax for types with generic arity 1 is just `TypeName<>`; for each additional type parameter, you add a comma within the angle brackets. To get the generic type definition for `Dictionary<TKey,TValue>`, you’d use `typeof(Dictionary<,>)`. To get the definition for `Tuple<T1,T2,T3>`, you’d use `typeof(Tuple<,,>)`.
-
-  ```csharp
-    public static void Print<T>()
-    {
-      Console.WriteLine(typeof(string));
-      Console.WriteLine(typeof(List<int>));
-      Console.WriteLine(typeof(List<T>));
-      Console.WriteLine(typeof(Dictionary<,>));
-
-    }
-
-    // somewhere
-    Print<string>()
-
-    /*
-
-    System.String
-    System.Collections.Generic.List`1[System.Int32]
-    System.Collections.Generic.List`1[System.String]
-    System.Collections.Generic.Dictionary`2[TKey,TValue]
-
-    */
-
-  ```
-
----
-
-## `Nullable<T>`
-
-- Represents a value type that can be assigned `null`. (defined like this)
-
-  ```csharp
-    public struct Nullable<T> where T : struct
-    {
-      private readonly T value;
-      private readonly bool hasValue;
-
-      public Nullable(T value)
-      {
-        this.value = value;
-        this.hasValue = true;
-      }
-      public bool HasValue { get { return hasValue; } }
-      public T Value
-      {
-        get
-        {
-          if (!hasValue)
-          {
-            throw new InvalidOperationException();
-          }
-          return value;
-        }
-      }
-    }
-  ```
-
-#### Boxing behavior
-
-- `Nullable` value types behave differently than non-nullable value types when it comes to boxing.
-
-- When a value of a non-nullable value type is boxed, the result is a reference to an object of a type that’s the boxed form of the original type.
-
-- Say, for example, you write this:
-
-  ```csharp
-    int x = 5;
-    object o = x;
-  ```
-
-  The value of o is a reference to an object of type “boxed int.” The difference between boxed int and int isn’t normally visible via C#. If you call `o.GetType()`, the Type returned will be equal to `typeof(int)`.
-
-- But, Nullable value types have no boxed equivalent, however.
-
-- The result of boxing avalue of type `Nullable<T>` depends on the `HasValue` property:
-
-  - If `HasValue` is `false`, the result is a `null` reference.
-  - If `HasValue` is true, the result is a reference to an object of type “boxed T".
-
-- Calling `GetType` on nullable values leads to surprising results
-
-  ```csharp
-    Nullable<int> noValue = new Nullable<int>();
-    // Console.WriteLine(noValue.GetType());  => wOULD THROW NULL REFERENCE EXCEPTION
-    Nullable<int> someValue = new Nullable<int>(5);
-    Console.WriteLine(someValue.GetType());  // Prints System.Int32, the same as you'd typed typeof(int)
-  ```
-
-- If you add a `?` to the end of the name of a non-nullable value type, that’s precisely equivalent to using `Nullable<T>` for the same type.
-
-  - Nullable<int> x;
-  - Nullable<Int32> x;
-  - int? x;
-  - Int32? x;
-
-- The `null` literal refers to - either a `null` reference or a value of a nullable value type where `HasValue` is `false`.
-
-  - for value types the following two are equivalent
-    - `int? x = new int?();`
-    - `int? x = null;`
-
-
----
-
 ## Summary of keywords
 
 | Keyword   | Interface | Abstract class | Class | Sealed Class | Structure |
@@ -1198,6 +991,103 @@ Generics (like `List<T>`), solve
 | `SortedDictionary<TKey, TValue>`                       | Sorted, Fast inserts and removals                 |
 | Concurrent Collections `System.Collections.Concurrent` | Multiple Writers and Readers                      |
 | Immutable Collections (NuGet: Microsoft.BcI.Immutable) | Threadsafe, modifications produce new collections |
+
+---
+
+## Interfaces
+
+- An interface gives you only the name, return type, and parameters of the method. Exactly how the method is implemented is not a concern of the interface. The interface describes the functionality that a class should provide but not how this functionality is implemented.
+
+- Within the interface, you declare methods exactly as in a `class` or `structure`, except that you never specify an access modifier (`public`, `private`, or `protected`).
+
+- An interface cannot contain any data; you cannot add fields (not even private ones) to an interface.
+
+### Implementing an Interface
+
+- When you implement an interface, you must ensure that each method matches its corresponding interface method exactly, according to the following rules:
+
+  - The method names and return types match exactly.
+  - Any parameters (including `ref` and `out` keyword modifiers) match exactly.
+  - All methods implementing an interface must be publicly accessible.However, if you are using an explicit interface implementation, the method should not have an access qualifier.
+
+- A class can inherit from another class and implement an interface at the same time. The base class is always named first, followed by a comma, followed by the interface.
+
+- **Note** An interface, InterfaceA, can inherit from another interface,InterfaceB. Technically, this is known as interface extension rather than inheritance. In this case, any class or struct that implements InterfaceA must provide implementations of all the methods in InterfaceB and InterfaceA.
+
+### Referencing a `class` through its `interface`
+
+- In the same way that you can reference an `object` by using a variable defined as a `class` that is higher up the hierarchy, you can reference an `object` by using a variable defined as an `interface` that the object’s `class` implements.
+
+- The technique of referencing an object through an interface is useful because you can use it to define methods that can take different types as parameters, as long as the types implement a specified interface.
+
+  ```csharp
+    int FindLandSpeed(ILandBound landBoundMammal)
+    {
+      // ...
+    }
+  ```
+
+- We can verify that an `object` is an instance of a `class` that implements a
+  specific `interface` by using the `is` operator. You use the `is` operator to determine whether an `object` has a specified type, and it works with `interfaces` as well as with classes and structs.
+
+  ```csharp
+    if (myHorse is ILandBound)
+    {
+      ILandBound iLandBoundAnimal = myHorse;
+    }
+  ```
+
+- **Note** that when referencing an `object` through an `interface`, you can invoke only methods that are visible through the `interface`.
+
+- A `class` can have at most one base class, but it is allowed to implement an unlimited number of `interfaces`, specified as comma separated list.
+
+### Explicitly implementing interfaces
+
+- To solve the problem of a class inheriting from multiple interfaces which have a method of same names and disambiguate which method is part of which interface implementation, you can implement interfaces explicitly.
+
+  ```csharp
+    class Horse : ILandBound, IJourney
+    {
+      // ...
+      int ILandBound.NumberOfLegs()
+      {
+        return 4;
+      }
+      int IJourney.NumberOfLegs()
+      {
+        return 3;
+      }
+    }
+  ```
+
+- **NOTE** - Apart from prefixing the name of the method with the `interface` name, there is one other subtle difference in this syntax: the methods are not marked public. You cannot specify the protection for methods that are part of an explicit `interface` implementation. This leads to another interesting phenomenon. If you create a `Horse` variable in the code, you cannot actually invoke either of `theNumberOfLegs` methods because they are not visible. As far as the `Horse` class is concerned, they are both `private`. In fact, this makes sense. If the methods were visible through the `Horse` class, which method would the following code actually invoke, the one for the `ILandBound` interface or the one for the `IJourney` interface?
+
+  ```csharp
+    Horse horse = new Horse();
+    // ...
+    // The following statement will not compile
+    int legs = horse.NumberOfLegs();
+  ```
+
+  So, how do you access these methods? The answer is that you reference the `Horse` object through the appropriate interface, like this:
+
+  ```csharp
+    Horse horse = new Horse();
+    // ...
+    IJourney journeyHorse = horse;
+    int legsInJourney = journeyHorse.NumberOfLegs();
+    ILandBound landBoundHorse = horse;
+    int legsOnHorse = landBoundHorse.NumberOfLegs();
+  ```
+
+### Interface restrictions
+
+- You’re not allowed to define any fields in an interface, not even static fields. A field is an implementation detail of a `class` or `structure`.
+- You’re not allowed to define any constructors in an interface. A `constructor` is also considered to be an implementation detail of a `class` or `structure`.
+- You’re not allowed to define a `destructor` in an interface. A `destructor` contains the statements used to destroy an object instance.
+- You cannot specify an access modifier for any method. All methods in an interface are implicitly public.
+- You cannot nest any types (such as enumerations, structures, classes, or interfaces) inside an interface.
+- An `interface` is not allowed to inherit from a `structure` or a `class`, although an `interface` can inherit from another `interface`. Structures and classes contain implementation; if an `interface` were allowed to inherit from either, it would be inheriting some implementation.
 
 ---
 
