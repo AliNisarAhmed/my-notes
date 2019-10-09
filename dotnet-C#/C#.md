@@ -9,6 +9,10 @@
 - **_protected internal_**: member access in the same assembly, or derived classes in other assemblies.
 - **_private protected_**: member access inside the containing class, deriving class, but only in the same assembly.
 
+### other modifiers
+
+- `abstract` - The `abstract` modifier indicates that the thing being modified has a missing or incomplete implementation. The abstract modifier can be used with classes, methods, properties, indexers, and events.
+
 ---
 
 ## **Fields**
@@ -159,11 +163,15 @@ WriteLine($"The square root of 99.9 is ");
 
 ### **`abstarct` Method**
 
-A method that does not have an implementation in the `Base` Class, and therefore, must be `override` in the `Derived` Class.
+- A method that does not have an implementation in the `Base` Class, and therefore, must be `overriden` in the `Derived` Class.
+
+- `abstract` methods are defined in `abstract` classes (classes that cannot be instantiated)
 
 ### `sealed` Method
 
-A method which a `Derived` Class cannot `override`. You can seal only a method declared with `override` keyword. Hence the method is declared as `sealed override`.
+- A method which a `Derived` Class cannot `override`. You can seal only a method declared with `override` keyword. Hence the method is declared as `sealed override`.
+
+- You can also use the `sealed` keyword to declare that an individual method in an unsealed class is sealed.
 
 ### **Extension Method**
 
@@ -261,7 +269,9 @@ Point point = new Point();
 
 Destructors (opposite of `constructors`) is a special method which is called by CLR after the reference to an object has disappeared. It is written by prepending the Class name with `~`.
 
-e.g. `~Class`
+e.g. `~ClassName`
+
+- You can use a `destructor` to perform any tidying up that’s required when anobject is garbage collected. The CLR will automatically clear up any managed resources that an object uses, so in many of these cases, writing a destructor is unnecessary.
 
 #### Rules:
 
@@ -312,6 +322,12 @@ Without Garbage collector, following problems could arise:
 
 - We might try to destroy an object multiple times.
 
+The garbage collector makes the following guarantees:
+
+- Every object will be destroyed, and its destructor will be run. When a program ends, all outstanding objects will be destroyed.
+- Every object will be destroyed exactly once.
+- Every object will be destroyed only when it becomes unreachable—that is,when there are no references to the object in the process running your application.
+
 ##### Garbage Collector algo
 
 1. It builds a map of all reachable objects. It does this by repeatedly following
@@ -345,6 +361,45 @@ you just don’t know when. Consequently, you should never write code that
 depends on destructors running in a particular sequence or at a specific point in
 your application.
 
+### `using` statement and `IDisposable` interface
+
+Instead of using nested `try catch finally` blocks, `using` statements are used (not to be confused with `using` directive at the top of the file)
+
+`using` statement provides a clean mechanism for controlling the lifetimes of resources, you create an object, and that object will be destroyed when the `using` statement block finishes.
+
+```csharp
+using ( type variable = initialization)
+{
+  statement block
+}
+
+```
+
+- The variable you declare in a `using` statement must be of a type that implements the `IDisposable` interface. The `IDisposable` interface lives in the `System` namespace and contains just one method, named `Dispose`
+
+  ```csharp
+    namespace System
+    {
+      interface IDisposable
+      {
+        void Dispose();
+      }
+    }
+  ```
+
+- Support exception-safe disposal in a class
+
+  ```csharp
+    class SafeResource : IDisposable
+    {
+      // ...
+      public void Dispose()
+      {
+        // Dispose resources here
+      }
+    }
+  ```
+
 ---
 
 ## **Classes**
@@ -352,6 +407,20 @@ your application.
 - `abstract` classes: A class that is meant to be a Base class to other classes, and not be instantiated from (but can be inherited from).
 - Normal or Concrete `clases` may have virtual methods.
 - `sealed` classes: prevents other classes from inheriting from it.
+
+  - Unless you consciously design a class with the intention of using it as a base class, it’s extremely unlikely that it will function well as a base class. With C#, you can use the `sealed` keyword to prevent a classfrom being used as a base class if you decide that it should not be.
+
+    ```csharp
+    sealed class Horse : GrazingMammal, ILandBound
+    {
+      // ...
+    }
+    ```
+
+  - If any class attempts to use `Horse` as a base class, a compile-time error will be generated.
+
+  - Note that a sealed class cannot declare any `virtual` methods (bacause `virtual` methods need an implementation in derived class) and that an `abstract` class cannot be sealed (`abstract` classes are meant to be derived from).
+
 - `static` classes:
 
   - class that cannot be instantiated, nor can be inherited from (hence they cannot be `Base` Class to other classes).
@@ -421,6 +490,65 @@ class Horse : Mammal // derived class
 - The `System.Object` class is the root class of all classes. All classes implicitly derive from `System.Object`. This means that all classes that you define automatically inherit all the features of the `System.Object` class. This includes methods such as `ToString`.
 
 - You are not expected to call the `ToString` method defined by `System.Object`; it is simply a placeholder. Instead, you might find it more useful to provide your own version of the `ToString` method in each class you define, overriding the default implementation in `System.Object`. The version in `System.Object` is there only as a safety net, in case a class does not implement or require its own specific version of the `ToString` method.
+
+---
+
+## Property
+
+### Property Restrictions
+
+- You can assign a value through a property of a structure or class only after the structure or class has been initialized. The following code example is illegal because the `location` variable has not been initialized (by using `new`):
+
+  ```csharp
+    ScreenPosition location;
+    location.X = 40; // compile-time error, location not assigned
+
+    // This might seem trivial, but if X were a field rather than a property,the code would be legal.
+  ```
+
+- You can’t use a property as a `ref` or an `out` argument to a method (although you can use a writable field as a `ref` or an `out` argument). This makes sense because the property doesn’t really point to a memory location; rather, it points to an accessor method.
+
+  ```csharp
+    MyMethod(ref location.X); // compile-time error
+  ```
+
+- A property can contain at most one `get` accessor and one `set` accessor. A property cannot contain other methods, fields, or properties.
+
+- The `get` and `set` accessors cannot take any parameters. The data being assigned is passed to the `set` accessor automatically by using the `value` variable.
+
+- You can’t declare properties by using `const`. (`const` is used to create static fields)
+
+### object initializer
+
+```csharp
+  public class Triangle
+  {
+    private int side1Length = 10;
+    private int side2Length = 10;
+    private int side3Length = 10;
+    public int Side1Length
+    {
+      set => this.side1Length = value;
+    }
+    public int Side2Length
+    {
+      set => this.side2Length = value;
+    }
+    public int Side3Length
+    {
+      set => this.side3Length = value;
+    }
+  }
+
+  // When you create an instance of a class, you can initialize it by specifying the names and values for any public properties that have set accessors
+
+  Triangle tri1 = new Triangle { Side3Length = 15 };
+  Triangle tri2 = new Triangle { Side1Length = 15, Side3Length = 20 };
+  Triangle tri3 = new Triangle { Side2Length = 12, Side3Length = 17 };
+  Triangle tri4 = new Triangle { Side1Length = 9, Side2Length = 12,Side3Length = 15 };
+
+  // This syntax is known as an object initializer.
+```
 
 ---
 
@@ -956,24 +1084,37 @@ class Horse : Mammal // derived class
 
 ---
 
-## **`new` modifier**
+## Generics
 
-When used as a declaration modifier, the `new` keyword explicitly hides a member that is inherited from a `base` class. When you hide an inherited member, the derived version of the member replaces the `base` class version. Although you can hide members without using the new modifier, you get a compiler warning. If you use new to explicitly hide a member, it suppresses this warning.
+### Generics vs Generalized Classes (using `object` type)
 
----
+- Consider a `Queue` class implemented using `object` type for generalization of its constituents.
 
-## Summary of keywords
+- you can use the `object` type to refer to a value or variable of any type.
 
-| Keyword   | Interface | Abstract class | Class | Sealed Class | Structure |
-| --------- | :-------: | :------------: | :---: | :----------: | :-------: |
-| Abstract  |    No     |      Yes       |  No   |      No      |    No     |
-| New       |    Yes    |      Yes       |  Yes  |     Yes      |    No     |
-| Override  |    No     |      Yes       |  Yes  |     Yes      |    No     |
-| Private   |    No     |      Yes       |  Yes  |     Yes      |    Yes    |
-| Protected |    No     |      Yes       |  Yes  |     Yes      |    No     |
-| Public    |    No     |      Yes       |  Yes  |     Yes      |    Yes    |
-| Sealed    |    No     |      Yes       |  Yes  |     Yes      |    No     |
-| Virtual   |    No     |      Yes       |  Yes  |      No      |    No     |
+  ```csharp
+    Queue queue = new Queue();
+    Horse myHorse = new Horse();
+    queue.Enqueue(myHorse); // legal – Horse is an object...
+    Horse dequeuedHorse = (Horse)queue.Dequeue(); // Need to cast object back to a Horse
+  ```
+
+- However, there are 2 problems with using general `object` class
+
+  1. Runtime Errors:
+
+     ```csharp
+     Queue queue = new Queue();
+     Horse myHorse = new Horse();
+     queue.Enqueue(myHorse);// ...
+     Circle myCircle = (Circle)queue.Dequeue(); // run-time error
+     ```
+
+     Although this code will compile, it is not valid and throws a `System.InvalidCastException` at runtime. The error is caused by trying to store a reference to a `Horse` in a `Circle` variable when it is dequeued, and the two types are not compatible. This error is not spotted until runtime because the compiler does not have enough information to perform this check at compiletime. The real type of the object being dequeued becomes apparent only whenthe code runs.
+
+  2. Consumtpion of additional memory and process time due to effort required to box and unbox value types to `object` type. This overhead is small for each item, but it adds up when a program creates queues of large numbers of value types.
+
+- Compare this with the `Queue<T>` class. Each time you use this class with a type parameter (such as `Queue<int>` or `Queue<Horse>`), you cause the compiler to generate an entirely new class that happens to have functionality defined by the generic class. This means that `Queue<int>` is a completely different type from `Queue<Horse>`, but they both happen to have the same behavior. 
 
 ---
 
@@ -1001,6 +1142,54 @@ When used as a declaration modifier, the `new` keyword explicitly hides a member
 - Within the interface, you declare methods exactly as in a `class` or `structure`, except that you never specify an access modifier (`public`, `private`, or `protected`).
 
 - An interface cannot contain any data; you cannot add fields (not even private ones) to an interface.
+
+- Interfaces can define properties as well as methods. To do this,you specify the `get` or `set` keyword or both, but you replace the body of the `get` or `set` accessor with a semicolon,
+
+  ```csharp
+    interface IScreenPosition
+    {
+      int X { get; set; }
+      int Y { get; set; }
+    }
+  ```
+
+  Any class or structure that implements this interface must implement the X and Y properties with `get` and `set` accessor methods (or expression-bodied members).
+
+  ```csharp
+    struct ScreenPosition : IScreenPosition
+    {
+      // ...
+      public int X
+      {
+        get { ... } // or get => ...
+        set { ... } // or set => ...
+      }
+      public int Y
+      {
+        get { ... }
+        set { ... }
+      }
+    }
+  ```
+
+  If you implement the interface properties in a class, you can declare the property implementations as `virtual`, which enables derived classes to `override` the implementations.
+
+  ```csharp
+    class ScreenPosition : IScreenPosition
+    {
+      //...
+      public virtual int X
+      {
+        get { ... }
+        set { ... }
+      }
+      public virtual int Y
+      {
+        get { ... }
+        set { ... }
+      }
+    }
+  ```
 
 ### Implementing an Interface
 
@@ -1088,22 +1277,6 @@ When used as a declaration modifier, the `new` keyword explicitly hides a member
 - You cannot specify an access modifier for any method. All methods in an interface are implicitly public.
 - You cannot nest any types (such as enumerations, structures, classes, or interfaces) inside an interface.
 - An `interface` is not allowed to inherit from a `structure` or a `class`, although an `interface` can inherit from another `interface`. Structures and classes contain implementation; if an `interface` were allowed to inherit from either, it would be inheriting some implementation.
-
----
-
-### `using` statement and `IDisposable` interface
-
-Instead of using nested `try catch finally` blocks, `using` statements are used (not to be confused with `using` directive at the top of the file)
-
-`using` statement provides a clean mechanism for controlling the lifetimes of resources, you create an object, and that object will be destroyed when the `using` statement block finishes.
-
-```csharp
-using ( type variable = initialization)
-{
-  statement block
-}
-
-```
 
 ---
 
@@ -1257,3 +1430,131 @@ void FinishFolding ()
 You declare an event in a class intended to act as an event source. An event source is usually a class that monitors its environment and raises an event when something significant happens.
 
 `event delegateTypeName eventName`
+
+---
+
+## Binary Numbers and Indexers
+
+### Binary and Hexadecimal numbers
+
+- To make life a little easier for handling data that you want to treat as a collection of binary values, C# enables you to specify integer constants using binary notation. You indicate that a constant should be treated as a binary representation by prefixing it with `0b0`.
+
+  ```csharp
+    uint binData = 0b01111;
+  ```
+
+  **Note** that this is a 4-bit value, but an integer occupies 32 bits; any bits not specified are initialized to zero. You should also observe that when you specify an integer as a binary value, it is good practice to store the result as an unsigned int (`uint`).
+
+- To help cope with long strings of bits, you can also insert the `_` character as a separator between blocks of digits, like this:
+
+  ```csharp
+    uint moreBinData = 0b0_11110000_01011010_11001100_00001111;  // the "_" is ignored by C# Compiler
+  ```
+
+- The same values can be specified using Hexa notation `0x0`
+
+  ```csharp
+    uint hexData = 0x0_0F;  // == binData
+    uint moreHexData = 0x0_F0_5A_CC_0F;  // == moreBinData
+  ```
+
+- If you need to display the binary representation of an integer, you can use the `Convert.ToString` method. `Convert.ToString` is a heavily overloaded method that can generate a string representation of a range of data values held in different types. If you are converting integer data, you can additionally specify a numeric base (2, 8, 10, or 16), and the method will convert the integer to that base.
+
+  ```csharp
+    uint moreHexData = 0x0_F0_5A_CC_0F;
+    Console.WriteLine($"{Convert.ToString(moreHexData, 2)}"); // displays 11110000010110101100110000001111
+  ```
+
+### Bitwise Operators
+
+(all the examples below are accurate to 8 bits, C# though, uses 32 bits to store numbers)
+
+- **The NOT (`~`) operator**: This is a unary operator that performs a bitwise complement. For example, if you take the 8-bit value `0b0_11001100` (204 decimal) and apply the `~` operator to it, you obtain the result `0b0_00110011` (51 decimal); all the `1`s in the original value become `0`s,and all the `0`s become `1`s.
+
+- **The left-shift (`<<`)**: operator This is a binary operator that performs a left shift. The 8-bit expression `204 << 2` returns the value `48`. (In binary, `204` decimal is `0b0_11001100`, and shifting it left by two places yields `0b0_00110000`, or `48` decimal.) The far-left bits are discarded, and zeros are introduced from the right. There is a corresponding **right-shift operator(`>>`)**.
+
+- **The OR (`|`) operator**: This is a binary operator that performs a bitwise OR operation, returning a value containing a 1 in each position in which either of the operands has a 1. For example, the 8-bit expression `204 | 24` has the value 220 (204 is `0b0_11001100`, 24 is `0b0_00011000`, and 220 is `0b0_11011100`).
+
+- **The AND (`&`) operator**: This operator performs a bitwise AND operation. AND is similar to the bitwise OR operator, but it returns a value containing a 1 in each position where both of the operands have a 1. So,the 8-bit expression `204 & 24` is 8 (204 is `0b0_11001100`, 24 is `0b0_00011000`, and 8 is `0b0_00001000`).
+
+- **The XOR (`^`) operator**: This operator performs a bitwise exclusive OR operation, returning a 1 in each bit where there is a 1 in one operand or theother but not both. (Two 1s yield a 0; this is the “exclusive” part of theoperator.) So the 8-bit expression 204 ^ 24 is 212 (0b0_11001100 ^0b0_00011000 is 0b0_11010100).
+
+- Reasoning about bitwise operators on numbers is difficult, that where indexer come in.
+
+### Indexers
+
+- Indexers allow us to use square bracket notation to access individual values from a collection, which, without indexers, does not usually allow square brackets as data access operator.
+
+- So, if we define an indexer, we can use `bits[5]`, where bits is a binary number, to access 6th value from the right.
+
+- You introduce the indexer with the `this` keyword, specify the type of the value returned by the indexer, and also specify the type of the value to use as the index into the indexer between square brackets. The indexer for the `IntBits` struct uses an `integer` as its index type and returns a `Boolean` value.
+
+  ```csharp
+    struct IntBits
+    {
+      private int bits;
+      public IntBits(int initialBitValue) => bits = initialBitValue;
+
+      public bool this [ int index ]
+      {
+        get => (bits & (1 << index)) != 0;
+        set
+        {
+          if (value) // turn the bit on if value is true; otherwise, turn it off
+            bits |= (1 << index);
+          else
+            bits &= ~(1 << index);
+        }
+      }
+
+      public override string ToString()
+      {
+        return (Convert.ToString(bits, 2);
+      }
+    }
+
+  ```
+
+- **NOTE:**
+
+  - An indexer is not a method; there are no parentheses containing a parameter, but there are square brackets that specify an index. This index is used to specify which element is being accessed.
+  - All indexers use the `this` keyword. A `class` or `structure` can define at most one indexer (although you can overload it and have several implementations), and it is always named `this`.
+  - Indexers contain `get` and `set` accessors just like properties. In this example, the `get` and `set` accessors contain the complicated bitwise expressions.The `index` specified in the indexer declaration is populated with the index value specified when the indexer is called. The `get` and `set` accessor methods can read this argument to determine which element should be accessed.
+
+- It is also good practice to provide a way to display the data in this structure. You can do this by overriding the `ToString` method and converting the value held in the structure to a string containing its binary representation.
+
+- After you have created the indexer, you can use a variable of type `IntBits` instead of an `int` and apply the square bracket notation.
+
+  ```csharp
+    int adapted = 0b0_01111110;
+    IntBits bits = new IntBits(adapted);
+    bool peek = bits[6]; // retrieve bool at index 6; should be true (1)
+    bits[0] = true; // set the bit at index 0 to true (1)
+    bits[3] = false; // set the bit at index 3 to false (0)
+    Console.WriteLine($""); // displays 1110111 (0b0_01110111)
+  ```
+
+---
+
+---
+
+## **`new` modifier**
+
+When used as a declaration modifier, the `new` keyword explicitly hides a member that is inherited from a `base` class. When you hide an inherited member, the derived version of the member replaces the `base` class version. Although you can hide members without using the new modifier, you get a compiler warning. If you use new to explicitly hide a member, it suppresses this warning.
+
+---
+
+## Summary of keywords
+
+| Keyword   | Interface | Abstract class | Class | Sealed Class | Structure |
+| --------- | :-------: | :------------: | :---: | :----------: | :-------: |
+| Abstract  |    No     |      Yes       |  No   |      No      |    No     |
+| New       |    Yes    |      Yes       |  Yes  |     Yes      |    No     |
+| Override  |    No     |      Yes       |  Yes  |     Yes      |    No     |
+| Private   |    No     |      Yes       |  Yes  |     Yes      |    Yes    |
+| Protected |    No     |      Yes       |  Yes  |     Yes      |    No     |
+| Public    |    No     |      Yes       |  Yes  |     Yes      |    Yes    |
+| Sealed    |    No     |      Yes       |  Yes  |     Yes      |    No     |
+| Virtual   |    No     |      Yes       |  Yes  |      No      |    No     |
+
+---
