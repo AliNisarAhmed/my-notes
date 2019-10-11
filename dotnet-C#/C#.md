@@ -69,7 +69,7 @@ WriteLine($"The square root of 99.9 is ");
 
 - If a `class` has one or more `private` constructors and no `public` constructors, other classes (except nested classes) cannot create instances of this `class`.
 
-#### Overloading contructors
+### Overloading contructors
 
 - A constructor is just a special kind of method, and it—like all methods—can be overloaded.
 
@@ -724,7 +724,7 @@ class Horse : Mammal // derived class
 
 - Remember that `i` is a value type and that it lives on the stack.If the reference inside `o` referred directly to `i`, the reference would refer to the stack. However, all references must refer to objects on the heap; creating references to items on the stack could seriously compromise the robustness of the runtime and create a potential security flaw, so it is not allowed. Therefore,the runtime allocates a piece of memory from the heap, copies the value of integer `i` to this piece of memory, and then refers the object `o` to this copy. This automatic copying of an item from the stack to the heap is called **Boxing**.
 
-![Boxing](./boxing.PNG)
+![Boxing](./boxing.png)
 
 - **NOTE**: If you modify the original value of the variable `i`, the value on the heap referenced through `o` will not change. Likewise, if you modify the value on the heap, the original value of the variable will not change.
 
@@ -740,7 +740,7 @@ class Horse : Mammal // derived class
 
 - The effect of this cast is subtle. The compiler notices that you’ve specified the type `int` in the cast. Next, the compiler generates code to check what `o` actually refers to at runtime. It could be absolutely anything. Just because your cast says `o` refers to an int, that doesn’t mean it actually does. If `o` really does refer to a boxed `int` and everything matches, the cast succeeds, and the compiler-generated code extracts the value from the boxed int and copies it to i. This is called **unboxing**.
 
-![Un-Boxing](./unboxing.PNG)
+![Un-Boxing](./unboxing.png)
 
 - On the other hand, if `o` does not refer to a boxed `int`, there is a type mismatch, causing the cast to fail. The compiler-generated code throws an `InvalidCastException` exception at runtime.
 
@@ -1114,7 +1114,38 @@ class Horse : Mammal // derived class
 
   2. Consumtpion of additional memory and process time due to effort required to box and unbox value types to `object` type. This overhead is small for each item, but it adds up when a program creates queues of large numbers of value types.
 
-- Compare this with the `Queue<T>` class. Each time you use this class with a type parameter (such as `Queue<int>` or `Queue<Horse>`), you cause the compiler to generate an entirely new class that happens to have functionality defined by the generic class. This means that `Queue<int>` is a completely different type from `Queue<Horse>`, but they both happen to have the same behavior. 
+- Compare this with the `Queue<T>` class. Each time you use this class with a type parameter (such as `Queue<int>` or `Queue<Horse>`), you cause the compiler to generate an entirely new class that happens to have functionality defined by the generic class. This means that `Queue<int>` is a completely different type from `Queue<Horse>`, but they both happen to have the same behavior.
+
+### Generic Type constraints
+
+- When a type parameter is declared by a generic type or method, it can also specify type constraints that restrict which types can be provided as type arguments.
+
+  ```csharp
+    public class PrintableCollection<T> where T : IPrintable
+
+    // OR
+
+    static void PrintItems<T>(List<T> items) where T : IFormattable
+
+  ```
+
+- The following constraints are available -
+
+  - _Reference type constraint_ — `where T : class` - The type argument must be a refer-ence type. (Don’t be fooled by the use of the `class` keyword; it can be any reference type, including `interfaces` and `delegates`.)
+  - _Value type constraint_ — `where T : struct` - The type argument must be a non-nullable value type (either a `struct` or an `enum`. Nullable value types don’t meet this constraint.
+  - _Constructor constraint_ — `where T : new()` - The type argument must have a public parameterless constructor. This enables the use of `new T()` within the body of the code to construct a new instance of `T`.
+  - _Conversion constraint_ — `where T : SomeType`. Here, `SomeType` can be a `class`, an `interface`, or another type parameter as shown here:
+    – `where T : Control`
+    – `where T : IFormattable`
+    – `where T1: T2`
+
+- When multiple type parameters exist in a generic declaration, each type parameter can have an entirely different set of constraints as in the following example:
+
+  ```csharp
+  TResult Method<TArg, TResult>(TArg input)
+    where TArg : IComparable<TArg>
+    where TResult : class, new()
+  ```
 
 ---
 
@@ -1132,6 +1163,27 @@ class Horse : Mammal // derived class
 | `SortedDictionary<TKey, TValue>`                       | Sorted, Fast inserts and removals                 |
 | Concurrent Collections `System.Collections.Concurrent` | Multiple Writers and Readers                      |
 | Immutable Collections (NuGet: Microsoft.BcI.Immutable) | Threadsafe, modifications produce new collections |
+
+- `LinkedList<T>`
+  - is a doubly-linked list
+  - does not support array notation for insertion or examining elements, unlike `List<T>`.
+  - Also only supports `AddFirst`, `AddLast`, `AddBefore`, `AddAfter`, `Remove`, `RemoveFirst`, `RemoveLast` methods.
+
+- `Dictionary<TKey, TValue>`
+  - cannot contain duplicate keys.
+  - Calling `Add` method with an existing key is an exception.
+  - Supports square bracket notation
+  - Uses relatively more memory.
+  - `foreach` iterate over a `KeyValuePair<TKey, TValue>` pair with `Key` and `Value` props.
+
+- `SortedList<TKey, TValue>`
+  - is similar to Dictionary
+  - is sorted by `Key` automatically
+  - `foreach` returns a KeyValuePair sorted by `Key`
+
+- `HashSet<T>`
+  - is a hash table internally
+  - enables fast lookup of items
 
 ---
 
@@ -1282,7 +1334,7 @@ class Horse : Mammal // derived class
 
 ### Invariant, Covariant and Contravariant Interfaces
 
-An Interface is said to be invariant when we cannot assign an `IWrapper<A>` object to a reference of type `IWrapper<B>`, even if type `A` is derived from type `B`. So, `IWrapper<object>` cannot be assigned to `IWrapper<string>`.
+An Interface is said to be invariant when we cannot assign an `IWrapper<A>` object to a reference of type `IWrapper<B>`, even if type `A` is derived from type `B`. So, `IWrapper<object>` cannot be assigned to `IWrapper<string>`, because, even though all strings are objects, not all objects are strings.
 
 Following definitions hold:
 
@@ -1317,7 +1369,7 @@ interface IRetrieveWrapper<out T>
 
 ```
 
-This feature is called **_covariance_**. You can assign an `IRetrieveWrapper<A>` object to an `IRetrieve-Wrapper<B>` reference as long as there is a valid conversion from type `A` to type `B`, or type `A` derives from type `B`. You can specify the out qualifier with a type parameter only if the type parameter occurs as the return type of methods. If you use the type parameter to specify the type of any method parameters, the out qualifier is illegal, and your code will not compile. Also, covariance works only with reference types. This is because value types cannot form inheritance hierarchies.
+This feature is called **_covariance_**. You can assign an `IRetrieveWrapper<A>` object to an `IRetrieve-Wrapper<B>` reference as long as there is a valid conversion from type `A` to type `B`, or type `A` derives from type `B`. You can specify the `out` qualifier with a type parameter only if the type parameter occurs as the return type of methods. If you use the type parameter to specify the type of any method parameters, the out qualifier is illegal, and your code will not compile. Also, covariance works only with reference types. This is because value types cannot form inheritance hierarchies.
 
 #### Contravariance
 
@@ -1374,6 +1426,10 @@ By using the `GetEnumerator` method of a collection to create an enumerator, rep
 
 The `Current` property of the `IEnumerator` interface exhibits non–type-safe behavior in that it returns an `object` rather than a specific type. However, you should be pleased to know that the Microsoft .NET Framework class library also provides the generic
 `IEnumerator<T>` interface, which has a Current property that returns a `T` instead. Likewise, there is also an `IEnumerable<T>` interface containing a `GetEnumerator` method that returns an `Enumerator<T>` object. Both of these interfaces are defined in the `System.Collections.Generic` namespace, and if you are building applications for the .NET Framework version 2.0 or later, you should make use of these generic interfaces rather than the nongeneric versions when you define enumerable collections.
+
+### System.IComparable and System.IComparable<T> interfaces
+
+- If you need to create a class that requires you to be able to compare values according to some natural (or possibly unnatural) ordering, you should implement the `IComparable<T>` interface. This interface contains amethod called `CompareTo`, which takes a single parameter specifying the object to be compared with the current instance and returns an integer that indicates the result of the comparison. less than 0 means current instance < value of the parameter. Equal to 0 means current instance = value of the parameter. Greater than 0 means current instance > value of the parameter.
 
 ---
 

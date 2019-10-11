@@ -61,8 +61,7 @@ public static IWebHost BuildWebHost(string[] args) =>
 
 ## Dependency injection
 
-It is essential to understand the concept of dependency injection
-(DI). Having dependencies between the components of an application is inevitable, and if the references to them are not correctly designed, it can have a negative impact on the maintainability of the code. DI is a design pattern to allow instances of objects to be passed to other objects that require them at runtime.
+It is essential to understand the concept of dependency injection (DI). Having dependencies between the components of an application is inevitable, and if the references to them are not correctly designed, it can have a negative impact on the maintainability of the code. DI is a design pattern to allow instances of objects to be passed to other objects that require them at runtime.
 
 Let’s say we have a class called `ComponentA` that is using `ComponentB`. The following example shows a typical scenario where no DI is used, and as a result these components are tightly coupled together:
 
@@ -113,8 +112,7 @@ public class ComponentB: IComponent
 
 ```
 
-When we run this code as is, it will result in a `NullReferenceException` error because `ComponentA` is expecting an object of type `IComponent`, and although `ComponentB` implements the `IComponent` interface, there is nothing configured to pass in
-the required instance of `IComponent` to the constructor of `ComponentA`.
+When we run this code as is, it will result in a `NullReferenceException` error because `ComponentA` is expecting an object of type `IComponent`, and although `ComponentB` implements the `IComponent` interface, there is nothing configured to pass in the required instance of `IComponent` to the constructor of `ComponentA`.
 
 For the code to run without this issue, we need a mechanism to pass the correct instance of a requested type during runtime. This can be achieved by making use of an ***Inversion of Control*** (IoC) container to register all the required dependencies and their instances. There are many frameworks available on NuGet that provide IoC containers
 for dependency resolution, namely Unity, Castle Windsor, Autofac, and Ninject.
@@ -142,25 +140,6 @@ All the containers must provide easy support for the following DI lifecycle.
 
 ---
 
-## Design Principle vs Design Pattern
-
-### Design Principle
-
-Design principles provide high level guidelines to design better software applications. They do not provide implementation guidelines and are not bound to any programming language. The SOLID (SRP, OCP, LSP, ISP, DIP) principles are one of the most popular sets of design principles.
-
-For example, the Single Responsibility Principle (SRP) suggests that a class should have only one reason to change. This is a high-level statement which we can keep in mind while designing or creating classes for our application. SRP does not provide specific implementation steps but it's up to you how you implement SRP in your application.
-
-### Design Pattern
-
-Design Pattern provides low-level solutions related to implementation, of commonly occurring object-oriented problems. In other words, design pattern suggests a specific implementation for the specific object-oriented programming problem. For example, if you want to create a class that can only have one object at a time, then you can use the Singleton design pattern which suggests the best way to create a class that can only have one object.
-
-Design patterns are tested by others and are safe to follow, e.g. Gang of Four patterns: Abstract Factory, Factory, Singleton, Command, etc.
-
-Principle --> Inversion of Control & Dependency Inversion Principle
-
-Pattern   --> Dependency Injection
-
-Framework --> IoC Container
 
 read: https://www.tutorialsteacher.com/ioc/introduction
 
