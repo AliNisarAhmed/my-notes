@@ -1425,11 +1425,11 @@ By using the `GetEnumerator` method of a collection to create an enumerator, rep
 ##### NOTE:
 
 The `Current` property of the `IEnumerator` interface exhibits non–type-safe behavior in that it returns an `object` rather than a specific type. However, you should be pleased to know that the Microsoft .NET Framework class library also provides the generic
-`IEnumerator<T>` interface, which has a Current property that returns a `T` instead. Likewise, there is also an `IEnumerable<T>` interface containing a `GetEnumerator` method that returns an `Enumerator<T>` object. Both of these interfaces are defined in the `System.Collections.Generic` namespace, and if you are building applications for the .NET Framework version 2.0 or later, you should make use of these generic interfaces rather than the nongeneric versions when you define enumerable collections.
+`IEnumerator<T>` interface, which has a `Current` property that returns a `T` instead. Likewise, there is also an `IEnumerable<T>` interface containing a `GetEnumerator` method that returns an `Enumerator<T>` object. Both of these interfaces are defined in the `System.Collections.Generic` namespace, and if you are building applications for the .NET Framework version 2.0 or later, you should make use of these generic interfaces rather than the nongeneric versions when you define enumerable collections.
 
 ### System.IComparable and System.IComparable<T> interfaces
 
-- If you need to create a class that requires you to be able to compare values according to some natural (or possibly unnatural) ordering, you should implement the `IComparable<T>` interface. This interface contains amethod called `CompareTo`, which takes a single parameter specifying the object to be compared with the current instance and returns an integer that indicates the result of the comparison. less than 0 means current instance < value of the parameter. Equal to 0 means current instance = value of the parameter. Greater than 0 means current instance > value of the parameter.
+- If you need to create a class that requires you to be able to compare values according to some natural (or possibly unnatural) ordering, you should implement the `IComparable<T>` interface. This interface contains a method called `CompareTo`, which takes a single parameter specifying the object to be compared with the current instance and returns an integer that indicates the result of the comparison. less than 0 means current instance < value of the parameter. Equal to 0 means current instance = value of the parameter. Greater than 0 means current instance > value of the parameter.
 
 ---
 
@@ -1445,6 +1445,37 @@ The `currentItem` variable is defined by using the type parameter `TItem`. When 
 
 The default keyword solves this problem. The value used to initialize the variable will be determined when the statement is executed. If `TItem` is a reference type, `default(TItem)` returns null; if TItem is numeric, `default(TItem)` returns 0; if `TItem` is a boolean, `default(TItem)` returns `false`. If TItem is a struct, the individual fields in the struct are initialized in the same way. (Reference fields are set
 to null, numeric fields are set to 0, and boolean fields are set to false.)
+
+---
+
+### Iterators
+
+```csharp
+using System.Collections.Generic;
+using System.Collections;
+
+class BasicCollection<T> : IEnumerable<T>
+{
+  private List<T> data = new List<T>();
+  public void FillList(params T [] items)
+  {
+    foreach (var datum in items)
+    {
+      data.Add(datum);
+    }
+  }
+  IEnumerator<T> IEnumerable<T>.GetEnumerator()
+  {
+    foreach (var datum in data)
+    {
+      yield return datum;
+    }
+  }
+}
+
+```
+
+- The code in the `GetEnumeratormethod` defines an iterator. The compiler uses this code to generate an implementation of the `IEnumerator<T>` class containing a `Current` method and a `MoveNext` method.
 
 ---
 

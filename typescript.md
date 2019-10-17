@@ -1,4 +1,189 @@
-# TypeScript Interview Questions
+# TypeScript
+
+## Compiler Options
+
+- `noImplicitAny` rule will not allow us to allow the compiler to infer `any` type, though we can set a variable to `any` ourselves.
+
+- `declaration: true` will enable the compiler to generate an `index.d.ts` file, with which we can inpect the types infered by the compiler.
+
+- if the `noUnusedParameters` option is enabled, the compiler will warn you if a function defines parameters that it doesn’t use.
+
+- In `strictNullChecks` mode, the `null` and `undefined` values are not in the domain of every type and are only assignable to themselves and any (the one exception being that undefined is also assignable to void).
+
+- When the `noImplicitReturns` setting is true, the compiler will report an error when there are paths through functions that don’t explicitly produce a result with the `return` keyword or throw an error.
+
+- `suppressExcessPropertyErrors: true` allows objects to be defined with additioinal properties, over and above those specified by their interface or type alias.
+
+## Union types
+
+- Union types can be defined using the `|` operator. e.g. `string | number`.
+
+- It is important to understand that a type union is handled as a type in its own right, whose features are the intersection of the individual types.
+
+### Using shape type unions
+
+```typescript
+  type Product = {
+    id: number,
+    name: string,
+    price?: number
+    };
+  type Person = {
+    id: string,
+    name: string,
+    city: string
+    };
+  let hat = { id: 1, name: "Hat", price: 100 };
+  let gloves = { id: 2, name: "Gloves", price: 75 };
+  let umbrella = { id: 3, name: "Umbrella", price: 30 };
+  let bob = { id: "bsmith", name: "Bob", city: "London" };
+  let dataItems: (Product | Person)[] = [hat, gloves, umbrella, bob];
+
+  dataItems.forEach(item => console.log(`ID: ${item.id}, Name: ${item.name}`));
+```
+
+- The dataItems array in this example has been annotated with a union of the `Product` and `Person` types. These types have two properties in common, `id` and `name`, which means these properties can be used when processing the array without having to narrow to a single type.
+
+- These are the only properties that can be accessed because they are the only properties shared by all types in the union. Any attempt to access the `price` property defined by the `Product` type or the `city` property defined by the `Person` type will produce an error because these properties are not part of the `Product | Person` union.
+
+## Type Assertions
+
+- A `type assertion` tells the TypeScript compiler to treat a value as a specific type, known as `type narrowing`. A `type assertion` is one of the ways that you can narrow a type from a union.
+
+- the `as` keyword is used for type assertions.
+
+- **Caution** - no type conversion is performed by a type assertion, which only tells the compiler what type it should apply to a value for the purposes of type checking.
+
+## Type Guards
+
+- For primitive types only, `typeof` operator can be used to test for a specific type without needing a type assertion.
+
+- The simplest way to differentiate between shape/object types is to use the JavaScript `in` keyword to check for a property.
+
+### Type Guarding with a Type Predicate Function
+
+- The `in` keyword is a useful way to identify whether an object conforms to a shape, but it requires the same checks to be written each time types need to be identified. TypeScript also supports guarding object types using a function:
+
+  ```typescript
+    function isPerson(testObj: any): testObj is Person
+    {
+      return testObj.city !== undefined;
+    }
+  ```
+
+## `any`, `unknown` and `never` types
+
+- `never` type arises when the compiler cannot figure out the type, usually happens when all the types have been exhausted in a type gaurd.
+
+- `any` value can be assigned to all other types, which creates a gap in the compiler’s type checking. TypeScript also supports the unknown type, which is a safer alternative to any. An unknown value can be assigned only any or itself unless a type assertion or type guard is used.
+
+- An `unknown` value can’t be assigned to another type without a type assertion.
+
+```typescript
+function calculateTax(amount: number, format: boolean): string | number {
+  const calcAmount = amount * 1.2;
+  return format ? `$${calcAmount.toFixed(2)}` : calcAmount;
+}
+let taxValue = calculateTax(100, false);
+
+switch (typeof taxValue) {
+  case 'number':
+    console.log(`Number Value: ${taxValue.toFixed(2)}`);
+    break;
+  case 'string':
+    console.log(`String Value: ${taxValue.charAt(0)}`);
+    break;
+  default:
+    let value: never = taxValue;
+    console.log(`Unexpected type for value: ${value}`);
+}
+
+let newResult: unknown = calculateTax(200, false);
+let myNumber: number = newResult;
+console.log(`Number value: ${myNumber.toFixed(2)}`);
+
+// This raises the error below:
+// src/index.ts(18,5): error TS2322: Type 'unknown' is not assignable to type 'number'.
+// typing like below will reolve the issue
+
+let myNumber: number = newResult as number; // forcing unknown to be a number
+```
+
+## Nullable types: `undefined` and `null`
+
+- Under normal circumstances, the compiler will report an error if a value of one type is assigned to a variable of a different type, but the compiler remains silent because it allows `null` and `undefined` to be treated as values for all types.
+
+- The use of `null` and `undefined` can be restricted by enabling the `strictNullChecks` compiler setting.
+
+```json
+{
+  "compilerOptions": {
+    "target": "es2018",
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "declaration": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true
+  }
+}
+```
+
+- using `typeof` on `null` values returns `"object"`, so guarding against `null` values is done using an explicit value check `if (value === null)`, which the TypeScript compiler understands as a type guard.
+
+- A non-null value is asserted by applying the `!` character after the value. An alternative approach is to filter out `null` or `undefined` values using a type guard (e.g. `value !== undefined`).
+
+- The second approach has the advantage of runtime safety, while first approach may result in runtime errors (TODO: Find an example for this in React).
+
+## Function overloads
+
+- TS allows type overloads of functions, but they are not like C# overloads with unique implementations. All TS overloads have the same implementation, and different type paths should be handled inside the function body.
+
+```typescript
+function calculateTax(amount: number): number;
+function calculateTax(amount: null): null;
+```
+
+## Dynamically creating properties
+
+- The TypeScript compiler only allows values to be assigned to properties that are part of an object’s type, which means that `interfaces` and `classes` have to define all the properties that the application requires.
+
+- By contrast, JavaScript allows new properties to be created on objects simply by assigning a value to an unused property name. The TypeScript index signature feature bridges these two models, allowing properties to be defined dynamically while preserving type safety,
+
+  ```typescript
+    interface object {
+      [prop: string]: any;
+    }
+  ```
+
+---
+
+## TyepScript advantages
+
+### Static typing
+
+### Code documentation
+
+- typed code is self-documenting, and types around functions increase readability and understandability multiple folds.
+
+### Code readability
+
+### Code maintainability
+
+### Less runtime errors, more bugs caught at compile time
+
+### Editor support and Intellisense
+
+### New JS features
+
+### Union types for props
+
+### Interface for typing state and props
+
+### But it wont' save you from shooting your foot, runtime errors may not always be caught at compile time.
+
+---
+
+## **TypeScript Interview Questions**
 
 ## What is TypeScript? Why should we use it?
 
