@@ -1491,6 +1491,10 @@ class BasicCollection<T> : IEnumerable<T>
 
 References to methods, basically.
 
+- it is a type/object that represents references to methods with a particular parameter list and return type and then calls the method in a program for execution when it is needed.
+
+- A delegate will call only a method which agrees with its signature and return type. A method can be a static method associated with a class or can be an instance method associated with an object, it doesn’t matter.
+
 In a `class`, make a `delegate` type, that create an instance of the `delegate`, and then in the class constructor, add methods to the delegate using `+=` operator. We can also remove methods from a `delegate` using `-=`.
 
 We can also add methods outside of a constructor of a specific `class`, to make the whole thing more generalized. For example, we can make separate `Add` or `Remove` methods to add or remove delegates.

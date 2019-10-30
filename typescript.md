@@ -181,6 +181,27 @@ function calculateTax(amount: null): null;
 
 ### But it wont' save you from shooting your foot, runtime errors may not always be caught at compile time.
 
+
+## Conditional Types (from https://www.youtube.com/watch?v=O1rn-d_P_Rc)
+
+`any` type is JS land, no support by TS compiler during runtime.
+
+```typescript
+  type StringOrNull<T> = T extends string ? string : null;  // if the given type is a string then return the type string else return the type null
+
+  // or to restrict types, provide type constraints
+
+  type StringOrNull<T extends string | null> = T extends string ? string : null;
+
+  // or
+
+  type StringOrNull <T> = T extends string
+   ? string
+   : T extends null
+   ? null
+   : never; // or unknown
+```
+
 ---
 
 ## **TypeScript Interview Questions**

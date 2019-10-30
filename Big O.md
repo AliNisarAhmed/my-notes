@@ -8,6 +8,17 @@ big O describes an upper bound on time, while big Omega describes a lower bound.
 
 ---
 
+Suppose you’ve got a routine that takes one second to process 100 records. How long will it take to process 1,000?
+
+- If your code is `O(1)`, then it will still take one second.
+- If it’s `O(log n)`, then you’ll probably be waiting about three  seconds.
+- `O(n)`  will  show  a  linear  increase  to  ten  seconds.
+- while  an `O(n log n)` will take some 33 seconds.
+- If you’re unlucky enough to have an `O(n^2)` routine, then sit back for 100 seconds while it does its stuff.
+- And if you’re using an exponential algorithm `O(2^n)`, you might want to make a cup of coffee—your  routine  should  finish  in  about  10^263  years.  Let  us  know  how the universe ends.
+
+---
+
 Example: For Quick Sort
 
 **Best Case**: If all elements are equal, then QS will traverse throug the array at least once, hence O(n).
@@ -80,9 +91,9 @@ problem space gets halved each time, that will likely be a 0( log N) runtime.**
 
 #### Runtime for Recursive Functions
 
-Try to remember this pattern. When you have a recursive function that makes multiple calls, the runtime will often (but not always) look like O(branches<sup>depth</sup>), where branches is the number of times each recursive call branches. 
+Try to remember this pattern. When you have a recursive function that makes multiple calls, the runtime will often (but not always) look like O(branches<sup>depth</sup>), where branches is the number of times each recursive call branches.
 
-So, for 
+So, for
 ```js
 function f (n) {
   if (n <= 1) {
@@ -98,12 +109,12 @@ Runtime is O (2 <sup>n</sup>)
 
 #### Objects and Arrays
 
-Objects have 
+Objects have
 * `O(1)` entry, `O(1)` value retrieval given a key
 * `Object.keys()`, `Object,values()`, `Object,entries()` are `O(n)`
 * `Object.hasOwnProperty()` is `O(1)`.
 
-Arrays have 
+Arrays have
 * O(1) insertion/removal at the end
 * O(n) insertion/removal at the start
 * O(n) search
@@ -111,7 +122,7 @@ Arrays have
 * slice(), splice(), map(), reduce(), filter(), concat() are O(n)
 * sorting is O(n log n)
 
---- 
+---
 
 #### Singly Linked List
 
@@ -170,7 +181,7 @@ But above are best and average cases, in the worst case (like a completely lop-s
 In BFS, We go through all the children of a node before proceeding to the children of children.
 
 In DFS, We traverse all the way to the bottom of the tree, and then work our way back up.
-DFS can be done in 3 orders: 
+DFS can be done in 3 orders:
 1. Pre-Order - In pre-order, we visit the node first, then we traverse its left, then we traverse its right.
 2. Post-Order - In post-order, we traverse the left first, then the right, then the node itself is visited.
 3. In-order - in in-order, we traverse the left first, then we visit the node then we traverse the right.
@@ -191,5 +202,5 @@ DFS-Pre-order results in the lis tof values being in the same order as the tree,
 A binary heap is defined as a binary tree with two additional constraints:
 
   * Shape property: a binary heap is a *complete binary tree*; that is, all levels of the tree, except possibly the last one (deepest) are fully filled, and, if the last level of the tree is not complete, the nodes of that level are filled from left to right.
-  * Heap property: the key stored in each node is either greater than or equal to (≥) or less than or equal to (≤) the keys in the node's children, according to some total order. 
+  * Heap property: the key stored in each node is either greater than or equal to (≥) or less than or equal to (≤) the keys in the node's children, according to some total order.
   * (Where parent >= children)(>=) are called max-heaps, (where parent <= children) (<=) are called min-heaps.
