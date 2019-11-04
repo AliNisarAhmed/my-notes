@@ -13,20 +13,24 @@ The process of application of a function is called **Beta Reduction**
 e.g.
 
 ```haskell
+
 (\x.x)(\y.y)z
 [x :== \y.y] -> substituting
 (\y.y)z
 z
+
 ```
 
-*Free Variables* -> e.g. \x.xy (y is a free variable, not in the 'head' of the lambda expression)
+_Free Variables_ -> e.g. \x.xy (y is a free variable, not in the 'head' of the lambda expression)
 
 Alpha Equivalence does not apply to free variables e.g. \x.xz and \x.xy are not equivalent as x and y might be different things, however, \xy.yx and \ab.ba hold alpha equivalence
 
 ##### Beta Normal Form
+
 When you cannot beta reduce the terms any further (cannot apply lambdas to arguments)
 
 ##### Combinators
+
 are lambda terms with no free variables
 λy.x
 Here y is bound (it occurs in the head of the lambda) but x is free.
@@ -35,16 +39,22 @@ Below are Combinators
 λxy.x
 λxyz.xz(yz)
 
+## Lazy Evaluation
+
+In the expression `isOdd (1 + 2)` for the function `isOdd n = mod n 2 == 1`, the `(1 + 2)` part if not evaluated, unlike strict languages.
+
+It is evaluated only when needed, before that, we create a “promise” that when the value of the expression `isOdd (1 + 2)` is needed, we'll be able to compute it. The record that we use to track an unevaluated expression is referred to as a _thunk_. This is all that happens: we create a thunk, and defer the actual evaluation until it's really needed.
+
 ## Functions
 
-To use Infix Operators as prefix (like 1 + 1), use parens => (+) 1 1  // 2
+To use Infix Operators as prefix (like 1 + 1), use parens => (+) 1 1 // 2
 To use prefix operators as infix (div 3 2), use backticks => 3 `div` 2
 
 `div` is integer division
 `mod` is remainder operator
 
 | Operator | Name      | Purpose/application                   |
-|:-------- | --------- | ------------------------------------- |
+| :------- | --------- | ------------------------------------- |
 | \+       | plus      | addition                              |
 | \-       | minus     | subtraction                           |
 | /        | slash     | fractional division                   |
@@ -54,14 +64,17 @@ To use prefix operators as infix (div 3 2), use backticks => 3 `div` 2
 | rem      | remainder | remainder after division              |
 
 #### Laws for quotients and remainders
+
 (quot x y)*y + (rem x y) == x
 (div x y)*y + (mod x y) == x
 
 ###### Difference between `rem` and `mod`
+
 One key difference here is that, in Haskell (not in all languages), if
 one or both arguments are negative, the results of mod will have the
 same sign as the divisor, while the result of rem will have the same
 sign as the dividend:
+
 ```haskell
 (-5) `mod` 2  => 1
 5 `mod` (-2) => -1
@@ -75,6 +88,7 @@ rem (-9) 7 => -2
 ```
 
 ##### `$` Operator
+
 here’s the definition of (`$`):
 f $ a = f a
 Immediately this seems a bit pointless until we remember that it’s defined as an infix operator with the lowest possible precedence.
@@ -100,6 +114,7 @@ If you use sectioning with a function that is not commutative, the order matters
 
 [ Output function | drawing from, condition1, condition2 ...]
 e.g.
+
 ```haskell
 [x * 2 | x <- [1..10], x >= 4]
 -- Only those x, which are >= 4, will be chosen
@@ -121,7 +136,7 @@ fromIntegral :: (Num b, Integral a) => a -> b
 **Fractional** -> `Float`, `Double`, `Rational`, `Fixed`, `Scientific`
 **Num** includes all the above types
 
---- 
+---
 
 #### Sectioning
 
@@ -168,13 +183,13 @@ A function is polymorphic when its type signature has variables that can represe
 
 #### Partial Functions
 
-A partial function is one that doesn’t handle all the possible cases, so there are possible scenarios in which we haven’t defined any way for the code to evaluate. 
+A partial function is one that doesn’t handle all the possible cases, so there are possible scenarios in which we haven’t defined any way for the code to evaluate.
 
 We need to take care to avoid partial functions in general in Haskell, but this must be especially kept in mind when we have a type with multiple cases
 
 #### List Comprehensions
 
-List Comprehensions must have at least one list, called the generator, that gives the input for the comprehension, that is, provides the set of items from which the new list will be constructed. They may have conditions to determine which elements are drawn from the list and/or functions applied to those elements. 
+List Comprehensions must have at least one list, called the generator, that gives the input for the comprehension, that is, provides the set of items from which the new list will be constructed. They may have conditions to determine which elements are drawn from the list and/or functions applied to those elements.
 
 ```haskell
   [ x ^ 2 | x <- [1..4] ] -- [1, 4, 9, 16]
