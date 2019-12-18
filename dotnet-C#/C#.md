@@ -1072,6 +1072,14 @@ class Horse : Mammal // derived class
 
   ```
 
+- #### Optional Parameters
+
+  - You specify that a parameter is optional when you define a method by providing a default value for the parameter. You indicate a default value by using the assignment operator.
+
+  ```csharp
+     void optMethod(int first, double second = 0.0, string third = "Hello") {...}
+  ```
+
 - `params` array vs optional parameters
 
   - A method that takes optional parameters still has a fixed parameter list,and you cannot pass an arbitrary list of arguments.
@@ -1165,11 +1173,13 @@ class Horse : Mammal // derived class
 | Immutable Collections (NuGet: Microsoft.BcI.Immutable) | Threadsafe, modifications produce new collections |
 
 - `LinkedList<T>`
+
   - is a doubly-linked list
   - does not support array notation for insertion or examining elements, unlike `List<T>`.
   - Also only supports `AddFirst`, `AddLast`, `AddBefore`, `AddAfter`, `Remove`, `RemoveFirst`, `RemoveLast` methods.
 
 - `Dictionary<TKey, TValue>`
+
   - cannot contain duplicate keys.
   - Calling `Add` method with an existing key is an exception.
   - Supports square bracket notation
@@ -1177,6 +1187,7 @@ class Horse : Mammal // derived class
   - `foreach` iterate over a `KeyValuePair<TKey, TValue>` pair with `Key` and `Value` props.
 
 - `SortedList<TKey, TValue>`
+
   - is similar to Dictionary
   - is sorted by `Key` automatically
   - `foreach` returns a KeyValuePair sorted by `Key`

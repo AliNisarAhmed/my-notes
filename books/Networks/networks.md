@@ -58,8 +58,7 @@ links. Store-and-forward transmission means that the packet switch must receive
 the entire packet before it can begin to transmit the first bit of the packet onto the
 outbound link
 
-Let’s now consider the general case of sending one packet from source to des-
-tination over a path consisting of N links each of rate R (thus, there are N-1 routers
+Let’s now consider the general case of sending one packet from source to destination over a path consisting of N links each of rate R (thus, there are N-1 routers
 between source and destination). Applying the same logic as above, we see that the
 end-to-end delay is:
 delay = N \* L / R
@@ -94,3 +93,15 @@ The Internet has a number of special routing protocols that are used to auto-
 matically set the forwarding tables. A routing protocol may, for example, determine
 the shortest path from each router to each destination and use the shortest path results
 to configure the forwarding tables in the routers.
+
+### Circuit Switching
+
+In circuit-switched networks, the resources needed along a path (buffers, link
+transmission rate) to provide for communication between the end systems are
+reserved for the duration of the communication session between the end systems.
+
+In packet-switched networks, these resources are not reserved; a session’s messages
+use the resources on demand and, as a consequence, may have to wait (that is, queue)
+for access to a communication link.
+
+Traditional telephone networks are examples of circuit-switched networks.

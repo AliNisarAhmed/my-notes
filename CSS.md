@@ -28,7 +28,7 @@ so we can do
 
 ```css
 body {
-  overflow-x: hidden;
+	overflow-x: hidden;
 }
 ```
 
@@ -44,6 +44,10 @@ for `margin` & `padding`, `em` looks at the font-size of the element, (not the p
 
 ---
 
+## Default Margins
+
+- `<p>` tag gets a default margin-top/margin-bottom of the font-size
+
 ## Margin Collapsing
 
 - By default, margins collapse into one another
@@ -56,7 +60,7 @@ for `margin` & `padding`, `em` looks at the font-size of the element, (not the p
 
   ```html
   <div class="card">
-    <h1 class="main-heading">I am the main heading</h1>
+  	<h1 class="main-heading">I am the main heading</h1>
   </div>
   ```
 
@@ -65,7 +69,7 @@ for `margin` & `padding`, `em` looks at the font-size of the element, (not the p
   }
 
   .main-heading {
-    margin-top: 100px;
+  	margin-top: 100px;
   }
   ```
 
@@ -82,3 +86,46 @@ for `margin` & `padding`, `em` looks at the font-size of the element, (not the p
   - setting width, height, margin-top and margin-bottom has no effect.
   - setting padding-top, padding-bottom just "overrides" the neighboring elements, as if the other elements are ignoring the padding.
   - So, they only respect margin, padding and border which are placed on the left or the right side, and not the top or bottom.
+
+## Margin and Padding
+
+- For consistency, we often turn-off margin-top on typography related elements.
+
+- we can do that with one selector, using comma separated list
+
+```css
+h1,
+h2,
+h3,
+p {
+	margin-top: 0;
+}
+```
+
+- so, to have space on top and bottom of the content, add `padding: y px` on the parent.
+
+- Related best practice to the above is to have the last element on the page have a `margin-bottom: 0`, so that the padding & margin dont clash at the bottom of the page.
+
+## Block vs inline-block elements
+
+- Block level elements create a new line of content, stacking on top of each other e.g. `<p>, <header> <footer> <main> <section> <li> <ul> <div> <h1>`
+
+- Inline elements stay within the flow of what's around them. e.g. `<a> <b> <em>`
+
+  - usually placed inside block elements
+
+  - They only respect margin, padding and borders which are placed on the left or the right side, and not on the top or bottom
+
+  - cannot set width and height on them!
+
+## Styling Links
+
+- Links have several states
+
+  - Default "link" state
+  - Visited
+  - Focus
+  - Hover
+  - Active (While the link is being clicked)
+
+- These states need to be in the order as shown above, otherwise due to specificity some states maybe overwritten by others.

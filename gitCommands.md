@@ -67,6 +67,8 @@
 | --                                                | --                                                                                                          |
 | `git reflog`                                      | show a record of all the times we changed branches                                                          |
 | --                                                | --                                                                                                          |
+| `git rebase master`                               | merge master on the current branch, but master's commits are added first, resulting in linear commits       |
+| --                                                | --                                                                                                          |
 | `git stash`                                       | Set the current WIP to a stash (holding area), so you can perform a git checkout.                           |
 | `git stash list`                                  | List works in progress that you’ve stashed away                                                             |
 | `git stash pop`                                   | Apply the most recently saved stash to the cur-rent working directory; remove it from the stash.            |

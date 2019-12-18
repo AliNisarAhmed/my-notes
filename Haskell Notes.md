@@ -41,9 +41,58 @@ Below are Combinators
 
 ## Lazy Evaluation
 
-In the expression `isOdd (1 + 2)` for the function `isOdd n = mod n 2 == 1`, the `(1 + 2)` part if not evaluated, unlike strict languages.
+In the expression `isOdd (1 + 2)` for the function `isOdd n = mod n 2 == 1`, the `(1 + 2)` part is not evaluated, unlike strict languages.
 
 It is evaluated only when needed, before that, we create a “promise” that when the value of the expression `isOdd (1 + 2)` is needed, we'll be able to compute it. The record that we use to track an unevaluated expression is referred to as a _thunk_. This is all that happens: we create a thunk, and defer the actual evaluation until it's really needed.
+
+### `seq` function
+
+- The `foldl` function is not the only place where space leaks can arise in Haskell code.
+
+- We refer to an expression that is not evaluated lazily as strict, so `foldl'` is a strict left fold. It bypasses Haskell's usual non-strict evaluation through the use of a special function named `seq`.
+
+  ```haskell
+    seq :: a -> t -> t
+  ```
+
+- `seq` forces the first argument to be evalated, then returns the second argument.
+
+- This avoids the creation of **thunks** in `foldl'`
+
+- Some rules for use of `seq`
+
+  - To have any effect, a seq expression must be the first thing evaluated in an expression.
+
+  ```haskell
+    -- incorrect: seq is hidden by the application of someFunc
+    -- since someFunc will be evaluated first, seq may occur too late
+    hiddenInside x y = someFunc (x `seq` y)
+
+    -- incorrect: a variation of the above mistake
+    hiddenByLet x y z = let a = x `seq` someFunc y
+      in anotherFunc a z
+
+    -- correct: seq will be evaluated first, forcing evaluation of x
+      onTheOutside x y = x `seq` someFunc y
+  ```
+
+  - To strictly evaluate several values, chain applications of `seq` together.
+
+  ```haskell
+    chained x y z = x `seq` y `seq` someFunc z
+  ```
+
+  - A common mistake is to try to use `seq` with two unrelated expressions.
+
+  ```haskell
+    badExpression step zero (x:xs) =
+    seq (step zero x)
+        (badExpression step (step zero x) xs)
+
+    -- Here, the apparent intention is to evaluate step zero x strictly. Since the expression is duplicated in the body of the function, strictly evaluating the first instance of it will have no effect on the second. The use of let from the definition of foldl' above shows how to achieve this effect correctly.
+  ```
+
+  - When evaluating an expression, `seq` stops as soon as it reaches a constructor. For simple types like numbers, this means that it will evaluate them completely. Algebraic data types are a different story. Consider the value `(1+2):(3+4):[]`. If we apply `seq` to this, it will evaluate the `(1+2)` thunk. Since it will stop when it reaches the first `(:)` constructor, it will have no effect on the second thunk. The same is true for tuples: `seq ((1+2),(3+4)) True` will do nothing to the thunks inside the pair, since it immediately hits the pair's constructor.
 
 ## Functions
 
