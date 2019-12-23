@@ -160,6 +160,21 @@ Generics (like `List<T>`), solve
     }
   ```
 
+  - The type `T` is also known as the underlying type of `Nullable<T>`. For example, the
+    underlying type of `Nullable<int>` is `int`.
+
+  - The Nullable<T> struct has methods and operators available, too:
+
+    - The parameterless GetValueOrDefault() method will return the value in the struct or the default value for the type if HasValue is false.
+
+    - The parameterized GetValueOrDefault(T defaultValue) method will return the value in the struct or the specified default value if HasValue is false .
+
+    - The Equals(object) and GetHashCode() methods declared in object are overridden in a reasonably obvious way, first comparing the HasValue properties and then comparing the Value properties for equality if HasValue is true for both values.
+
+    - There’s an implicit conversion from T to Nullable<T> , which always succeeds and returns a value where HasValue is true . This is equivalent to calling the parameterized constructor.
+
+    - There’s an explicit conversion from Nullable<T> to T , which either returns the encapsulated value (if HasValue is true ) or throws an InvalidOperationException (if HasValue is false ). This is equivalent to using the Value property.
+
 #### Boxing behavior
 
 - `Nullable` value types behave differently than non-nullable value types when it comes to boxing.
@@ -203,4 +218,3 @@ Generics (like `List<T>`), solve
   - for value types the following two are equivalent
     - `int? x = new int?();`
     - `int? x = null;`
-

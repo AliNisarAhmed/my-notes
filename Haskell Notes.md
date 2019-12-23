@@ -94,6 +94,120 @@ It is evaluated only when needed, before that, we create a “promise” that wh
 
   - When evaluating an expression, `seq` stops as soon as it reaches a constructor. For simple types like numbers, this means that it will evaluate them completely. Algebraic data types are a different story. Consider the value `(1+2):(3+4):[]`. If we apply `seq` to this, it will evaluate the `(1+2)` thunk. Since it will stop when it reaches the first `(:)` constructor, it will have no effect on the second thunk. The same is true for tuples: `seq ((1+2),(3+4)) True` will do nothing to the thunks inside the pair, since it immediately hits the pair's constructor.
 
+---
+
+## Selected Numeric Types
+
+<details>
+
+  <summary>Click Here to show diagram</summary>
+
+![Numeric Types](./images/numericTypes.png)
+
+</details>
+
+---
+
+## Selected Numeric Functions and Constants
+
+<details>
+
+  <summary>Click Here to show diagram</summary>
+
+![Selected Numeric Functions](./images/numericFunctions.png)
+![Selected Numeric Functions](./images/numericFunctions2.png)
+
+</details>
+
+---
+
+## Typeclass Instances for Numeric Types
+
+<details>
+
+  <summary>Click Here to show diagram</summary>
+
+![Instances](./images/typclassInstances.png)
+
+</details>
+
+---
+
+## Conversion between Numeric Types
+
+<details>
+
+  <summary>Click Here to show diagram</summary>
+
+![Conversion](./images/conversion.png)
+
+</details>
+
+---
+
+## Langugae Extensions
+
+- Language extensions are enabled in this manner `{-# LANGUAGE FlexibleInstances #-}`
+- Read more [here](https://downloads.haskell.org/~ghc/latest/docs/html/users_guide/glasgow_exts.html)
+
+| Extension            | Explanation                                                                                                                                                                                                                                                                                                                                                                               |
+| -------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| TypeSynonymInstances | Allow definition of type class instances for type synonyms. like `instance TypeClass String where`                                                                                                                                                                                                                                                                                        |
+| FlexibleInstances    | implies `TypeSynonymInstances`. Allow definition of type class instances with arbitrary nested types in the instance head                                                                                                                                                                                                                                                                 |
+| OverlappingInstances | **Deprecated**, but allows to define instances of more particular types if two type instances match, e.g. `[Char]` and `[a]`. Deprectaed in favor or specifying the overlap behavior for individual instances with a pragma, written immediately after the instance keyword. The pragma may be one of: {-# OVERLAPPING #-}, {-# OVERLAPPABLE #-}, {-# OVERLAPS #-}, or {-# INCOHERENT #-} |
+
+- Related notes on Langugae extensions
+
+  - ### Why use `FlexibleInstances`
+
+    First: Synonyms are not allowed.
+    Second: We should take a closer look at the `[Char]` type.
+    `[]` is a type: `data [] a = [] | a : [a] -- Defined in ‘GHC.Types’`
+    Char is a type: data Char = GHC.Types.C# GHC.Prim.Char# -- Defined in ‘GHC.Types’
+
+    But `[Char]` is not a type defined by 'data'. In fact, it is an instance of type `[] a`, which is obtained by replacing the type variable `a` with `Char`. In fact, this "replacing" is what Haskell does not allowed.
+
+  - ### Example:
+
+    given the following type and typeclass:
+
+    ```haskell
+    data (Num a) => Vector a = Vector a a
+    deriving (Show)
+
+    class MyClass a where
+    myFun :: a -> a
+    ```
+
+    it seems perfectly ok to define (without the need of any pragma)
+
+    ```haskell
+    instance MyClass (Vector a) where
+    myFun = id
+
+    myFun (Vector 1 2) :: Vector Int gives Vector 1 2, myFun (Vector 1 2) :: Vector Double gives Vector 1.0 2.0 instead.
+    ```
+
+    but if you try to define
+
+    ```haskell
+    instance MyClass (Vector Int) where etc…
+    instance MyClass (Vector Double) where etc…
+    ```
+
+    perhaps because you want to handle those types of vectors differently - you will need the `FlexibleInstances` pragma. and if you try to work around this problem by introducing two new type synonyms
+
+    ```haskell
+    type VectorInt = Vector Int
+    type VectorDouble = Vector Double
+    ```
+
+    and using them in the instance declaration
+
+    `instance MyClass VectorInt where` etc…
+
+    you will need the TypeSynonymInstances pragma instead.
+
 ## Functions
 
 To use Infix Operators as prefix (like 1 + 1), use parens => (+) 1 1 // 2
@@ -149,12 +263,17 @@ Writing expressions like (*30) is called *sectioning*. (*30) is a function in it
 
 With commutative functions, such as addition, it makes no difference if you use (+1) or (1+) because the order of the arguments won’t change the result.
 If you use sectioning with a function that is not commutative, the order matters:
+
 `(1/) 2` => 0.5
+
 `(/1) 2` => 2.0
 
 `2 - 1` => 1
+
 `(-) 2 1` => 1
+
 `(-2) 1` => Error, (-2) is being used as a unary negation
+
 `(2 -) 1` => 1, this is ok
 
 ---
