@@ -129,3 +129,9 @@ p {
   - Active (While the link is being clicked)
 
 - These states need to be in the order as shown above, otherwise due to specificity some states maybe overwritten by others.
+
+## Styling buttons
+
+- Use Padding to give "width" and "height" to buttons.
+- Always put the class on the button/link, rather than the container.
+- Use a ratio of 1:2.5 (h:w) on a button.

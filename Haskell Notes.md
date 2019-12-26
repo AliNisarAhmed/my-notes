@@ -210,6 +210,8 @@ It is evaluated only when needed, before that, we create a “promise” that wh
 
 ## Functions
 
+- In Haskell, function application is left associative. This is best illustrated by example: the expression `a b c d` is equivalent to `(((a b) c) d)`
+
 To use Infix Operators as prefix (like 1 + 1), use parens => (+) 1 1 // 2
 To use prefix operators as infix (div 3 2), use backticks => 3 `div` 2
 

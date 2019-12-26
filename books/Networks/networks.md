@@ -105,3 +105,71 @@ use the resources on demand and, as a consequence, may have to wait (that is, qu
 for access to a communication link.
 
 Traditional telephone networks are examples of circuit-switched networks.
+
+---
+
+## The 4-layer Internet Model
+
+Application -> Transport -> Network -> Link
+
+### Datagrams
+
+- Datagrams is a packet with content and header, i.e. `| Data | From | To |`
+
+### Link
+
+- The Internet is made up of end-hosts, links and routers. Data is delivered hop-by-hop over each link in turn. Data is delivered in packets. A packet consists of the data we want to be delivered, along with a header that tells the network where the packet is to be delivered, where it came from and so on.
+
+- The Link Layer’s job is to carry the data over one link at a time. Ethernet and WiFi are two examples of different Link layers.
+
+### Network
+
+- Network layer is special because
+
+  - IP makes a best-effort attempt to deliver our packets to the other end. But it makes no promises.
+  - IP packets can get lost, can be delivered out of order, and can be corrupted. There are no guarantees.
+
+- How can the Internet work at all when the packets are not guaranteed to be delivered? Well, if an application wants a guarantee that its data will be re-transmitted when necessary and will be delivered to the application in order and without corruption then it needs another protocol running on top of IP. This is the job of the Transport Layer.
+
+### Transport
+
+- The most common Transport layer is the TCP (Transmission Control Protocol).
+- TCP/IP is when an application uses both TCP and IP together
+- TCP makes sure that data sent by an application at one end of the Internet is correctly delivered – in the right order - to the application at the other end of the Internet
+- If the Network Layers drops some datagrams, TCP will retransmit them, multiple times if need-be
+- If the Network Layer delivers them out of order – perhaps because two packets follow a different path to their destination – TCP will put the data back into the right order again
+- The main thing to remember is that TCP provides a service to an application guaranteeing correct in-order delivery of data, running on top of the Network Layer service, which provides an unreliable datagram delivery service.
+- Applications such as a web client, or an email client, find TCP very useful indeed. By employing TCP to make sure data is delivered correctly, they don’t have to worry about implementing all of the mechanisms inside the application. They can take advantage of the huge effort that developers put into correctly implementing TCP, and reuse it to deliver data correctly. Reuse is another big advantage of layering.
+- UDP (User Datagram Protocol) is an alternative communications protocol to Transmission Control Protocol (TCP) used primarily for establishing low-latency and loss-tolerating connections between applications on the internet.
+
+### Application
+
+- There are many thousands of applications that use the Internet. While each application is different, it can reuse the Transport Layer by using the well-defined API from the Application Layer to the TCP or UDP service beneath.
+- Applications typically want a bi-directional reliable byte stream between two end points. They can send whatever byte-stream they want, and Applications have a protocol of their own that defines the syntax and semantics of data flowing between the two end points.
+- As far as the Application Layer is concerned, the GET request is sent directly to its peer at the other end – the web server Application. The Application doesn’t need to know how it got there, or how many times it needed to be retransmitted. At the web client, the Application Layer hands the GET request to the TCP layer, which provides the service of making sure it is reliably delivered. It does this using the services of the Network layer, which in turn uses the services of the Link Layer.
+
+We say that each layer communicates with its peer layer. It’s as if each layer is only communicating with the same layer at the other end of the link or Internet, without regard for how the layer below gets the data there.
+
+<details>
+  <summary> Summary </summary>
+
+![4 Layer model summary](./../../images/4-layer.png)
+
+</details>
+
+- Two further things to note
+
+  - The first is that IP is often referred to as “the thin waist” of the Internet. This is because if we want to use the Internet, we have to use the Internet Protocol, or IP. We have no choice.
+    - But we have lots of choices for Link Layers: IP runs over many different Link Layers, such as Ethernet, WiFi, DSL, 3G cellular, and so on.
+    - On top of the unreliable IP layer, we can choose between many different transport layers. We already saw TCP and UDP. There is RTP for real time data and many others too. And of course there are tens of thousands of different applications
+  - The second is that in the 1980s the International Standards Organization, or ISO created a 7-layer model to represent any type of network. It was called the 7-layer Open Systems Interconnection or OSI model.
+    - it has been replaced by the 4-layer Internet model.
+    - Today, the only real legacy of the 7-layer OSI model is the numbering system. You’ll often hear network engineers refer to the Network Layer as “Layer 3”, even though it is the 2nd layer up from the bottom in the Internet Layer. Similarly, you’ll hear people refer to Ethernet as a Layer 2 protocol, and the Application as Layer 7.
+
+  <details>
+
+  <summary>7 Layer model</summary>
+
+  ![7 layer model](../../images/7-layer.png)
+
+  </details>
