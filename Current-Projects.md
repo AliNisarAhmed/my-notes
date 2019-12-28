@@ -16,7 +16,7 @@
 | Resp. Web Design - Scrimba     | Practice           | 16-12-2019      |
 | Modern React tooling - Egghead | style-loaders      | 21-12-2019      |
 | Git - Egghead and book         |                    | 15-12-2019      |
-| Computer Networks - Stanford   |                    | 25-12-2019      |
+| Computer Networks - Stanford   | 4-layer            | 25-12-2019      |
 | SQL course - online            |                    |                 |
 | Algo & DS - udemy Colt Steel   |                    |                 |
 | Python course - Udemy          |                    |                 |
