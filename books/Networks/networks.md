@@ -241,3 +241,50 @@ Reasons
 7. The Type of Service field gives a hint to routers about how important this packet is.
 8. The Header Length tells us how big the header is --- some headers have optional extra fields to carry extra information.
 9. Finally, a checksum is calculated over the whole header so just in case the header is corrupted, we are not likely to deliver a packet to the wrong destination by mistake.
+
+---
+
+## Life of a packet
+
+- Almost all web traffic is over TCP, the Transport Control Protocol. In its typical operation, there’s a client and a server. A server listens for connection requests. To open a connection, a client issues a connection request, which the server responds to.
+- This exchange takes three messages, something called the “three way handshake.”
+
+### SYN, SYN-ACK, SYN
+
+- The first step of handshake is when the client sends a “synchronize” message to the server, often called a **SYN**. The second step is when the server responds with a “synchronize” message that also acknowledges the clients “synchronize”, or a “synchronize and acknowledge message”, often called a **SYN-ACK**. The third and final step is when the client responds by acknowledging the server’s synchronize, often called an **ACK**. So often the three way handshake is described as “synchronize, synchronize and acknowledge, acknowledge”, or **“SYN, SYN-ACK, ACK”**.
+
+### TCP Byte Stream
+
+<details>
+  <summary>Diagram: </summary>
+
+![TCP Byte Stream](../../images/tcpbytestream.png)
+
+</details>
+
+- **Recall that the network layer is responsible for delivering packets to computers, but the transport layer is responsible for delivering data to applications.**
+- From the perspective of the network layer, packets sent to different applications on the same computer look the same. This means that to open a TCP stream to another program, we need two addresses.
+- The first, an Internet Protocol address (IP Address), is the address the network layer uses to deliver packets to the computer.
+- The second, the TCP port, tells the computer’s software which application to deliver data to.
+- Web servers usually run on TCP port 80. So when we open a connection to a web server, we send IP packets to the computer running the web server whose destination address is that computer’s IP address. Those IP packets have TCP segments whose destination port is 80.
+
+#### Hopping
+
+- But how do those IP packets get to their destination? We don’t have a direct wire connecting my client to the server.
+- Instead, the client is connected to an intermediate computer, a router. This router is itself connected to other routers.
+- IP packets between the client and server take many “hops,” where a hop is a link connecting two routers. For example, since my client is on a WiFi network, the first hop is wireless to the WiFi access point. The access point has a wired connection to the broader Internet, so it forwards my client’s packets along this wired hop.
+- A router can have many links connecting it. As each packet arrives, a router decides which of its links to send it out on. Routers have IP addresses, so it’s also the case that it might not forward a packet but rather deliver it to its own software. For example, when you log into a router using TCP, the IP packets are destined to the router’s own IP address.
+
+### Inside a Router: Forwarding Tables
+
+<details>
+  <summary>Diagram: </summary>
+
+![Forwading Tables](../../images/insideHop.png)
+
+</details>
+
+- How does a router make this decision? It does so through something called a **forwarding table**, shown here on the right. A forwarding table consists of a set of IP address patterns and the link to send across for each pattern.
+- When a packet arrives, the router checks which forwarding table entry’s pattern best matches the packet. It forwards the packet along that entry’s link. Generally, “best” means the most specific match.
+- The default route is the least specific route -- it matches every IP address. If, when a packet arrives, there isn’t a more specific route than the default route, the router will just use the default one.
+- The default route is especially useful in edge networks. For example, Stanford University has a router connecting it to the larger Internet. The router will have many specific routes for the IP addresses of Stanford’s network. But if the destination IP address isn’t Stanford’s, then the router should send it out to the larger Internet.

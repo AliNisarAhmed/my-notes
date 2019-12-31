@@ -1,4 +1,8 @@
-# Big O
+# Asymtotic notation
+
+- Purpose of Asymptotic notation: suppress constant factors and lower-order terms
+
+## Big O
 
 Big O notation is used in Computer Science to describe the time complexity of an algorithm. The best algorithms will execute the fastest and have the simplest complexity.
 
@@ -11,11 +15,11 @@ big O describes an upper bound on time, while big Omega describes a lower bound.
 Suppose you’ve got a routine that takes one second to process 100 records. How long will it take to process 1,000?
 
 - If your code is `O(1)`, then it will still take one second.
-- If it’s `O(log n)`, then you’ll probably be waiting about three  seconds.
-- `O(n)`  will  show  a  linear  increase  to  ten  seconds.
-- while  an `O(n log n)` will take some 33 seconds.
+- If it’s `O(log n)`, then you’ll probably be waiting about three seconds.
+- `O(n)` will show a linear increase to ten seconds.
+- while an `O(n log n)` will take some 33 seconds.
 - If you’re unlucky enough to have an `O(n^2)` routine, then sit back for 100 seconds while it does its stuff.
-- And if you’re using an exponential algorithm `O(2^n)`, you might want to make a cup of coffee—your  routine  should  finish  in  about  10^263  years.  Let  us  know  how the universe ends.
+- And if you’re using an exponential algorithm `O(2^n)`, you might want to make a cup of coffee—your routine should finish in about 10^263 years. Let us know how the universe ends.
 
 ---
 
@@ -50,9 +54,10 @@ For this reason, we drop the constants in runtime. An algorithm that one might h
 #### Drop the non Dominant terms
 
 You should drop the non-dominant terms.
- - O(N 2<sup>N</sup>) becomes O(N<sup>2</sup>).
- - O(N + log N) becomes O(N).
- - O(5*2<sup>N</sup> + 1000N<sup>100</sup>) becomes O(2<sup>N</sup> ).
+
+- O(N 2<sup>N</sup>) becomes O(N<sup>2</sup>).
+- O(N + log N) becomes O(N).
+- O(5\*2<sup>N</sup> + 1000N<sup>100</sup>) becomes O(2<sup>N</sup> ).
 
 ---
 
@@ -60,28 +65,31 @@ You should drop the non-dominant terms.
 
 ```js
 for (let i = 0; i < A.length; i++) {
-  //
+	//
 }
 
 for (let j = 0; j < B.length; j++) {
-  //
+	//
 }
-
 ```
+
 Runtime: O(A + B)
 
 ```js
 for (let i = 0; i < A.length; i++) {
-  for (let j = 0; j < B.length; j++) {
-    //
-  }
+	for (let j = 0; j < B.length; j++) {
+		//
+	}
 }
 ```
+
 Runtime: O(A x B)
 
 **In other words:**
+
 - If your algorithm is in the form "do this, then, when you're all done, do that"then you add the runtimes.
 - If your algorithm is in the form "do this for each time you do that"then you multiply the runtimes.
+
 ---
 
 **When you see a problem where the number of elements in the
@@ -94,12 +102,13 @@ problem space gets halved each time, that will likely be a 0( log N) runtime.**
 Try to remember this pattern. When you have a recursive function that makes multiple calls, the runtime will often (but not always) look like O(branches<sup>depth</sup>), where branches is the number of times each recursive call branches.
 
 So, for
+
 ```js
-function f (n) {
-  if (n <= 1) {
-    return 1;
-  }
-  return f(n - 1) + f (n - 1)
+function f(n) {
+	if (n <= 1) {
+		return 1;
+	}
+	return f(n - 1) + f(n - 1);
 }
 ```
 
@@ -110,17 +119,19 @@ Runtime is O (2 <sup>n</sup>)
 #### Objects and Arrays
 
 Objects have
-* `O(1)` entry, `O(1)` value retrieval given a key
-* `Object.keys()`, `Object,values()`, `Object,entries()` are `O(n)`
-* `Object.hasOwnProperty()` is `O(1)`.
+
+- `O(1)` entry, `O(1)` value retrieval given a key
+- `Object.keys()`, `Object,values()`, `Object,entries()` are `O(n)`
+- `Object.hasOwnProperty()` is `O(1)`.
 
 Arrays have
-* O(1) insertion/removal at the end
-* O(n) insertion/removal at the start
-* O(n) search
-* O(1) access
-* slice(), splice(), map(), reduce(), filter(), concat() are O(n)
-* sorting is O(n log n)
+
+- O(1) insertion/removal at the end
+- O(n) insertion/removal at the start
+- O(n) search
+- O(1) access
+- slice(), splice(), map(), reduce(), filter(), concat() are O(n)
+- sorting is O(n log n)
 
 ---
 
@@ -128,7 +139,7 @@ Arrays have
 
 **insertion** - O(1)
 
-*Note*: Insertion and Indexing are considered a separate operation, hence when we talk about insertion is O(1) for linked-lists, we already assume that we are in the middle of iterating though the list. For linked list, indexing is O(n), but oonce we have the index, insertion itself is O(1) since we do not have to move the remaining elements. For arrays, indexing is O(1), but, insertion itself is O(n), since all the elements after the index must be re-indexed.
+_Note_: Insertion and Indexing are considered a separate operation, hence when we talk about insertion is O(1) for linked-lists, we already assume that we are in the middle of iterating though the list. For linked list, indexing is O(n), but oonce we have the index, insertion itself is O(1) since we do not have to move the remaining elements. For arrays, indexing is O(1), but, insertion itself is O(n), since all the elements after the index must be re-indexed.
 
 **Removal** - O(1) assuming that the index is known and node has already been identified
 **Searching** - O(n)
@@ -149,14 +160,15 @@ DLL are better than SLL for finding nodes and can be done in half the time.
 However, they do take up more memory considering an additional pointer.
 
 ---
+
 #### Stack
 
 Big O of stack
 
-* insertion - `O(1)`
-* Removal - `O(1)`
-* Searching - `O(n)`
-* Access - `O(n)`
+- insertion - `O(1)`
+- Removal - `O(1)`
+- Searching - `O(n)`
+- Access - `O(n)`
 
 ---
 
@@ -168,12 +180,13 @@ Trees are a non-linear DS that contain a root and child nodes
 
 BSTs are more specific version of Binary Trees, where there are only two children of each node, and every node to the left of a parent is less than its value, and every node to the right is greater than its value.
 
-* Insertion - `O(log n)`
-* Searching - `O(log n)`
+- Insertion - `O(log n)`
+- Searching - `O(log n)`
 
 But above are best and average cases, in the worst case (like a completely lop-sided BST), both get worse to `O(n)`
 
 ---
+
 ### Tree Traversal
 
 #### Breadth-First Search vs Depth First Search
@@ -182,6 +195,7 @@ In BFS, We go through all the children of a node before proceeding to the childr
 
 In DFS, We traverse all the way to the bottom of the tree, and then work our way back up.
 DFS can be done in 3 orders:
+
 1. Pre-Order - In pre-order, we visit the node first, then we traverse its left, then we traverse its right.
 2. Post-Order - In post-order, we traverse the left first, then the right, then the node itself is visited.
 3. In-order - in in-order, we traverse the left first, then we visit the node then we traverse the right.
@@ -201,6 +215,6 @@ DFS-Pre-order results in the lis tof values being in the same order as the tree,
 
 A binary heap is defined as a binary tree with two additional constraints:
 
-  * Shape property: a binary heap is a *complete binary tree*; that is, all levels of the tree, except possibly the last one (deepest) are fully filled, and, if the last level of the tree is not complete, the nodes of that level are filled from left to right.
-  * Heap property: the key stored in each node is either greater than or equal to (≥) or less than or equal to (≤) the keys in the node's children, according to some total order.
-  * (Where parent >= children)(>=) are called max-heaps, (where parent <= children) (<=) are called min-heaps.
+- Shape property: a binary heap is a _complete binary tree_; that is, all levels of the tree, except possibly the last one (deepest) are fully filled, and, if the last level of the tree is not complete, the nodes of that level are filled from left to right.
+- Heap property: the key stored in each node is either greater than or equal to (≥) or less than or equal to (≤) the keys in the node's children, according to some total order.
+- (Where parent >= children)(>=) are called max-heaps, (where parent <= children) (<=) are called min-heaps.
