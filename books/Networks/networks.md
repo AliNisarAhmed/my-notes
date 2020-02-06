@@ -288,3 +288,185 @@ Reasons
 - When a packet arrives, the router checks which forwarding table entry’s pattern best matches the packet. It forwards the packet along that entry’s link. Generally, “best” means the most specific match.
 - The default route is the least specific route -- it matches every IP address. If, when a packet arrives, there isn’t a more specific route than the default route, the router will just use the default one.
 - The default route is especially useful in edge networks. For example, Stanford University has a router connecting it to the larger Internet. The router will have many specific routes for the IP addresses of Stanford’s network. But if the destination IP address isn’t Stanford’s, then the router should send it out to the larger Internet.
+
+---
+
+## Packet Switching basics
+
+- Packet: A self-contained unit of data that carries information necessary for it to reach its destination.
+- Packet switching: Independently for each arriving packet, pick its outgoing link. If the link is free, send it. Else hold the packet for later.
+
+### Two consequences
+
+- Simple Packet forwarding
+- Efficient sharing of links
+
+### No per-flow state required
+
+- Flow: A collection of datagrams belonging to the same end-to-end communication, e.g. a TCP connection.
+
+- Packet switches don’t need state for each flow – each packet is self-contained.:
+
+- No per-flow state to be added/removed.:
+
+  - The switch doesn’t need to worry about adding or removing this per-flow state. Imagine if every time you wanted to load a web page, you had to communicate with every switch along the path to set up state so your request would work. This could make things much slower. Instead, you can just send packets and the switches forward them appropriately.
+
+- No per-flow state to be stored.
+
+  - The switches also don’t need to _store_ this state. Because switches have to be fast, they’d need to store this state in very fast memory, which is expensive. This lets switches focus on doing one thing, forwarding packets quickly.
+
+- No per-flow state to be changed upon failure.
+
+### Efficient sharing of links
+
+Data traffic is bursty
+
+- Packet switching allows flows to use all available link capacity.
+- Packet switching allows flows to share link capacity.
+
+This is called Statistical Multiplexing.
+
+- This idea of taking a single resource and sharing it across multiple users in a probabilistic or statistical way is called statistical multiplexing. It’s statistical in that each user receives a statistical share of the resource based on how much others are using it. For example, if your friend is reading, you can use all of the link. If both of you are loading a page, you receive half of the link capacity.
+
+#### Quiz
+
+- In the traditional circuit-switched telephone network, the human voice is digitized at 64kb/s. The following reasons explain why circuit switching was a good choice for the telephone network? Check all that apply.
+  - Multiplexing many 64kb/s channels onto an electrical, optical or wireless link is quite easy. The fixed rate of each circuit makes it easy to manage the link.
+  - By dedicating 64kb/s to every phone call, the quality can be kept constant without fear of one phone call interfering with the quality of another.
+
+---
+
+## Layering
+
+- Layers are functional components
+- Layers communicate sequentially with the layer above and below.
+- Each layer provides a well-defined service to the layer above, using the services provided by layers below and its own private processing.
+
+Example of layering
+
+- Programming: Source code -> byte code -> assembly code -> machine code
+- Postal service: person1 -> mailbox -> local mail service -> transport -> local mail service 2 -> mailbox -> user 2
+
+Reasons for layering:
+
+1. Modularity
+2. Well defined service
+3. Reuse
+4. Separation of concerns
+5. Continuous improvement
+6. Peer-to-peer communications (TCP communicating only with TCP)
+
+---
+
+## Encapsulation
+
+Encapsulation is how layering manifests in data representation.
+
+- Encapsulation is the result of what happens when you combine layers and packet switching.
+- We want to break up our data into discrete units, called packets. However, each packet contains data from multiple layers. When you send a TCP segment, for example, it’s inside an IP packet, which is inside an Ethernet frame. Encapsulation is how this works. Encapsulation is the principle by which you organize information in packets so that you can maintain layers, yet let them share the contents of your packets.
+- Encapsulation allows each layer to grow and evolve independently
+- Examples:
+  - HTTP (web) payload inside
+  - a TCP Transport Segment
+  - an IP network packet
+  - a WiFi Link frame
+- Encapsulation allows us to layer recursively.
+  - Example: VPN
+    - HTTP (web) application payload in
+    - a TCP transport segment in
+    - an IP network packet in
+    - a secured TLS presentation message in
+    - a TCP transport segment in
+    - an IP network packet in
+    - an Ethernet link frame.
+
+---
+
+## Endianness
+
+- How a multi byte value is laid out in memory is called endianness.
+- Little Endian - Least Significant Digit is at lower addresss
+- Big Endian - MSB is at lowest address
+
+e.g. 1024 Decimal = 0x0400 Binary (in Bytes) (means 16 bits)
+
+so
+
+- 00 | 04 would be Little endian
+- 04 | 00 would be Big endian
+
+- Tip to remember (Little Endian is the reverse order, big endian is in normal writing form)
+
+- Why does this matter? If two computers need to communicate, they need to agree how to represent multi-byte fields.
+- DIfferent processors have different endianness e.g. x86 is little endian vs ARM is big endian
+- You have to convert network byte order values to your host order.
+- Network byte order is Big-endian by convention
+
+- The layout of a character string (8-bit ASCII) is the same on big-endian and little endian architentures. This is true coz:
+
+  If you have a simple 8-bit character representation (e.g. extended ASCII), then no, endianness does not affect the layout, because each character is one byte.
+
+  If you have a multi-byte representation, such as UTF-16, then yes, endianness is still important
+
+---
+
+## Names and Addresses: IPv4
+
+- an IPv4 Address identifies a device on the internet (Layer 3 network address)
+- 32 bits long written in the format `a.b.c.d`
+  - 171.64.64.64 (In decimal)
+  - 192.168.123.132 (Decimal), 110000000101000111101110000100 (binary), 11000000.10101000.01111011.10000100 (binary octets)
+- For a TCP/IP wide area network (WAN) to work efficiently as a collection of networks, the routers that pass packets of data between networks do not know the exact location of a host for which a packet of information is destined. Routers only know what network the host is a member of and use information stored in their route table to determine how to get the packet to the destination host's network. After the packet is delivered to the destination's network, the packet is delivered to the appropriate host.
+- For this process to work, an IP address has two parts. The first part of an IP address is used as a network address, the last part as a host address.
+- The second item, which is required for TCP/IP to work, is the subnet mask. The subnet mask is used by the TCP/IP protocol to determine whether a host is on the local subnet or on a remote network.
+- In TCP/IP, the parts of the IP address that are used as the network and host addresses are not fixed, so the network and host addresses above cannot be determined unless you have more information. This information is supplied in another 32-bit number called a subnet mask
+
+Let's say that the subnet mask is `255.255.255.0`. It is not obvious what this number means unless you know that `255` in binary notation equals `11111111`; so, the subnet mask is:
+
+`11111111.11111111.11111111.0000000`
+
+Lining up the IP address and the subnet mask together, the network and host portions of the address can be separated:
+
+`11000000.10101000.01111011.10000100 -- IP address (192.168.123.132)`
+`11111111.11111111.11111111.00000000 -- Subnet mask (255.255.255.0)`
+
+The first 24 bits (the number of ones in the subnet mask) are identified as the network address, with the last 8 bits (the number of remaining zeros in the subnet mask) identified as the host address. This gives you the following:
+
+`11000000.10101000.01111011.00000000 -- Network address (192.168.123.0)`
+`00000000.00000000.00000000.10000100 -- Host address (000.000.000.132)`
+
+So now you know, for this example using a `255.255.255.0` subnet mask, that the network ID is `192.168.123.0`, and the host address is `0.0.0.132`. When a packet arrives on the `192.168.123.0` subnet (from the local subnet or a remote network), and it has a destination address of `192.168.123.132`, your computer will receive it from the network and process it.
+
+### Address Structure
+
+Originally, 3 classes of addresses
+
+- Class A: | 0 | Network (7) | host (24) |
+- Class B: | 1 | 0 | Network (14) | host(16) |
+- Class C: | 1 | 1 | 1 | Network (21) | host(8) |
+
+Now: Classless Inter-Domain Routing (CIDR)
+
+- Today, IPv4 addresses are structured thought something called CIDR, or Classless Inter-Domain Routing. Rather than have prefixes only of length 8, 16, and 24 bits, CIDR allows prefixes to be any number of bits. This means all CIDR prefixes define a block of addresses that is a power of 2 in size. When we talk about a CIDR address, we refer to its netmask length. So, for example, when we talk about a “slash 16”, we mean a netmask of length 16. This CIDR block describes 2 to the 16 addresses, or 65,536. When we talk about a “slash 20”, we mean a netmask of length 20. This CIDR block describes 2 to the 12 addresses, or 4.096 addresses. CIDR blocks are how addresses are structured, addressed, and managed today.
+
+- Address block is a pair: address and count
+- counts are power of 2, which specify netmask length
+- 171.64.0.0/16 means any address in the range 171.64.0.0 to 171.64.255.255
+- A /24 describes 256 addresses, a /20 describes 4096 addresses
+
+### IPv4 Address Assignment
+
+- IANA: Internet Assigned Numbers Authority
+  - Internet Corporation for Assignment of Names and Numbers (ICANN)’s job
+- IANA gives out /8s to Regional Internet Registries (RIRs)
+  - Ran out in February 2011, in special end case of giving 1 to each RIR
+- RIRs responsible for geographic regions, each has own policy
+  - AfriNIC: Africa
+  - ARIN: U.S.A., Canada, Carribean, Antarctica
+  - APNIC: Asia, Australia, New Zealand
+  - LACNIC: Latin America, Carribean
+  - RIPE NCC: Europe, Russia, Middle East, Central Asia
+
+There’s an organization called IANA, for the Internet Assigned Numbers Authority. The ultimate authority is ICANN, the Internet Corporation for Assignment of Names and Numbers. ICANN delegates the work to IANA.
+
+IANA gives out slash-8s, describing 16 million addresses, to Regional Internet Registries or RIRs. Each continent has its own RIR. The RIR for the United States is ARIN, while the RIR for the western Pacific is APNIC. These RIRs each have their own policy for how they break up the /8s into smaller blocks of addresses and assign them to parties who need them.You might have read in the news is that we’ve run out of IP addresses. This isn’t really true -- there are many unused addresses today. What _did_ happen is that IANA ran out of /8s to give out. It reached a special end case in its charter. When reduced to its last 5 /8s, IANA gave one /8 to each RIR. Now address management and allocation is up to RIRs

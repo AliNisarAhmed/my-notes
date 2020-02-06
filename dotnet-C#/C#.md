@@ -1502,6 +1502,31 @@ class BasicCollection<T> : IEnumerable<T>
 
 References to methods, basically.
 
+- Creating a delegate is a two-step process: you first declare the delegate type and
+  then provide an implementation. (This is analogous to writing an interface and then
+  instantiating a class implementing that interface.)
+
+- The first step is done by using the delegate keyword and providing the signature for the delegate. For example, . NET includes the following definition of a `Comparison<T>` delegate.
+
+  ```csharp
+  namespace System
+  {
+    public delegate int Comparison<T>(T x, T y);
+  }
+
+  // Once you have the delegate, you can use it like this
+
+  var list = Enumerable.Range(1, 10).Select(i => i * 3).ToList();
+  // list  => [3, 6, 9, 12, 15, 18, 21, 24, 27, 30]
+
+  // Provides an implementation of Comparison
+  Comparison<int> alphabetically = (l, r) => l.ToString().CompareTo(r.ToString());
+
+  // uses the comparison delegate as an argument to list.Sort
+  list.Sort(alphabetically);
+  // list => [12, 15, 18, 21, 24, 27, 3, 30, 6, 9]
+  ```
+
 - it is a type/object that represents references to methods with a particular parameter list and return type and then calls the method in a program for execution when it is needed.
 
 - A delegate will call only a method which agrees with its signature and return type. A method can be a static method associated with a class or can be an instance method associated with an object, it doesn’t matter.
@@ -1509,6 +1534,24 @@ References to methods, basically.
 In a `class`, make a `delegate` type, that create an instance of the `delegate`, and then in the class constructor, add methods to the delegate using `+=` operator. We can also remove methods from a `delegate` using `-=`.
 
 We can also add methods outside of a constructor of a specific `class`, to make the whole thing more generalized. For example, we can make separate `Add` or `Remove` methods to add or remove delegates.
+
+### The FUNC and ACTION Delegates
+
+The .NET framework includes a couple of delegate “families” that can represent pretty much any function type:
+
+- `Func<R>` represents a function that takes no arguments and returns a result of
+  type `R` .
+- `Func<T1, R>` represents a function that takes an argument of type `T1` and
+  returns a result of type `R`.
+- `Func<T1, T2, R>` represents a function that takes a `T1` and a `T2` and returns an `R`.
+
+  And so on. There are delegates to represent functions of various “arities”.
+
+Similarly
+
+- Action represents an action with no input arguments.
+- `Action<T1>` represents an action with an input argument of type `T1`.
+- `Action<T1, T2>` and so on represent an action with several input arguments.
 
 ---
 

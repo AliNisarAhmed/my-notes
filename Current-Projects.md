@@ -4,11 +4,12 @@
 | --------------------- | -------------------------------------------- | --------------- |
 | A Type of Programming | Folds                                        | 19-12-2019      |
 | GEB                   | t-q system                                   | 25-12-2019      |
-| Real World Haskell    | Chap - 6 done                                | 19-12-2019      |
+| Real World Haskell    | Chap - 8 to be re done                       | 19-12-2019      |
 | Algorithm Illuminated | Chap 1, exercises left                       | 25-12-2019      |
 | Practical Elm         | Chap 3 - Login Screen                        | 15-12-2019      |
 | Clean Code            | Chap 3 & 4 - 5 6 next (two weeks from today) | 15-12-2019      |
-| C# in Depth           | Chap 2                                       | 15-12-2019      |
+| C# in Depth           | Chap 3                                       | 15-12-2019      |
+| FP in C#              | Chap 1                                       | 15-12-2019      |
 
 | **Courses**                    | **Current Status** | **Last Update** |
 | ------------------------------ | ------------------ | --------------- |

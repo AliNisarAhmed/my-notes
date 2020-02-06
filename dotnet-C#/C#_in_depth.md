@@ -218,3 +218,322 @@ Generics (like `List<T>`), solve
   - for value types the following two are equivalent
     - `int? x = new int?();`
     - `int? x = null;`
+
+---
+
+## Automatically implemented Properties
+
+- Prior to C# 3, every property had to be implemented manually with bodies for the get
+  and/or set accessors.
+
+```csharp
+private string name;
+public string Name
+{
+get { return name; }
+set { name = value; }
+}
+```
+
+- C# 3 made this much simpler by using automatically implemented properties (often
+  referred to as automatic properties or even autoprops). These are properties with no
+  accessor bodies; the compiler provides the implementation. The whole of the preced-
+  ing code can be replaced with a single line:
+
+```csharp
+public string Name { get; set; }
+```
+
+- Note that there’s no field declaration in the source code now. There’s still a field, but
+  it’s created for you automatically by the compiler and given a name that can’t be
+  referred to anywhere in the C# code.
+
+---
+
+## Implicit Typing
+
+### Statically typed vs dynamically typed
+
+- Languages that are statically typed are typically compiled languages; the compiler is
+  able to determine the type of each expression and check that it’s used correctly.
+
+- Determining the meaning of something like a method call or field access is called binding.
+
+- Languages that are dynamically typed leave all or most of the binding to execution time.
+
+### Explicit vs Implicit Typing
+
+- In a language that’s explicitly typed, the source code specifies all the types involved. This
+  could be for local variables, fields, method parameters, or method return types.
+
+- A language that’s implicitly typed allows the developer to omit the types from
+  the source code so some other mechanism (whether it’s a compiler or something at
+  execution time) can infer which type is meant based on other context.
+
+### Implicitly typed local variables (var)
+
+- Implicitly typed local variables are variables declared with the contextual keyword `var`
+  instead of the name of a type, such as the following:
+
+```csharp
+var language = "C#";
+```
+
+- The way the type is inferred leads to two important rules for implicitly typed local
+  variables:
+  - The variable must be initialized at the point of declaration.
+  - The expression used to initialize the variable must have a type.
+
+### Implicitly typed arrays
+
+- Sometimes you need to create an array without populating it and keep all the ele-
+  ments with their default values. The syntax for that hasn’t changed since C# 1; it’s
+  always something like this:
+
+```csharp
+int[] array = new int[10];
+```
+
+- But you often want to create an array with specific initial content. Before C# 3, there
+  were two ways of doing this:
+
+```csharp
+int[] array1 = { 1, 2, 3, 4, 5};
+int[] array2 = new int[] { 1, 2, 3, 4, 5};
+```
+
+- The first form of this is valid only when it’s part of a variable declaration that specifies
+  the array type. This is invalid, for example:
+
+```csharp
+int[] array;
+array = { 1, 2, 3, 4, 5 };
+```
+
+- The second form is always valid, so the second line in the preceding example could’ve
+  been as follows:
+
+```csharp
+array = new int[] { 1, 2, 3, 4, 5 };
+```
+
+- C# 3 introduced a third form in which the type of the array is implicit based on the
+  content:
+
+```csharp
+array = new[] { 1, 2, 3, 4, 5 };
+```
+
+- This can be used anywhere, so long as the compiler is able to infer the array element
+  type from the array elements specified. It also works with multidimensional arrays, as
+  in the following example:
+
+```csharp
+var array = new[,] { { 1, 2, 3 }, { 4, 5, 6 } };
+```
+
+- The next obvious question is how the compiler infers that type. As is so often the case,
+  the precise details are complex in order to handle all kinds of corner cases, but the sim-
+  plified sequence of steps is as follows:
+
+  1. Find a set of candidate types by considering the type of each array element that
+     has a type.
+  2. For each candidate type, check whether every array element has an implicit con-
+     version to that type. Remove any candidate type that doesn’t meet this condition.
+  3. If there’s exactly one type left, that’s the inferred element type, and the com-
+     piler creates an appropriate array. Otherwise (if there are no types or more
+     than one type left), a compile-time error occurs.
+
+- Example of Rules:
+
+| Expression                      | Result     | Notes                                                                                               |
+| ------------------------------- | ---------- | --------------------------------------------------------------------------------------------------- |
+| `new[] { 10, 20 }`              | `int[]`    | All elements are of type int.                                                                       |
+| `new[] { null, null }`          | Error      | No elements have types.                                                                             |
+| `new[] { "xyz", null }`         | `string[]` | Only candidate type is string, and the null literal can be converted to string.                     |
+| `new[] { "abc", new object() }` | `object[]` | Candidate types of string and object; implicit conversion from string to object but not vice versa. |
+| `new[] { 10, new DateTime() }`  | Error      | Candidate types of `int` and `DateTime` but no conversion from either to the other.                 |
+| `new[] { 10, null }`            | Error      | Only candidate type is `int`, but there’s no conversion from `null` to `int`.                       |
+
+---
+
+### Object & Collection initializers
+
+- Creating and populating with object and collection initializers
+
+```csharp
+var order = new Order
+{
+  OrderId = "xyz",
+  Customer = new Customer { Name = "Jon", Address = "UK" },
+  Items =
+    {
+      new OrderItem { ItemId = "abcd123", Quantity = 1 },
+      new OrderItem { ItemId = "fghi456", Quantity = 2 }
+    }
+};
+```
+
+---
+
+### Anonymous Types
+
+- Created like this
+
+  ```csharp
+    var player = new
+    {
+      Name = "Rajesh",
+      Score = 3500
+    };
+  ```
+
+- A shortcut is _projection initializer_
+
+  ```csharp
+    var flattenedItem = new
+    {
+      order.OrderId,
+      CustomerName = customer.Name,
+      customer.Address,
+      item.ItemId,
+      item.Quantity
+    };
+  ```
+
+- An anonymous type has the following characteristics
+
+- It’s a class (guaranteed).
+- Its base class is `object` (guaranteed).
+- It’s sealed (not guaranteed, although it would be hard to see how it would be
+  useful to make it unsealed).
+- The properties are all read-only (guaranteed).
+- The constructor parameters have the same names as the properties (not guar-
+  anteed; can be useful for reflection occasionally).
+- It’s internal to the assembly (not guaranteed; can be irritating when working
+  with dynamic typing).
+- It overrides `GetHashCode()` and `Equals()` so that two instances are equal only if all their properties are equal. (It handles properties being null.) The fact that these methods are overridden is guaranteed, but the precise way of computing the hash code isn’t.
+- It overrides `ToString()` in a helpful way and lists the property names and their values. This isn’t guaranteed, but it is super helpful when diagnosing issues.
+- The type is generic with one type parameter for each property. Multiple anonymous types with the same property names but different property types will use different type arguments for the same generic type. This isn’t guaranteed and
+  could easily vary by compiler.
+- If two anonymous object creation expressions use the same property names in the same order with the same property types in the same assembly, the result is guaranteed to be two objects of the same type.
+
+## Lambda Expressions
+
+- The Compiler converts the Lambda expression to a delegate
+- To create a delegate instance from a lambda expression, the compiler converts the code in the lambda expression to a method somewhere. The delegate can then be created at execution time exactly as if you had a method group.
+
+### Captured Variables aka Closure
+
+Within a lambda expression, you can use any variable that you’d be able to use in regular code at that
+point. That could be a static field, an instance field (if you’re writing the lambda expression within an instance method 1 ), the `this` variable, method parameters, or local variables. All of these are captured variables, because they’re variables declared outside the immediate context of the lambda expression.
+
+```csharp
+class CapturedVariablesDemo
+{
+  private string instanceField = "instance field";
+  public Action<string> CreateAction(string methodParameter)
+  {
+    string methodLocal = "method local";
+    string uncaptured = "uncaptured local";
+    Action<string> action = lambdaParameter =>
+    {
+      string lambdaLocal = "lambda local";
+      Console.WriteLine("Instance field: {0}", instanceField);
+      Console.WriteLine("Method parameter: {0}", methodParameter);
+      Console.WriteLine("Method local: {0}", methodLocal);
+      Console.WriteLine("Lambda parameter: {0}", lambdaParameter);
+      Console.WriteLine("Lambda local: {0}", lambdaLocal);
+    };
+    methodLocal = "modified method local";
+  return action;
+  }
+}
+```
+
+Normal Closure rules apply here
+
+- `instanceField` is an instance field in the `CapturedVariablesDemo` class and is captured by the lambda expression.
+- `methodParameter` is a parameter in the CreateAction method and is cap-
+  tured by the lambda expression.
+- `methodLocal` is a local variable in the `CreateAction` method and is captured by the lambda expression.
+- `uncaptured` is a local variable in the `CreateAction` method, but it’s never used by the lambda expression, so it’s not captured by it.
+- `lambdaParameter` is a parameter in the lambda expression itself, so it isn’t a captured variable.
+- `lambdaLocal` is a local variable in the lambda expression, so it isn’t a captured variable.
+
+It’s important to understand that the lambda expression captures the variables themselves, not the values of the variables at the point when the delegate is created.
+
+### Implementation of Captured variables with a generated class
+
+- If no variables are captured at all, the compiler can create a static method. No extra context is required.
+- If the only variables captured are instance fields, the compiler can create an instance method. Capturing one instance field is equivalent to capturing 100 of them, because you need access only to `this`.
+- If local variables or parameters are captured, the compiler creates a private nested class to contain that context and then an instance method in that class containing the lambda expression code. The method containing the lambda expression is changed to use that nested class for every access to the captured variables.
+
+The above code is compiled to:
+
+```csharp
+private class LambdaContext  // Generated class to hold the captured variables
+{
+  // Captured Variables
+  public CapturedVariablesDemoImpl originalThis;
+  public string methodParameter;
+  public string methodLocal;
+
+  // Body of the lambda expression becomes an instance method
+  public void Method(string lambdaParameter)
+  {
+    string lambdaLocal = "lambda local";
+    Console.WriteLine("Instance field: {0}",
+    originalThis.instanceField);
+    Console.WriteLine("Method parameter: {0}", methodParameter);
+    Console.WriteLine("Method local: {0}", methodLocal);
+    Console.WriteLine("Lambda parameter: {0}", lambdaParameter);
+    Console.WriteLine("Lambda local: {0}", lambdaLocal);
+  }
+}
+
+// Generated class is used for all captured variables
+public Action<string> CreateAction(string methodParameter)
+{
+  LambdaContext context = new LambdaContext();
+  context.originalThis = this;
+  context.methodParameter = methodParameter;
+  context.methodLocal = "method local";
+  string uncaptured = "uncaptured local";
+  Action<string> action = context.Method;
+  context.methodLocal = "modified method local";
+  return action;
+}
+
+```
+
+## Extension methods
+
+- Extension methods are static methods that can be called as if they’re instance methods, based on their first parameter.
+
+Suppose you have a static method call like this:
+
+`ExampleClass.Method(x, y);`
+
+If you turn ExampleClass.Method into an extension method, you can call it like this instead:
+
+`x.Method(y);`
+
+- Extension methods are declared by adding the keyword this before the first parameter. The method must be declared in a non-nested, nongeneric static class, and until C# 7.2, the first parameter can’t be a ref parameter.
+
+- The type of the first parameter is sometimes called the target of the extension
+  method and sometimes called the extended type. (The specification doesn’t give this
+  concept a name, unfortunately.)
+
+- Note:
+  - if there’s a regular instance method that’s valid
+    for the method invocation, the compiler will always prefer that over an extension
+    method. It doesn’t matter whether the extension method has “better” parameters; if
+    the compiler can use an instance method, it won’t even look for extension methods.
+  - After it has exhausted its search for instance methods, the compiler will look for
+    extension methods based on the namespace the calling code is in and any using
+    directives present.
+  - The compiler effectively works its way outward from the deepest namespace out
+    toward the global namespace and looks at each step for static classes either in that
+    namespace or provided by classes made available by using directives in the namespace
+    declaration.
