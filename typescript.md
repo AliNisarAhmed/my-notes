@@ -14,6 +14,43 @@
 
 - `suppressExcessPropertyErrors: true` allows objects to be defined with additioinal properties, over and above those specified by their interface or type alias.
 
+---
+
+## Excess Property Check
+
+Object literals get special treatment and undergo excess property checking when assigning them to other variables, or passing them as arguments. If an object literal has any properties that the “target type” doesn’t have, you’ll get an error:
+
+```typescript
+interface Dog {
+	breed: string;
+}
+
+function printDog(dog: Dog) {
+	console.log('Dog: ' + dog.breed);
+}
+
+const ginger = {
+	breed: 'Airedale',
+	age: 3
+};
+
+printDog(ginger); // All good
+
+// > Dog:Airedale
+
+// BUT
+
+printDog({
+	breed: 'Airedale',
+	age: 3
+}); // ERROR
+
+//Argument of type '{ breed: string; age: number; }' is not assignable to parameter of type 'Dog'.
+//Object literal may only specify known properties, and 'age' does not exist in type 'Dog'.
+```
+
+---
+
 ## Union types
 
 - Union types can be defined using the `|` operator. e.g. `string | number`.
@@ -23,23 +60,23 @@
 ### Using shape type unions
 
 ```typescript
-  type Product = {
-    id: number,
-    name: string,
-    price?: number
-    };
-  type Person = {
-    id: string,
-    name: string,
-    city: string
-    };
-  let hat = { id: 1, name: "Hat", price: 100 };
-  let gloves = { id: 2, name: "Gloves", price: 75 };
-  let umbrella = { id: 3, name: "Umbrella", price: 30 };
-  let bob = { id: "bsmith", name: "Bob", city: "London" };
-  let dataItems: (Product | Person)[] = [hat, gloves, umbrella, bob];
+type Product = {
+	id: number;
+	name: string;
+	price?: number;
+};
+type Person = {
+	id: string;
+	name: string;
+	city: string;
+};
+let hat = { id: 1, name: 'Hat', price: 100 };
+let gloves = { id: 2, name: 'Gloves', price: 75 };
+let umbrella = { id: 3, name: 'Umbrella', price: 30 };
+let bob = { id: 'bsmith', name: 'Bob', city: 'London' };
+let dataItems: (Product | Person)[] = [hat, gloves, umbrella, bob];
 
-  dataItems.forEach(item => console.log(`ID: ${item.id}, Name: ${item.name}`));
+dataItems.forEach(item => console.log(`ID: ${item.id}, Name: ${item.name}`));
 ```
 
 - The dataItems array in this example has been annotated with a union of the `Product` and `Person` types. These types have two properties in common, `id` and `name`, which means these properties can be used when processing the array without having to narrow to a single type.
@@ -65,10 +102,9 @@
 - The `in` keyword is a useful way to identify whether an object conforms to a shape, but it requires the same checks to be written each time types need to be identified. TypeScript also supports guarding object types using a function:
 
   ```typescript
-    function isPerson(testObj: any): testObj is Person
-    {
-      return testObj.city !== undefined;
-    }
+  function isPerson(testObj: any): testObj is Person {
+  	return testObj.city !== undefined;
+  }
   ```
 
 ## `any`, `unknown` and `never` types
@@ -81,21 +117,21 @@
 
 ```typescript
 function calculateTax(amount: number, format: boolean): string | number {
-  const calcAmount = amount * 1.2;
-  return format ? `$${calcAmount.toFixed(2)}` : calcAmount;
+	const calcAmount = amount * 1.2;
+	return format ? `$${calcAmount.toFixed(2)}` : calcAmount;
 }
 let taxValue = calculateTax(100, false);
 
 switch (typeof taxValue) {
-  case 'number':
-    console.log(`Number Value: ${taxValue.toFixed(2)}`);
-    break;
-  case 'string':
-    console.log(`String Value: ${taxValue.charAt(0)}`);
-    break;
-  default:
-    let value: never = taxValue;
-    console.log(`Unexpected type for value: ${value}`);
+	case 'number':
+		console.log(`Number Value: ${taxValue.toFixed(2)}`);
+		break;
+	case 'string':
+		console.log(`String Value: ${taxValue.charAt(0)}`);
+		break;
+	default:
+		let value: never = taxValue;
+		console.log(`Unexpected type for value: ${value}`);
 }
 
 let newResult: unknown = calculateTax(200, false);
@@ -117,14 +153,14 @@ let myNumber: number = newResult as number; // forcing unknown to be a number
 
 ```json
 {
-  "compilerOptions": {
-    "target": "es2018",
-    "outDir": "./dist",
-    "rootDir": "./src",
-    "declaration": true,
-    "noImplicitAny": true,
-    "strictNullChecks": true
-  }
+	"compilerOptions": {
+		"target": "es2018",
+		"outDir": "./dist",
+		"rootDir": "./src",
+		"declaration": true,
+		"noImplicitAny": true,
+		"strictNullChecks": true
+	}
 }
 ```
 
@@ -150,9 +186,9 @@ function calculateTax(amount: null): null;
 - By contrast, JavaScript allows new properties to be created on objects simply by assigning a value to an unused property name. The TypeScript index signature feature bridges these two models, allowing properties to be defined dynamically while preserving type safety,
 
   ```typescript
-    interface object {
-      [prop: string]: any;
-    }
+  interface object {
+  	[prop: string]: any;
+  }
   ```
 
 ---
@@ -181,25 +217,24 @@ function calculateTax(amount: null): null;
 
 ### But it wont' save you from shooting your foot, runtime errors may not always be caught at compile time.
 
-
 ## Conditional Types (from https://www.youtube.com/watch?v=O1rn-d_P_Rc)
 
 `any` type is JS land, no support by TS compiler during runtime.
 
 ```typescript
-  type StringOrNull<T> = T extends string ? string : null;  // if the given type is a string then return the type string else return the type null
+type StringOrNull<T> = T extends string ? string : null; // if the given type is a string then return the type string else return the type null
 
-  // or to restrict types, provide type constraints
+// or to restrict types, provide type constraints
 
-  type StringOrNull<T extends string | null> = T extends string ? string : null;
+type StringOrNull<T extends string | null> = T extends string ? string : null;
 
-  // or
+// or
 
-  type StringOrNull <T> = T extends string
-   ? string
-   : T extends null
-   ? null
-   : never; // or unknown
+type StringOrNull<T> = T extends string
+	? string
+	: T extends null
+	? null
+	: never; // or unknown
 ```
 
 ---

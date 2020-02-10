@@ -176,6 +176,61 @@ We say that each layer communicates with its peer layer. It’s as if each layer
 
   ***
 
+## 7 layer model (OSI Model - Open Systems Interconnection) (OSI)
+
+- It's a conceptual framework. The model uses layers to help give a visual description of what is going on with a particular networking system.
+- It has been developed by ISO – ‘International Organization of Standardization‘, in the year 1984. It is a 7 layer architecture with each layer having specific functionality to perform.
+
+<details>
+
+<summary>7 Layer model</summary>
+
+![OSI Model](../../images/OSI-model.png)
+
+</details>
+
+#### Layer 7 - Application
+
+- In the OSI model, this is the layer that is the “closest to the end user”. Applications that work at Layer 7 are the ones that users interact with directly. A web browser (Google Chrome, Firefox, Safari, etc.) or other app - Skype, Outlook, Office - are examples of Layer 7 applications.
+
+#### Layer 6 - Presentation
+
+- Presentation layer is also called the Translation layer.The data from the application layer is extracted here and manipulated as per the required format to transmit over the network.
+- The functions of the presentation layer are :
+  - **Translation** : For example, ASCII to EBCDIC.
+  - **Encryption/ Decryption** : Data encryption translates the data into another form or code. The encrypted data is known as the cipher text and the decrypted data is known as plain text. A key value is used for encrypting as well as decrypting data.
+  - **Compression**: Reduces the number of bits that need to be transmitted on the network.
+
+#### Layer 5 - Session
+
+- This layer is responsible for establishment of connection, maintenance of sessions, authentication and also ensures security.
+  The functions of the session layer are :
+  - **Session establishment, maintenance and termination**: The layer allows the two processes to establish, use and terminate a connection.
+  - **Synchronization** : This layer allows a process to add checkpoints which are considered as synchronization points into the data. These synchronization point help to identify the error so that the data is re-synchronized properly, and ends of the messages are not cut prematurely and data loss is avoided.
+  - **Dialog Controller** : The session layer allows two systems to start communication with each other in half-duplex or full-duplex.
+
+_All the above 3 layers(including Session Layer) are integrated as a single layer in the TCP/IP model as “Application Layer”_
+
+#### Layer 4 - Transport
+
+- Transport layer provides services to application layer and takes services from network layer. The data in the transport layer is referred to as Segments. It is responsible for the End to End Delivery of the complete message. The transport layer also provides the acknowledgement of the successful data transmission and re-transmits the data if an error is found.
+
+#### Layer 3 - Network
+
+Network layer works for the transmission of data from one host to the other located in different networks. It also takes care of packet routing i.e. selection of the shortest path to transmit the packet, from the number of routes available. The sender & receiver’s IP address are placed in the header by the network layer.
+The functions of the Network layer are :
+
+- **Routing**: The network layer protocols determine which route is suitable from source to destination. This function of network layer is known as routing.
+- **Logical Addressing**: In order to identify each device on internetwork uniquely, network layer defines an addressing scheme. The sender & receiver’s IP address are placed in the header by network layer. Such an address distinguishes each device uniquely and universally.
+
+#### Layer 2 - Data Link Layer
+
+The data link layer is responsible for the node to node delivery of the message. The main function of this layer is to make sure data transfer is error-free from one node to another, over the physical layer. When a packet arrives in a network, it is the responsibility of DLL to transmit it to the Host using its MAC address.
+
+#### Layer 1 - Physical
+
+- The lowest layer of the OSI reference model is the physical layer. It is responsible for the actual physical connection between the devices. The physical layer contains information in the form of bits. It is responsible for transmitting individual bits from one node to the next. When receiving data, this layer will get the signal received and convert it into 0s and 1s and send them to the Data Link layer, which will put the frame back together.
+
 ## The Internet Protocol
 
 <details>
@@ -217,7 +272,7 @@ Reasons
 
 ### Other IP Services
 
-1. IP tries to prevent packets from looping forever. Because IP routers forward packets hop-by-hop across the Internet, it is possible for the forwarding table in a router to be wrong, causing a packet to start looping round and around following the same path. This is most likely to happen when the forwarding tables are changing and they temporarily get into an inconsistent state. Rather than try to prevent loops from ever happening – which would take a lot of complexity - IP uses a very simple mechanism to catch and then delete packets that appear to be stuck in a loop. To do this, IP simply adds a hop-count field in the header of every datagram. It is called the time to live, or TTL field. It starts out at a number like 128 and then is decremented by every router it passes through. If it reaches zero, IP concludes that it must be stuck in a loop and the router drops the datagram. It is a simple mechanism, typical of IP – it doesn’t guarantee loops won’t happen, it just tries to limit the damage caused by a flood of endlessly looping packets in the network.
+1. IP tries to prevent packets from looping forever. Because IP routers forward packets hop-by-hop across the Internet, it is possible for the forwarding table in a router to be wrong, causing a packet to start looping round and around following the same path. This is most likely to happen when the forwarding tables are changing and they temporarily get into an inconsistent state. Rather than try to prevent loops from ever happening – which would take a lot of complexity - IP uses a very simple mechanism to catch and then delete packets that appear to be stuck in a loop. To do this, IP simply adds a **hop-count** field in the header of every datagram. It is called the **time to live, or TTL field**. It starts out at a number like 128 and then is decremented by every router it passes through. If it reaches zero, IP concludes that it must be stuck in a loop and the router drops the datagram. It is a simple mechanism, typical of IP – it doesn’t guarantee loops won’t happen, it just tries to limit the damage caused by a flood of endlessly looping packets in the network.
 2. IP will fragment packets if they are too long. IP is designed to run over any kind of link. Most links have a limit on the size of the packets they can carry. For example, Ethernet can only carry packets shorter than 1500bytes long. If an application has more than 1500bytes to send, it has to be broken into 1500 pieces before sending in an IP datagram. Now, along the path towards the destination, a 1500byte datagram might need to go over a link that can only carry smaller packets, for example 1000 bytes. The router connecting the two links will fragment the datagram into two smaller datagrams.
 3. IP uses a header checksum to reduce chances of delivering a datagram to the wrong destination. IP includes a checksum field in the datagram header to try and make sure datagrams are delivered to the right location. It could be quite a security problem if packets are accidentally and frequently sent to the wrong place because of a mistake by a router along the way.
 4. There are two versions of IP in use today: IPv4, which is used today by over 90% of end hosts. It uses the 32bit addresses you are probably familiar with. Because we are running out of IPv4 addresses, the Internet is in a gradual transition to IPv6, which uses 128 bit addresses instead.
@@ -470,3 +525,79 @@ Now: Classless Inter-Domain Routing (CIDR)
 There’s an organization called IANA, for the Internet Assigned Numbers Authority. The ultimate authority is ICANN, the Internet Corporation for Assignment of Names and Numbers. ICANN delegates the work to IANA.
 
 IANA gives out slash-8s, describing 16 million addresses, to Regional Internet Registries or RIRs. Each continent has its own RIR. The RIR for the United States is ARIN, while the RIR for the western Pacific is APNIC. These RIRs each have their own policy for how they break up the /8s into smaller blocks of addresses and assign them to parties who need them.You might have read in the news is that we’ve run out of IP addresses. This isn’t really true -- there are many unused addresses today. What _did_ happen is that IANA ran out of /8s to give out. It reached a special end case in its charter. When reduced to its last 5 /8s, IANA gave one /8 to each RIR. Now address management and allocation is up to RIRs
+
+## Longest Prefix Match
+
+- Internet routers can have many links. They have many options for which direction to forward a received packet. To select which link to forward a packet over, routers today typically use an algorithm called Longest Prefix Match.
+- When a packet arrives, the router checks which forwarding table entry best matches the packet and forwards the packet along the link associated with that forwarding table entry. By “best”, I mean most specific. The default route is effectively all wildcards -- it matches every IP address. If, when a packet arrives, there isn’t a more specific route than the default route, the router will just use the default one.
+- Hence - **LPM** - is an Algorithm IP routers use to chose matching entry from forwarding table
+
+Quiz
+
+ <details>
+  <summary>Diagram: </summary>
+
+![LMP Quiz](../../images/Lpm-quiz.png)
+
+</details>
+
+<details>
+  <summary>Answers: </summary>
+
+- The answer for A, 63.19.5.3, is link 3. 63.19.5.3 matches two prefixes: the default route and prefix 63.19.5.0/30. The prefix is 30 bits long and 63.19.5.3 differs in only the last two bits. /30 is a longer prefix than /0 so the router will pick link 3.
+- The answer for B,171.15.15.0, is link 4. 171.15.15.0 matches three entries. It matches the default route, 171.0.0.0/8 and 171.0.0.0/10. It does not match 171.0.15.0/24 because B’s second octet is 15, not 0. The third match, 171.0.0.0/10, is the longest prefix, so the router sends the packet along link 4.
+- The answer for C, 63.19.5.32, is link 1. The longest prefix match is the default route. It does not match 63.19.5.0/30 because it differs in the 26th bit.
+- The answer for D, 44.199.230.1, is link 1. The longest prefix match is the default route.
+- The answer for E, 171.128.16.0, is link 2. This address matches two prefixes, the default route and 171.0.0.0/8. It does not match 171.0.0.0/10 because it differs on the 9th bit. 171.0.0.0/8 is the longest prefix, so the router will forward the packet on link 2.
+  </details>
+
+---
+
+## Address Resolution Protocol (ARP)
+
+- The Address Resolution Protocol, or ARP, is the mechanism by which the network layer can discover the link address associated with a network address it’s directly connected to.
+- Put another way, it’s how a device gets an answer to the question: “I have an IP packet whose next hop is this address -- what link address should I send it to?”
+- ARP is needed because each protocol layer has its own names and addresses. An IP address is a network-level address. It describes a host, a unique destination at the network layer. A link address, in contrast, describes a particular network card, a unique device that sends and receives link layer frames
+- Ethernet, for example, has 48 bit addresses. Whenever you buy an Ethernet card, it’s been preconfigured with a unique Ethernet address. So an IP address says “this host”, while an Ethernet address says “this Ethernet card.”
+- 48-bit Ethernet addresses are usually written as a colon delimited set of 6 octets written in hexidecimal, such as 0:13:72:4c:d9:6a as in the source, or 9:9:9:9:9:9 as in the destination. Also call **MAC Addresses** (Media Access Control Address)
+
+<details>
+  <summary> Summary </summary>
+
+![Example Addressing](./../../images/example-address.png)
+
+</details>
+
+Let’s say node A, on the left, wants to send a packet to node B, on the right. It’s going to generate an IP packet with source address 192.168.0.5 and destination address 171.43.22.5.Node A checks whether the destination address is in the same network. The netmask tells it that the destination address is in a different network: 255.255.255.0. This means node A needs to send the packet through the gateway, or 192.168.0.1. To do this, it sends a packet whose network-layer destination is 171.43.22.5 but whose link-layer destination is the link layer address of the gateway. So the packet has a network layer destination 171.43.22.5 and a link layer destination 0:18:e7:f3:ce:1a. The network layer source is 192.168.0.5 and the link layer source is 0:13:72:4c:d9:6a.So we have an IP packet from A to B, encapsulated inside a link layer frame from A to the left gateway interface. When the packet reaches the gateway, the gateway looks up the next hop, decides it’s node B, and puts the IP packet inside a link layer frame to B. So this second IP packet from A to B is inside a link layer from from the right gateway interface to B.
+
+#### Example Problem:
+
+<details>
+  <summary> Summary </summary>
+
+![Example problem](./../../images/example-problem-arp.png)
+
+</details>
+
+So here we get to the problem ARP solves. My client knows that it needs to send a packet through the gateway that has IP address 192.168.0.1. To do so, however, it needs to have the link layer address associated with 192.168.0.1. How does it get this address? We somehow need to be able to map a layer 3, network layer, address, to its corresponding layer 2, link layer, address. We do this with a protocol called ARP, or the Address Resolution Protocol.
+
+So, ARP
+
+- Generates mappings between layer 2 and layer 3 addresses
+  - Nodes cache mappings, cache entries expire
+- Simple request-reply protocol
+  - “Who has network address X?”
+  - “I have network address X.”
+- Request sent to link layer broadcast address
+- Reply sent to requesting address (not broadcast)
+- Packet format includes redundant data
+- Request has sufficient information to generate a mapping
+- Makes debugging much simpler•No “sharing” of state: bad state will die eventually
+
+ARP is a simple request-reply protocol. Every node keeps a cache of mappings from IP addresses on its network to link layer addresses. If a node needs to send a packet to an IP address it doesn’t have a mapping for, it sends a request: “Who has network address X?” The node that has that network address responds, saying “I have network address X.” The response includes the link layer address. On receiving the response, the requester can generate the mapping and send the packet.
+
+So that every node hears the request, a node sends requests to a link layer broadcast address. Every node in the network will hear the packet.
+
+Furthermore, ARP is structured so that it contains redundant data. The request contains the network and link layer address of the requestor. That way, when nodes hear a request (since it’s broadcast), they can insert or refresh a mapping in their cache. Nodes _only_ respond to requests for themselves. This means, assuming nobody is generating packets incorrectly, the only way you can generate a mapping for another node is in response to a packet that node sends. So if that node crashes or disconnects, its state will inevitably leave the network when all of the cached mappings expire. This makes debugging and troubleshooting ARP much easier.
+
+So how long do these dynamically discovered mappings last? It depends on the device: some versions of Mac OSX, for example, keep them around for 20 minutes, while some Cisco devices use timeouts of 4 hours. The assumption is that these mappings do not change very frequently
