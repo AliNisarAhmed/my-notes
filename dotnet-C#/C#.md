@@ -408,7 +408,7 @@ using ( type variable = initialization)
 - Normal or Concrete `clases` may have virtual methods.
 - `sealed` classes: prevents other classes from inheriting from it.
 
-  - Unless you consciously design a class with the intention of using it as a base class, it’s extremely unlikely that it will function well as a base class. With C#, you can use the `sealed` keyword to prevent a classfrom being used as a base class if you decide that it should not be.
+  - Unless you consciously design a class with the intention of using it as a base class, it’s extremely unlikely that it will function well as a base class. With C#, you can use the `sealed` keyword to prevent a class from being used as a base class if you decide that it should not be.
 
     ```csharp
     sealed class Horse : GrazingMammal, ILandBound
@@ -494,6 +494,10 @@ class Horse : Mammal // derived class
 ---
 
 ## Property
+
+### Static property
+
+- A typical property declared in a class is an instance property, meaning that you have a copy of that property's value for each instance of the class. You can also define static properties, which are properties that have a single value for the entire class, regardless of the number of instances of the class that exist.
 
 ### Property Restrictions
 
