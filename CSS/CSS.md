@@ -1,0 +1,138 @@
+# CSS
+
+#### Using Calc() to make 100vw images, which remain inside container
+
+```css
+img {
+  display: block;
+  max-width: 100%:
+}
+
+.big-image {
+  max-width: 100vw;
+  width: 100vw;
+  margin: 0 calc(-50vw + 50%);
+  max-height: 30vh;
+  object-fit: cover;  /* to make the image not squish */
+  /* 0 on the top and bottom*/
+  /* -50vw pushes the image to the left */
+  /* +50% pushes it to the right, adding half of its own width as margin */
+}
+```
+
+---
+
+#### Viewport units use the space below the scroll bar in calculations
+
+so we can do
+
+```css
+body {
+	overflow-x: hidden;
+}
+```
+
+---
+
+#### `em` vs `rem`
+
+for `font-size`, `em` looks at the parent's font-size, bubbling up to `body` if font-size on parents are not defined.
+
+for `margin` & `padding`, `em` looks at the font-size of the element, (not the parent).
+
+`rem` always looks at the font size of the root element `html`
+
+---
+
+## Default Margins
+
+- `<p>` tag gets a default margin-top/margin-bottom of the font-size
+
+## Margin Collapsing
+
+- By default, margins collapse into one another
+
+- So, if one element has `margin-bottom` of `50px`, and the next one has `margin-top` of `50px`, the space between them will be `50px` and not `100px`
+
+- Margins will collapse any time they touch each other, so, if the first child in an element has a margin-top, that can merge with the parent's margin top. (This is the reason we see `body` moving "downward" when the first element, usually the `h1`, is given a margin-top.)
+
+- Example
+
+  ```html
+  <div class="card">
+  	<h1 class="main-heading">I am the main heading</h1>
+  </div>
+  ```
+
+  ```css
+  .card {
+  }
+
+  .main-heading {
+  	margin-top: 100px;
+  }
+  ```
+
+  The above `100px` margin merges with margin of `.card` (even though it does not have a margin at all !!!), and the whole card will have a `margin-top` of `100px`. This is because `h1` margin top is touching the margin of `.card`.
+
+  The solution is to give the parent a `padding-top`.
+
+## Inline Elements
+
+- `<span>` `<em>` `<strong>`
+
+- Follow these rules
+  - Can't put a block element inside one
+  - setting width, height, margin-top and margin-bottom has no effect.
+  - setting padding-top, padding-bottom just "overrides" the neighboring elements, as if the other elements are ignoring the padding.
+  - So, they only respect margin, padding and border which are placed on the left or the right side, and not the top or bottom.
+
+## Margin and Padding
+
+- For consistency, we often turn-off margin-top on typography related elements.
+
+- we can do that with one selector, using comma separated list
+
+```css
+h1,
+h2,
+h3,
+p {
+	margin-top: 0;
+}
+```
+
+- so, to have space on top and bottom of the content, add `padding: y px` on the parent.
+
+- Related best practice to the above is to have the last element on the page have a `margin-bottom: 0`, so that the padding & margin dont clash at the bottom of the page.
+
+## Block vs inline-block elements
+
+- Block level elements create a new line of content, stacking on top of each other e.g. `<p>, <header> <footer> <main> <section> <li> <ul> <div> <h1>`
+- Block level elements have a width of 100% of their parent by default.
+
+- Inline elements stay within the flow of what's around them. e.g. `<a> <b> <em>`
+
+  - usually placed inside block elements
+
+  - They only respect margin, padding and borders which are placed on the left or the right side, and not on the top or bottom
+
+  - cannot set width and height on them!
+
+## Styling Links
+
+- Links have several states
+
+  - Default "link" state
+  - Visited
+  - Focus
+  - Hover
+  - Active (While the link is being clicked)
+
+- These states need to be in the order as shown above, otherwise due to specificity some states maybe overwritten by others.
+
+## Styling buttons
+
+- Use Padding to give "width" and "height" to buttons.
+- Always put the class on the button/link, rather than the container.
+- Use a ratio of 1:2.5 (h:w) on a button.

@@ -11,18 +11,17 @@
 | C# in Depth           | Chap 3                                       | 15-12-2019      |
 | FP in C#              | Chap 1                                       | 15-12-2019      |
 
-| **Courses**                    | **Current Status** | **Last Update** |
-| ------------------------------ | ------------------ | --------------- |
-| JS Testing                     |                    | 21-12-2019      |
-| Resp. Web Design - Scrimba     | Practice           | 16-12-2019      |
-| Modern React tooling - Egghead | style-loaders      | 21-12-2019      |
-| Git - Egghead and book         |                    | 15-12-2019      |
-| Computer Networks - Stanford   | 4-layer            | 25-12-2019      |
-| SQL course - online            |                    |                 |
-| Algo & DS - udemy Colt Steel   |                    |                 |
-| Python course - Udemy          |                    |                 |
-| .Net Core - Pluralsight        |                    |                 |
-| .Net Core MVC - YT             |                    |                 |
+| **Courses**                    | **Current Status**  | **Last Update** |
+| ------------------------------ | ------------------- | --------------- |
+| JS Testing                     |                     | 21-12-2019      |
+| Resp. Web Design - Scrimba     | module 2 - video 10 | 16-12-2019      |
+| Modern React tooling - Egghead | style-loaders       | 21-12-2019      |
+| Git - Egghead and book         |                     | 15-12-2019      |
+| SQL course - online            |                     |                 |
+| Algo & DS - udemy Colt Steel   | End module 1        |                 |
+| Python course - Udemy          |                     |                 |
+| .Net Core - Pluralsight        |                     |                 |
+| .Net Core MVC - YT             |                     |                 |
 
 | **Personal Projects**                  | **Current Status**                               | **Last Update** |
 | -------------------------------------- | ------------------------------------------------ | --------------- |
