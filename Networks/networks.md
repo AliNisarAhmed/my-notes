@@ -1,38 +1,5 @@
 # Computer Networks
 
-## The TCP/IP 5 layer Network Model
-
-| #   | Layer                 | Protocol          | Protocol Data unit | Addressing   |
-| --- | --------------------- | ----------------- | ------------------ | ------------ |
-| 5   | Application           | HTTP, SMTP, FTP   | Messages           | n/a          |
-| 4   | Transport             | TCP, UDP          | Segment            | Port numbers |
-| 3   | Network               | IP                | Datagram           | IP Address   |
-| 2   | Data Link / Nw Access | Ethernet, WiFi    | Frames             | MAC Address  |
-| 1   | Physical              | 10 Base T, 802.11 | Bits               | n/a          |
-
-## Network Switches vs Hubs
-
-- A **hub** is a physical layer device that allows for connections from many computers at once.
-- In a hub, all devices talk to ALL other devices all the time.
-- This results in a lot of noise on the network callec **collision domain**.
-- Hubs are mostly historical artifact today.
-- A **network switch** is a level 2 (or data link layer) device (in 5 layer model).
-- This means that a switch can actually inspect the contents of the Ethernet
-  protocol data being sent around the network, determine which system
-  the data is intended for and then only send that data to that one system.
-
-## Routers
-
-- A router is a device that knows how to forward data between independent networks.
-- While a hub is a layer one device and a switch is a layer two device. A router operates at layer three, a network layer.
-- A Router can inspect IP data to determine where to send things.
-- Routers store internal tables containing information about how to route traffic
-  between lots of different networks all over the world.
-- The most common type of router you'll see is one for a home network, or
-  a small office. These devices generally don't have very detailed routing tables.
-
----
-
 ## High-level view of the internet
 
 The Internet is a computer network that interconnects billions of computing devices throughout the world.

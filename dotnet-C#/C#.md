@@ -1395,6 +1395,38 @@ The way I remember, based on the examples in this section, is as follows:
 - **Covariance example** If the methods in a generic interface can return `strings`, they can also return `objects`. (All strings are objects.)
 - **Contravariance example** If the methods in a generic interface can take `object` parameters, they can take string parameters. (If you can perform an operation by using an object, you can perform the same operation by using a string because all strings are objects.)
 
+#### `out` keyword as a generic modifier
+
+- For generic type parameters, the out keyword specifies that the type parameter is covariant. You can use the `out` keyword in generic interfaces and delegates.
+
+- Covariance enables you to use a more derived type than that specified by the generic parameter.
+
+- An interface that has a covariant type parameter enables its methods to return more derived types than those specified by the type parameter. For example, because in .NET Framework 4, in IEnumerable<T>, type `T` is covariant, you can assign an object of the `IEnumerable<string>` type to an object of the IEnumerable<object> type without using any special conversion methods.
+
+```csharp
+  // Covariant interface.
+  interface ICovariant<out R> { }
+
+  // Extending covariant interface.
+  interface IExtCovariant<out R> : ICovariant<R> { }
+
+  // Implementing covariant interface.
+  class Sample<R> : ICovariant<R> { }
+
+  class Program
+  {
+      static void Test()
+      {
+          ICovariant<Object> iobj = new Sample<Object>();
+          ICovariant<String> istr = new Sample<String>();
+
+          // You can assign istr to iobj because
+          // the ICovariant interface is covariant.
+          iobj = istr;
+      }
+  }
+```
+
 ---
 
 ### Comparing arrays and collections
