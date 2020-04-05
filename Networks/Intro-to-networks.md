@@ -141,3 +141,85 @@
   of /23 or 255.255.254.0.
 - This means, that routers now only need to know one entry in their routing table to deliver traffic to these addresses instead of two.
 - So, For Example, if a /24 network has two to the eight or 256 potential hosts, you really only have 256 minus two, or 254 available IPs to assign. If you need two networks of this size, you have a total of 254 plus 254 or 508 hosts. A single /23 network, on the other hand, is two to the nine or 512. 512 minus two, 510 hosts.
+
+#### Routing Tables
+
+Each Router stores a Routing table with at least the following four columns (with millions of rows)
+
+- Destination N/w
+  - This column would contain a row for each N/w the router know about, consists of usually a network IP and a net mask.
+  - There usually also is a catcha-all entry that matches any IP address that does not have an explicit listing for.
+- Net Hop
+  - IP Address of the next router that should receive data intended for the destination networking question. OR this could just state that the network is directly connected and that there arent any additional hops.
+- Total hops
+  - The total hops needed to reach that router.
+  - Thus, the router keeps trach of how far away that destination network is,
+  - this number can change at any time.
+- Interface
+  - this is the anme of the interface on the router, which the router should forward the traffic that matches this row's network destination.
+
+#### Routing Protocols
+
+These protocols help routers keep up to date information about the routers next to them or far away.
+
+There are two main Categories
+
+- Interior gateway protocols
+  - Distance Vector routing
+  - Link State Routing
+- Exterior Gateway protocols
+
+##### Interior gateway protocol
+
+- Used by routers to share information within a single autonomous system
+  - an autonomous system is a collection of networks that all fall under the control of a single network operator. e.g. large corporation or a nation wide ISP
+- In contrast, exterior gateway protocols are used for exchange of info b/w independent autonomous systems.
+
+##### Distance Vector protocol
+
+- A now outdated system, in which a router takes its routing table and shares it with every router immediately adjacent to it.
+- since a list is known as vector in CS, that's why this sharing of Routing tables (list) is so named.
+- This protocol does not allow for a router to have much information about the state of the world outside of their own direct neighbours.
+- Because of this a router might be slow to react to changes in the network that happen far away from it.
+
+##### Link State Protocol
+
+- Here, each router advertises the state of the link of each of its interfaces.
+- These interfaces can be connected to other routers or they could be direct connections to networks.
+- The information about each router is propagated to every other router on the autonomous system.
+- This means that every router on the system knows every detail about every other router in the system.
+- Each router then uses this info and runs complicated algos against it to determine the best path to any destination network.
+- Link state protocols require both more memory in order to hold all of this data
+  and also much more processing power. This is because it has to run algorithms against this data in order to determine the quickest path to update the routing tables.
+- As computer hardware has become more powerful and cheaper over the years, link state protocols have mostly made distance vector protocols outdated.
+
+##### Exterior Gateway Protocols
+
+- are used to communicate data between routers representing the edges of an autonomous system.
+- Routers use this protocol when they need to share information across different organizations.
+- the **IANA**, or Internet Assigned Numbers Authority, is a non-profit organization that helps manage things like IP Address allocation. Along with managing IP Addresses, the IANA is also responsible for **ASN** or Autonomous System Number allocation
+- ANSs are 32-bit numbers just like IP addresses, assigned to individual autonomous systems.
+- They're normally referred to as a single decimal number.
+  - Because ASNs dont need to change
+  - They arent meant to be human readable often
+- AS19604 for example, belongs to IBM.
+
+##### Examples of above protocols
+
+- The most common distance vector protocols are
+  - RIP (Routing Information protocol)
+  - EIGRP (Enhanced Interior Gateway Routing Protocol)
+- The most common Link state protocol is
+  - OSPF (Open Shortest Path First)
+- There's only one exterior gateway protocol, called BGP (Border Gateway Protocol)
+
+#### Non-Routable Address Space
+
+- RFC 1918 outlined a number of networks that would be defined as non-routable addresses.
+- Non-routable address space are a range of IPs set aside for use by anyone that cannot be routed to.
+- No every computer connected to the internet needs to communicate with every other computer, so these address space allow for nodes on such a network to commmunicate with each other but no gateway router will attempt to forward traffic to this type of network.
+- RFC 1918 defined three ranges of IP addresses that will never be routed anywhere by co-routers. That means that they belong to no one and that anyone can use them. In fact, since they are separated from the way traffic moves across the internet, there's no limiting to how many people might use these addresses for their internal networks.
+- The primary range of these non-routable address space are
+  - 10.0.0.0/8
+  - 172.16.0.0/12
+  - 192.168.0.0/16

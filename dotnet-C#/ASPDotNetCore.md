@@ -114,7 +114,7 @@ public class ComponentB: IComponent
 
 When we run this code as is, it will result in a `NullReferenceException` error because `ComponentA` is expecting an object of type `IComponent`, and although `ComponentB` implements the `IComponent` interface, there is nothing configured to pass in the required instance of `IComponent` to the constructor of `ComponentA`.
 
-For the code to run without this issue, we need a mechanism to pass the correct instance of a requested type during runtime. This can be achieved by making use of an ***Inversion of Control*** (IoC) container to register all the required dependencies and their instances. There are many frameworks available on NuGet that provide IoC containers
+For the code to run without this issue, we need a mechanism to pass the correct instance of a requested type during runtime. This can be achieved by making use of an **_Inversion of Control_** (IoC) container to register all the required dependencies and their instances. There are many frameworks available on NuGet that provide IoC containers
 for dependency resolution, namely Unity, Castle Windsor, Autofac, and Ninject.
 
 **Note**: As a general rule of thumb, avoid the explicit instantiation of classes, as doing this results in a tightly coupled system.
@@ -140,7 +140,6 @@ All the containers must provide easy support for the following DI lifecycle.
 
 ---
 
-
 read: https://www.tutorialsteacher.com/ioc/introduction
 
 ---
@@ -148,7 +147,7 @@ read: https://www.tutorialsteacher.com/ioc/introduction
 ## Application Startup
 
 The `UseStartup` method is one of the critical methods that extends an `IWebHostBuilder` and registers aclass that is responsible for configuring the application startup process.
-The type specified in `UseStartup` needs to match a specific signature to have the host launch the application correctly. The runtime requires the specified startup class to contain two public functions, namely `ConfigureServices`, which is ***optional***, and `Configure`, which is ***compulsory***. For example, let’s say that the startup class is defined as `UseStartup<Foo>();` the structure of Foo should match the following:
+The type specified in `UseStartup` needs to match a specific signature to have the host launch the application correctly. The runtime requires the specified startup class to contain two public functions, namely `ConfigureServices`, which is **_optional_**, and `Configure`, which is **_compulsory_**. For example, let’s say that the startup class is defined as `UseStartup<Foo>();` the structure of Foo should match the following:
 
 ```csharp
 
@@ -184,7 +183,6 @@ public void ConfigureServices(IServiceCollection services)
 
 **Note**: It is also possible to register a dependency that binds to itself instead of using any interfaces by directly expecting the concrete type in the constructor and calling `services.AddSingleton<T>`, where `T` is the concrete type in this case.
 
-
 In the startup class, the `Configure` method is responsible for the actual configuration of the application’s HTTP request pipeline and is required by the runtime. This method can contain many dependent parameters that are resolved from the IoC container.
 
 Let’s build on the previous examples to have our application print out the name of an `IComponent` to the response when invoking it and show the Configure method in action:
@@ -202,7 +200,7 @@ public void Configure(IApplicationBuilder app, IComponent component)
 
 The two variables that are automatically resolved are an `IApplicationBuilder`, which is the mechanism to configure an application’s request, and an `IComponent`. The `IApplicationBuilder` extends with a `Run` function, which passes a `RequestDelegate` that writes out the Name property of the IComponent to the response. Running the application will result in the response being “Name is ComponentB.”
 
-*Optional*
+_Optional_
 
 It is also possible to configure the application’s dependencies and HTTP request pipeline directly inline when defining the web host, without the use of a startup class.
 
@@ -226,3 +224,10 @@ Given the default web-host configuration, an inline startup definition could loo
 ```
 
 One of the drawbacks of defining the bootstrapping configuration inline is that we can only pass in one parameter as IApplicationBuilder to the Configure extension method. This forces us to resolve any dependencies by calling `GetRequiredServices` manually.
+
+---
+
+#### A note about Validation
+
+- In .Net Core, `Validate` method from `IValidatebleObject` interface is not executed if any Data annotations on the model have already resulted in error.
+- This, Data Annotations take priority over Validation.

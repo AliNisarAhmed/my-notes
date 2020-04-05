@@ -39,7 +39,7 @@ It's easy for candidates to muddle these concepts (probably because both have so
 Best, worst, and expected cases describe the big O (or big theta) time for particular inputs or scenarios.
 Big 0, big omega, and big theta describe the upper, lower, and tight bounds for the runtime.
 
---- 
+---
 
 ### Space Complexity
 
@@ -50,29 +50,29 @@ Big 0, big omega, and big theta describe the upper, lower, and tight bounds for 
 - primitives are usually `O(1)` in space complexity, while strings and reference types are `O(n)`.
 
 - In Space complexity, `O(1)` means that a function, no matter the size of the input array, always needs a constant amount of space to perform the task. e.g.
-  
-	```javascript
-		function logUpTo10(n) {
-			for (let i = 0; i <= n; i++) {
-				console.log(i);
-			}
-		}
-	```
+
+      	```javascript
+      		function logUpTo10(n) {
+      			for (let i = 0; i <= n; i++) {
+      				console.log(i);
+      			}
+      		}
+      	```
 
 - The function below is `O(n)`, because it created an extra array, whose size varies proportionally in terms of the input array
 
-	```javascript
-		function onlyElementsAtEvenIndex(array) {
-		var newArray = Array(Math.ceil(array.length / 2));
-		for (var i = 0; i < array.length; i++) {
-			if (i % 2 === 0) {
-					newArray[i / 2] = array[i];
-			}
-		}
-			return newArray;
-		}
-	```
-	
+      	```javascript
+      		function onlyElementsAtEvenIndex(array) {
+      		var newArray = Array(Math.ceil(array.length / 2));
+      		for (var i = 0; i < array.length; i++) {
+      			if (i % 2 === 0) {
+      					newArray[i / 2] = array[i];
+      			}
+      		}
+      			return newArray;
+      		}
+      	```
+
 ---
 
 It is very possible for O(N) code to run faster than O(1) code for specific inputs. Big O just describes the rate of increase.
@@ -131,7 +131,6 @@ Runtime: O(A x B)
 **When you see a problem where the number of elements in the
 problem space gets halved each time, that will likely be a 0( log N) runtime.**
 
-
 ---
 
 #### Runtime for Recursive Functions
@@ -159,14 +158,20 @@ The space complexity of this algorithm will be O(N). Although we have 0(2 N ) no
 
 Therefore, if we want to convert log 2 p to log 10 , we just do this:
 
-log<sub>10</sub>p = log<sub>2</sub>p /  log<sub>2</sub>10
+log<sub>10</sub>p = log<sub>2</sub>p / log<sub>2</sub>10
 
 **Takeaway: Logs of different bases are only off by a constant factor. For this reason, we largely ignore what the base of a log within a big O expression. It doesn't matter since we drop constants anyway.**
 
 - However, this does not apply to exponents. The base of an
-exponent does matter. 
+  exponent does matter.
   - Compare 2^n and 8^n. If you expand 8^n, you get (2^3)^n, which equals 2^3n,
-  - which equals 2^2n * 2^n. As you can see, 8^n and 2^n are different by a factor of 2^2n. That is very much not a constant factor!
+  - which equals 2^2n \* 2^n. As you can see, 8^n and 2^n are different by a factor of 2^2n. That is very much not a constant factor!
+
+---
+
+#### Memoization and Exponential Time recursive alogs
+
+- Memoization is very common technique to turn exponential time resursive algos (O(2 ^ n)) to O(n).
 
 ---
 
