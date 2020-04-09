@@ -20,3 +20,27 @@
 6. **Code on Demand** - The final and optional constraint is Code on Demand, which allows a client to access specific resources from the server without knowledge of how to process them. This style is typically implemented by web-based applications that have clients using a client-side scripting language, like JavaScript. Having the ability to add functionality to a deployed client not only promotes extensibility but can also help to offload some serverside tasks onto the client, making it more responsive.
 
 Apply these six constraints to your API services—then and only then will they become truly RESTful.
+
+### Http Errors vs Faults
+
+- **Errors** occur when the consumer of the API passes invalid data to the API, and the API correctly rejects this.
+  - Mostly conveyed by **400** HTTP Status codes.
+  - Do not contribute to overall API availability
+- **Faults** OTOH occur when the API fails to return a response to a valid request.
+  - Conveyed by **500** status codes
+  - Do contribute to overall API availability
+
+### Rest conventions
+
+- For validation errors, it is best to return a 422 status code
+- 500 internet server error is used for Faults (that is, something going wrong not because of client's input)
+- 404 not found, or 403 bad request are used in case of client errors (and not in faults)
+
+- A **PUT** request is Idempotent, while a **POST** and **PATCH** request are not.
+- A **PATCH** required a **patch document** to specify how to carry out the changes
+
+  - A **patch document** is a subset of 6 instructions specified in JSON format
+  - the instructions are `add` `remove` `replace` `copy` `move` `test` (check if a value exists)
+
+- A **DELETE** request results in 204 no content code.
+- **DELETE** HTTP method is idempotent
