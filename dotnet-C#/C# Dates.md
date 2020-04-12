@@ -130,3 +130,159 @@
 - Always use `DateTimeOffset.UtcNow` to get the current time. This gives the current time in UTC, rather than system's local time.
 - To Convert to Local time, we can use `DateTimeOffset.UtcNow.ToLocalTime()`.
 - If we do get local time, we can convert it to UTC using `DateTime.Now.ToUniversalTime()`
+
+---
+
+## Calculating Time Differences
+
+- `TimeSpan` represents a time interval. e.g 1 day 23 hours 0 minutes.
+- `TimeSpan` automaticall calculates the correct amount of days, hours, seconds, milliseconds and ticks based on the data it is being created with.
+
+```csharp
+  // we can also supply `ticks` which is 100 nanoseconds
+  var timeSpan = new TimeSpan(60, 100, 200);  // hours minutes and seconds
+
+  timeSpan.Hours; // 13 (this is the number of hours left after rounding the time to nearest day)
+  // 60 hours + 100 minutes + 200 seconds = 2 days 13 hours 43 minutes 20 seconds
+
+
+  // to get total hours we use
+  timeSpan.TotalHours; // 61.72222
+  timeSpan.TotalMilliseconds // similarly
+```
+
+- using TimeSpan.
+
+  ```csharp
+    var start = DateTimeOffset.UtcNow;
+    var end = start.AddSeconds(45);
+
+    TimeSpan difference = start - end;  //
+    difference.Seconds; // seconds
+
+    TimeSpan difference2 = end - start
+    difference2.Seconds; // -45
+
+    difference2.TotalSeconds; // 45
+
+  ```
+
+- NOTE: had we defined `end` like this `DateTimeOffset.UtcNow.AddSeconds(45)`, then the time needed to calculated `end` would also have mattered, hence the actual time may be increased slightly e.g. `45.000034`
+
+#### Adding two Dates
+
+- Addition, multiplication or division of two dates does not make sense.
+- If we do want to do the above operations, we must use the built in operations.
+
+```csharp
+
+  var start = DateTimeOffset.UtcNow;
+  var end = start.AddSeconds(45);
+
+  TimeSpan difference = end - start;  // 0.75
+
+  difference = difference.Subtract()
+  // similarly
+  // difference.Add() & difference.Divide() & difference.Multiply(2)  -> 1.5
+
+
+  // we can also use methods directly on dates
+
+  var end = start.AddDays() // or AddHours, AddMinutes etc
+```
+
+### Displaying Week Number
+
+```csharp
+
+  Calendar calendar = CultureInfo.InvariantCulture.Calendar;
+
+  var start = new DateTimeOffset(2007, 12, 31, 0, 0, 0, TimeSpan.Zero);
+
+  calendar.GetWeekOfYear(
+    start.DateTime, // to convert to DateTime
+    CalendarWeekRule.FirstFourDayWeek,
+    DayOfWeek.Monday
+    );  // This gives us week 53
+
+  // but as per ISO 8601, weeks should always have 7 days,
+  // so the above date should actually be a part of the week for next year.
+
+  var isoWeek = ISOWeek.GetWeekOfYear(start.DateTime); // 1
+  // so the above gives us week number as per ISO8601
+
+```
+
+### Extending a Date (by a certain time)
+
+```csharp
+
+  var contractDate = new DateTimeOffset(2019, 7, 1, 0, 0, 0, TimeSpan.Zero);
+  // 2019-07-01 12:00:00 AM +00:00
+
+  // let say we want to extend the above contract by a month, or a year.
+
+  // Lets add 6 months
+
+  contractDate = contractDate.AddMonhts(6);
+  // 2020-01-01 12:00:00 AM +00:00
+
+  // The problem above is that it is expiring on 1st of Jan, instead of by
+  // the end of the year
+
+  // we could subtract a tick, and that would put the time back to the previous year
+
+  contractDate = contractDate.AddMonths(6).AddTicks(-1);
+  // 2019-12-31 11:59:59 PM +00:00
+
+
+
+  // now lets say, for the same contract date, we want to extend it by a month
+
+  contractDate = contractDate.AddMonths(1);
+  // 2020-03-28 11:59:59 PM +00:00
+
+  // the problem now is the the whole month of March is not covered.
+  // the date is stopping at 28 March, when it should go all the way till
+  // March 31.
+
+
+
+```
+
+```csharp
+
+
+  // lets define a method to deal with the above
+  // the idea is to find the exact last day of a month every time we
+  // extend a contract.
+
+  public static class XYZ
+  {
+      public static DateTimeOffset ExtendContract(
+        DateTimeOffset current,
+        int months)
+      {
+          var newContractDate = current.AddMonths(months).AddTicks(-1);
+
+          // DateTime.DaysInMonth() is only available in DateTime class
+          return newDateTimeOffset(
+            newContractDate.Year,
+            newContractDate.Month,
+            DateTime.DaysInMonth(newContractDate.Year, newContractDate.Month),
+            23,
+            59,
+            59,
+            current.Offset
+          );
+      }
+  }
+
+  // now when we extend the contract defined in the previous snippet
+
+  contractDate = ExtendContract(contractDate, 1);
+  // 2020-03-31 11:59:59 PM +00:00
+
+```
+
+---
