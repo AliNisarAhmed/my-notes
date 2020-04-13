@@ -418,3 +418,24 @@ Not all operating systems follow the ephemeral port recommendations of the IANA.
   a firewall is performed by the same device.
   And firewalls can run on individual hosts instead of being a network device.
   All major modern operating systems have firewall functionality built-in.
+
+## Application Layer
+
+- There are many application protocols, but for each application type, the protocol is still standardized.
+  - The same is true for most other classes of application.
+    You might have dozens of choices for an FTP client, but
+    they all need to speak the FTP protocol in the same way.
+- In the more commonly used in academia, the OSI (Open Systems Iterconnection) model, there are two more layers between application layer and transport layer, namely, Session and Presentation Layer
+  - Session: sits above transport, The concept of a session layer is that it's responsible for
+    things like facilitating the communication between actual applications and
+    the transport layer.
+    It's the part of the operating system that takes the application layer data
+    that's been unencapsulated from all the layers below it, and
+    hands it off to the next layer in the OSI model, the presentation layer.
+  - Presentation layer: The presentation layer is responsible for
+    making sure that the unencapsulated application layer data
+    is actually able to be understood by the application in question.
+    This is the part of an operating system that might handle encryption or
+    compression of data.
+
+#### NOTE: Watch the video to see how all the layers work together to perform the task of sending data over a network.
