@@ -439,3 +439,46 @@ Not all operating systems follow the ephemeral port recommendations of the IANA.
     compression of data.
 
 #### NOTE: Watch the video to see how all the layers work together to perform the task of sending data over a network.
+
+---
+
+## Domain Name Syetem (DNS)
+
+- For better human readability, we need to translate the IP addresses of web servers e.g. 192.168.1.100 to e.g. www.weather.com, this is the job of DNS.
+- A domain name is just the term we use for something that can be resolved by DNS.
+
+### Steps involved in Name Resolution
+
+- At its most basic, DNS is a system that converts domain names into IP addresses.
+- This process of using DNS to turn a domain name into an IP address is known as **name resolution**.
+- The first thing that's important to know is that DNS servers, are one of the things that need to be specifically configured at a node on a network.
+- a computer, in order to operate on a modern network, need to have these four things configured, MAC Address, IP Address, subnet mask, gateway for a host, and DNS Server.
+- A computer, though, can operate fine without a DNS Server
+- There are five primary types of DNS Servers
+  1. Caching Name servers
+  2. Recursive Name servers
+  3. Root name servers
+  4. TLD Name servers
+  5. Authoritative Name servers
+- Any given Name server can perform many of the above roles at once.
+- Caching and Recurssive name servers are usually provided by the local ISP.
+- If the name server does know the IP of a domain name, it will perform the full search, and then that server is known as recursive name servers.
+- To avoid doing that, name servers cache the domain names, hence these servers are called caching name servers.
+- All domain names in the global DNS system have a TTL (time to live.)
+  - This is a value in seconds, that can be configured by the owner of a domain name for how long a name server is allowed to cache in entry before it should discard it and perform a full resolution again.
+  - Used to be a day, but now are usually few hours to a few minutes.
+- Recursive Name Resolution
+  - The first step always is to contact a Root name Server.
+  - There are "13" total Root name servers and they're responsible for directing queries toward the approporiate TLD Name servers.
+  - These Root name servers are now globally distributed via anycast.
+  - **Anycast** is a technique that's used to route traffic to different destinations depending on factors like location, congestion, or link health.
+  - The Root servers respond to a DNS lookup with the name of the TLD Name server that should be contacted next.
+- TLD (Top Level Domain) Name Servers
+  - TLD is the last part of any domain name, e.g. dot com part of www.facebook.com
+  - For each TLD in existence, there is a TLD Name server
+  - The TLD Name servers respond again with a redirect, this time informing the computer performing the name lookup with what Authoritative name server to contact.
+- Authoritative Name Server
+  - responsible for the last two parts of any domain name which is the resolution at which a single organization may be responsible for DNS Lookup.
+  - e.g. for www.weather.com, the TLD name server would point a lookup at the authoritative server for Weather.com, which would likely be controlled by the Weather Channel, the organization that itself runs the site.
+- This strict hierarchy is very important to the stability of the internet, making sure that all full DNS resolutions go through a strictly regulated and controlled series of lookups to get the correct response. This is the best way to protect against maliciious parties redirecting traffic.
+- Out local computer (phone or desktop) will generally have its own temporary DNS cache as well, that way, it does not have to bother its local name server for every TCP connection either.

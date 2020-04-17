@@ -586,7 +586,7 @@ class Horse : Mammal // derived class
 
 - The `HasValue` property indicates whether a nullable type contains a value or is `null`.
 
-- You can retrieve the value of a nonnull nullable type by reading the Valueproperty
+- You can retrieve the value of a nonnull nullable type by reading the Value property
 
   ```csharp
     int? i = null;
@@ -744,7 +744,7 @@ class Horse : Mammal // derived class
 
 - The effect of this cast is subtle. The compiler notices that you’ve specified the type `int` in the cast. Next, the compiler generates code to check what `o` actually refers to at runtime. It could be absolutely anything. Just because your cast says `o` refers to an int, that doesn’t mean it actually does. If `o` really does refer to a boxed `int` and everything matches, the cast succeeds, and the compiler-generated code extracts the value from the boxed int and copies it to i. This is called **unboxing**.
 
-![Un-Boxing](./unboxing.png)
+  ![Un-Boxing](./unboxing.PNG)
 
 - On the other hand, if `o` does not refer to a boxed `int`, there is a type mismatch, causing the cast to fail. The compiler-generated code throws an `InvalidCastException` exception at runtime.
 
