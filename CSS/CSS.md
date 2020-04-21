@@ -136,3 +136,57 @@ p {
 - Use Padding to give "width" and "height" to buttons.
 - Always put the class on the button/link, rather than the container.
 - Use a ratio of 1:2.5 (h:w) on a button.
+
+## Media Queries
+
+- Media queries lets us add new styles that only target specific conditions
+
+- syntax `@media () { ... }`
+
+```css
+@media media-type and (media-features) {
+	// ...
+}
+```
+
+- **Media type** lets us target different types of media
+  - Screen
+  - Print
+  - Speech
+- **Media Condition** lets us target specific conditions within the **media type**
+  - Widths
+  - Orientation
+  - Specific features
+- both these properties are optional, but at least one must be specified.
+- we can combine type with a condition using `and` keyword
+
+```css
+@media screen and (min-width: 960px) {
+	// ...
+}
+```
+
+- Examples
+
+```css
+/* works over and above 500px, not below */
+@media (min-width: 500px) {
+	body {
+		background: pink;
+	}
+}
+
+/* works over 501 px but only up to 999px */
+@media (min-width: 501px) and (max-width: 999px) {
+	body {
+		background: yellow;
+	}
+}
+
+/* works up tp 1500px and not more than that */
+@media (max-width: 1500px) {
+	body {
+		background: orange;
+	}
+}
+```

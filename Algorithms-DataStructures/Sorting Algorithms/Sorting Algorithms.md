@@ -117,3 +117,28 @@ function helper(arr, start = 0, end = arr.length - 1) {
 	return pivotIndex;
 }
 ```
+
+## Radix Sort
+
+- All the algorithms above are **comparison sort** algorithms, meaning they need to compare elements to get the order.
+- Mathematically, comparison sort at best give us $O(n \log n)$ time complexity.
+- Radix sort, is not a comparison sort algo, rather it uses properties of numbers to sort the array.
+- Radix sort only works for array of integers.
+- Time complexity for Radix sort is $O(nk)$, where n is the lenght of the input array and k is the word length of the largest number in the array.
+
+### Algo
+
+#### Helpers
+
+- `getDigit` at place: divide num by 10^place, drop the decimals, and mod by 10.
+- `digitCount`: Log10 of num gives us word count - 1, we add 1 to the result. - for example digitCount(7654) => 10^x = 7654 => 10^3 + some decimal
+
+#### Main
+
+- figure out how many digits the largest number has, call it k
+- loop from 0 to k - 1
+- for each iteration
+  - create buckets for each digit (0, 9)
+  - place each number in the corresponding bucket based on its kth number
+- replace our existing array with values in our buckets, starting with 0 and going up to 9.
+- return the list.

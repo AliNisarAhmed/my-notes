@@ -447,7 +447,7 @@ Not all operating systems follow the ephemeral port recommendations of the IANA.
 - For better human readability, we need to translate the IP addresses of web servers e.g. 192.168.1.100 to e.g. www.weather.com, this is the job of DNS.
 - A domain name is just the term we use for something that can be resolved by DNS.
 
-### Steps involved in Name Resolution
+#### Steps involved in Name Resolution
 
 - At its most basic, DNS is a system that converts domain names into IP addresses.
 - This process of using DNS to turn a domain name into an IP address is known as **name resolution**.
@@ -482,3 +482,153 @@ Not all operating systems follow the ephemeral port recommendations of the IANA.
   - e.g. for www.weather.com, the TLD name server would point a lookup at the authoritative server for Weather.com, which would likely be controlled by the Weather Channel, the organization that itself runs the site.
 - This strict hierarchy is very important to the stability of the internet, making sure that all full DNS resolutions go through a strictly regulated and controlled series of lookups to get the correct response. This is the best way to protect against maliciious parties redirecting traffic.
 - Out local computer (phone or desktop) will generally have its own temporary DNS cache as well, that way, it does not have to bother its local name server for every TCP connection either.
+
+### DNS and UDP
+
+- DNS is a great example of an application layer that uses UDP for the transport layer instead of TCP.
+- UDP is connectionless, this means there is no setup and teardown of a connection like TCP.
+- So much less traffic needs to be transmitted overall.
+- a typical recursive name lookup using TCP will require 44 packets, compared to just 8 packets with UDP, demonstrating why protocols like UDP exist in addition to the more robust TCP.
+- If an error occurs, the DNS resolver just asks again if it doesnt't get a response from the name server.
+- However, DNS lookup over TCP does exist and is in use all over the world
+  - the reason being that as the web has gotten more complex, it's no longer the case that all DNS lookup responses can fit in a single UDP datagram.
+  - In these situations, a DNS name server would respond with a packet explaining that the response is too large
+  - the DNS client would then establish a TCP connection in order to perform the lookup.
+
+### Resource Record Type
+
+- DNS in practice operates with a set of defined resource record types.
+- These allow for different kinds of resolutions to take place.
+- There are dozens of different record types defined, but a lot of them only serve a very specialized purpose.
+- The most common resource record is **A record**
+  - An A record is used to point a certain domain name at a certain IPv4 IP address.
+  - usually a single domain name can have single A record, but multiple records are possible two.
+  - the latter allows for a technique known as **DNS round robin** to be used to balance traffic across multiple IPs.
+  - Round robin is a concept that involves iterating over a list of items one by one in an orderly fashion, with the hope that this ensures a fairly equal balance of each entry on the list that's selected.
+    - So let's say that Microsoft has 4 IP addresses registered for www.microsoft.com,
+    - for the first client, they may send IP address in the order A, B, C, D (where the client is intended to go to the address A)
+    - but for the next client, the response would be B, C, D, A
+    - This pattern would continue, cycling through all the A records configured
+- **Quad A** record is very similar to an A record except that it returns an IPv6 address.
+- A **CNAME record** is used to redirect traffic from one domain to another.
+  - CNAME stands for Canonical name
+  - e.g. google.com points to www.google.com
+  - CNAMEs are really useful because they ensure you only have to change the canonical IP address of a server in one place e.g. www.google.com (the rest of the domain names can just point to this one)
+- **MX Record** stands for mail exchange
+  - this resource record is used in order to deliver e-mail to the correct server.
+  - Many companies run their web and mail servers on different machines with different IPs, so the MX record makes it easy to ensure that email gets delivered to a company's mail server, while other traffic like web traffic would get delivered to their web server
+- **SRV Record**
+  - stands for service record.
+  - an SRV record can be defined to return the specifics of many different service types.
+  - For example, SRV records are often used to return the records of services like CalDAV, which has a calendar and scheduling service.
+- **TXT** stands for text and was originally intended to be used only for associating some descriptive text with a domain name for human consumption.
+  - The idea was that, you could leave notes or messages that humans could discover and read to learn more about arbitrary specifics of your network.
+  - This text record is often used to communicate configuration preferences about network services that
+    you've entrusted other organizations to handle for your domain.
+
+### Anatomy of a Domain name
+
+for `www.google.com`
+
+- `.com` is Top level Domain
+  - There are only a few TLDs defined
+  - there are country specific TLDs
+  - TLDs are handled by a non-profit **ICANN** (Internet Coporation for Assigned Names and Numbers)
+  - ICANN is a sister organization to **IANA**, and together they help define and control both the global IP spaces, along with the global DNS system.
+- `google` is known as domain
+  - Domains are used to demarcate where control moves from a TLD name server, to an authoritative name server.
+  - This is typically under the control of an independent organization, or someone outside of ICANN.
+  - Domains can be registered and chosen by any individual or company, but they must all end in one of the predefined TLDs.
+- `www` is known as subdomain (or hostname if it's only assigned to one host)
+- When we combine all the three parts, we get **FQDN** (Fully qualified domain name)
+- While it costs money to officially register a domain with a registrar, subdomains can be freely chosen and
+  assigned by anyone who controls such a registered domain.
+- A **registrar** is just a company that has an agreement with ICANN to sell unregistered domain names.
+- Technically you can have lots of subdomain names, for example `host.sub.sub.subdomain.domain.com` can be completely valid. Although you rarely see fully qualified domain names with that many levels.
+- DNS can technically support up to 127 levels of domain in total for a single fully qualified domain name.
+- There are some other restrictions in place for how your domain name can be specified.
+  - Each individual section can only be 63 characters long and
+  - a complete FQDN is limited to a total of 255 characters
+
+### DNS Zones in Authoritative Name servers
+
+- Authoritative name servers are responsible for responding to name resolution requests for specific domains,
+  but they do more than that.
+- An authoritative name server is responsible for a specific DNS zone.
+- DNS zones are a hierarchical concept.
+- The root name servers are responsible for the root zone.
+- Each TLD name server is responsible for the zone covering its specific TLD,
+  and what we refer to as authoritative name servers are
+  responsible for some even finer-grained zones underneath that.
+- The root and TLD name servers are actually just authoritative name servers, too.
+- It's just that the zones that they're authoritative for are special cases.
+- It should be noted that zones don't overlap.
+  - For example, the administrative authority of the TLD name server for the `.com` TLD doesn't encompass the `google.com` domain.
+  - Instead, it ends at the authoritative server responsible for google.com.
+- The purpose of DNS zones is to allow for easier control over multiple levels of a domain.
+- As the number of resource records in a single domain increases, it becomes more of a headache to manage them all. Network administrators can ease this pain by splitting up their configurations into multiple zones.
+  - Example
+  - Let's imagine a large company that owns the domain largecompany.com. This company has offices in Los Angeles, Paris, and Shanghai, very cosmopolitan.
+    Let's say each office has around 200 people with their own uniquely named desktop computer.
+  - This would be 600 A records to keep track of if it was all configured as a single zone. What the company could do, instead, is split up each office into their own zone. So now, we could have la.largecompany.com, pa.largecompany.com, and sh.largecompany.com as subdomains, each with their own DNS zones.
+  - A total of four authoritative name servers would now be required for the setup, one for largecompany.com and one for each of the subdomains.
+- Zones are configured through what are known as zone files, simple configuration files that declare all resource records for a particular zone
+
+### DHCP (Dynamic Host Configuration Protocol)
+
+- Managing hosts on a network can be a daunting and time consuming task.
+  - Every single computer on a modern TCP/IP based network needs to have at least four things to specifically configured.
+    - An IP Address,
+    - the subnet mask for the local network,
+    - a primary gateway,
+    - and a name server.
+  - On their own, these four things don't seem like much, but when you have to configure them on hundreds of machines, it becomes super tedious. Out of these four things, three are likely the same on just about every node on the network, the subnet mask, the primary gateway, and DNS server. The IP needs to be different on every host.
+- That could require a lot of tricky configuration work, and this is where DHCP, or Dynamic Host Configuration Protocol, comes into play.
+- DHCP is an application layer protocol that automates the configuration process of hosts on a network.
+  - With DHCP, a machine can query a DHCP server when the computer connects to the network and receive all the network configuration in one go.
+  - Not only does DHCP reduce the administrative overhead of having to configure lots of network devices on a single network, it also helps address the problem of having to choose what IP to assign to what machine.
+- Using DHCP, you can configure a range of IP addresses that's set aside for client devices that require fixed static IP, like gateways and DNS Servers.
+- This ensures that any of these devices can obtain an IP address when they need one, but solves the problem of having to maintain a list of every node on the network and its corresponding IP.
+- DCHP can operate in one of these standard ways
+  - Dynamic Allocation
+    - A range of IP addresses is set aside for client devices and one of these IPs is issued to these devices when they request one
+    - Under a dynamic allocation, the IP of a computer could be different, almost every time it connects to the network.
+  - Automatic Allocation
+    - very similar to dynamic allocation, in that a range of IP addresses is set aside for assignment purposes.
+    - The main difference here is that the DHCP server is asked to keep track of which IPs it's assigned to certain devices in the past.
+    - Using this information, the DHCP server will assign the same IP to the same machine each time, if possible.
+  - Fixed Allocation
+    - requires a manually specified list of MAC address and the corresponding IPs.
+    - When a computer requests an IP, the DHCP server looks for its MAC address in a table, and assigns the IP that corresponds to that MAC address.
+    - If the MAC address isn't found, the DHCP server might fall back to automatic or dynamic allocation, or it might refuse to assign an IP altogether.
+    - This can be used as a security measure to ensure that only devices that have had their MAC address specifically configured at the DHCP server will ever be able to obtain an IP and communicate on the network.
+
+#### DHCP Discovery (DHCP in action)
+
+- The process by which a client configured to use DHCP attempts to get network configuration information is known as DHCP discovery.
+- DHCP Discovery has for steps
+  - Server Discovery
+    - The DHCP Client sends a DHCP DISCOVER message out onto the network.
+    - Since the machine doesn't have an IP and it doesn't know the IP of the DHCP server, a specially crafted broadcast message is formed instead.
+    - DHCP listens on UDP port 67 and DHCP discovery messages are always sent from UDP port 68.
+    - So the DHCPDISCOVER message is encapsulated in a UDP datagram with a destination port of 67 and a source port of 68.
+    - This is then encapsulated inside of an IP datagram with a destination IP of 255.255.255.255, and a source IP of 0.0.0.0.
+    - This broadcast message would get delivered to every node on the local area network. And if a DHCP server is present, it would receive this message.
+  - Next the DHCP server would examine its own configuration and would make a decision on what, if any, IP address to offer to the client.
+    - This would depend on if it's configured to run with dynamic, automatic or fixed address allocation.
+    - The response would be sent as a DHCPOFFER message with a destination port of 68, a source port of 67, a destination broadcast IP of 255.255.255.255, and its actual IP as the source.
+    - Since the DHCP offer is also a broadcast, it would reach every machine on the network.
+    - The original client would recognize that this message was intended for itself. This is because the DHCPOFFER has the field that specifies the MAC address of the client that sent the DHCPDISCOVER message.
+  - the DHCP client would respond to the DHCPOFFER message with a DHCPREQUEST message.
+    - This message essentially says, yes, I would like to have an IP that you offer to me.
+    - Since the IP hasn't been assigned yet, this is again sent from an IP of 0.0.0.0, and to the broadcast IP of 255.255.255.255.
+  - Finally, the DHCP server receives the DHCPREQUEST message and responds with a DHCPACK or DHCP acknowledgement message.
+    - This message is again sent to a broadcast IP of 255.255.255.255, and with a source IP corresponding to the actual IP of the DHCP server.
+    - Again, the DHCP client would recognize that this message was intended for itself by inclusion of its MAC address in one of the message fields.
+    - The networking stack on the client computer can now use the configuration information presented to it by the DHCP server to set up its own network layer configuration.
+- At this stage, the computer that's acting as the DHCP client should have all the information it needs to operate in a full fledged manner on the network it's connected to.
+- All of this configuration is known as **DHCP lease** as it includes an expiration time.
+- A DHCP lease might last for days or only for a short amount of time.
+- Once a lease has expired, the DHCP client would need to negotiate a new lease by performing the entire DHCP discovery process all over again.
+- A client can also release its lease to the DHCP server, which it would do when it disconnects from the network.
+- This would allow the DHCP server to return the IP address that was assigned to its pool of available IPs.
