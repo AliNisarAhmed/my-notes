@@ -222,12 +222,24 @@ However, they do take up more memory considering an additional pointer.
 
 #### Stack
 
+- Stacks are a LIFO data structure where the last value in is always the first one out.
+- Stacks are used to handle function invocations (the call stack), for operations like undo/redo, and for routing (as in browser history)
+- we cant use a linked list directly because for stacks, push and pop is O(1), whereas for linked list pop() is O(n)
+
 Big O of stack
 
 - insertion - `O(1)`
 - Removal - `O(1)`
 - Searching - `O(n)`
 - Access - `O(n)`
+
+---
+
+#### Queues
+
+- FIFO data structure
+- Used is: Background tasks, uploading resources, printing / task processing
+- Big O - Insertion $O(1)$ - Removal $O(1)$ - Searching $O(N)$ - Access $O(N)$
 
 ---
 
@@ -242,7 +254,7 @@ BSTs are more specific version of Binary Trees, where there are only two childre
 - Insertion - `O(log n)`
 - Searching - `O(log n)`
 
-But above are best and average cases, in the worst case (like a completely lop-sided BST), both get worse to `O(n)`
+Both above are best and average cases, in the worst case (like a completely lop-sided BST), both get worse to `O(n)`
 
 ---
 
@@ -268,9 +280,13 @@ If a tree has a lot of depth, then DFS can end up taking alot of space.
 ###### Use cases
 
 DFS-In-order for Binary Search Tree results in an ordered, sorted list of values.
-DFS-Pre-order results in the lis tof values being in the same order as the tree, meaning, from the values array we can easily re-create the whole array. Hence, pre-order results in easy storage and re-creation of that tree.
+DFS-Pre-order results in the list of values being in the same order as the tree, meaning, from the values array we can easily re-create the whole array. Hence, pre-order results in easy storage and re-creation of that tree.
 
 ### Binary Heap
+
+- A Binary Tree where
+  - every number is either less than the root i.e. root is the largest element (called max heaps)
+  - every nunmber is greater than the root i.e. root is the smallest element (called min heaps)
 
 A binary heap is defined as a binary tree with two additional constraints:
 
