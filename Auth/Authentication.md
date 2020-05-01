@@ -69,3 +69,140 @@
 - For the most part, federation is not needed as a dev
   - but its good to know
   - for example, someone might say, why does Azure AD applications insists on hosting a browser window? because if the app decides to federate the identity to ADFS, then the redirect should work (native apps cant be redirected to).
+
+---
+
+# Web Application Authentication
+
+- Usually Auth is done with 3rd party.
+
+### Service Provider or Relying party
+
+- The app providing the actual service, asking for authentication. (e.g. like your own app, or sharepoint, or like Drivable Platform etc)
+
+### Identity Provider (IdP)
+
+- The entity providing the authentication service.
+
+## Mechanism
+
+- Entities
+  - User
+  - Web App
+  - IdP
+- User needs to communicate with Both Web App and IdP.
+- WebApp and IdP do not directly communicate with each other
+
+## Key Tenets
+
+- No Direct Interaction between relying Party and IdP.
+- A web app may support multiple IdP and vice verca
+- However, before the user has actually Authenticated with the IdP, the web app does not know which IdP they are using.
+- If the web app hints to the user to use a particular IdP, that process is called Home ground Discovery
+- The entire process is async
+- The Service Provider maintains no state.
+
+## Web Application Auth protocols
+
+- WS-Fed
+- SAML (Both a protocol and a token format)
+- OpenId Connect
+
+### WS-Fed
+
+- User visits a website
+- The website says you are not authenticated
+- But here is a list of IdPs I support
+- the user picks an IdP
+- Provide credentials
+- and then through a bunch of POST requests, the Service Provider is able to identify the user
+
+* On Azure, if we go to App registrations, we can see two endpoints related to WS-Fed
+  - Federation Metadata document
+  - WD-Federation sign-on endpoint - accepts our creds and issues auth token
+
+- The most important WS-Fed request parameter is `wa` who's value is usually `wsignin1.0`
+
+* WS-Fed uses SAML 1.1 Tokens (not to be confused with the Sign-in Protocol named SAML, which itself uses SAML 2.0 tokens)
+
+### SAML
+
+- User lands on a website
+- Website says, you are not authenticated.
+- Please go to one of this list of IdP
+- So far similar to WS-Fed, but one difference is that the login request could have originated from IdP as well, not just the user
+
+* Important parameters
+  - SAMLRequest
+    - Base64 envoded XML Document
+  - RelayState
+    - Context
+  - SigAlg
+    - Signature Algorithm used to sign the request
+  - Signature
+    - Signature of the request
+
+#### SAML Flows
+
+- SP-initiated
+- IdP initiated
+
+### OpenID Connect
+
+- By far the most commonly used
+
+### V1 vs V2 Apps
+
+- V1 are the older OAuth apps
+- V2 use OpenID Connect
+
+### Tokens in OpenID Connect
+
+- id_token
+  - User's identity
+- Refresh token
+  - long lived token - used to get the fresh access tokens
+- Access token
+  - The short lived
+  - put in the header `Authorization`
+
+### Auth Code Flow
+
+let
+`authEndpoint = /oauth2/v2.0/authorize`
+and
+`tokenEndpoint = /oauth2/v2.0/token`
+
+- User sends login request to Web app
+- web app sends the user to authEndpoint
+- User provides creds
+- if Sign in is successful, the user is shown a consent dialog (important)
+  - The consent dialog presents the user with the scopes that the web app is asking for, and ask for user'c consent
+- If all goes well, the user is given back an auth code
+- User takes 3 things: the code + client id (web app's id) + secret, and goes to the tokenEndpoint
+- where the id_token, access_token and if asked, a refresh token is issued.
+- user is also sent back permissions in the shape of scopes.
+- now, with the id_token, a session is established between web app and User.
+
+### Single Sign Out
+
+- When the user signs out, they just dont need to sign out from the web app
+- indeed, they also need to sign out of the IdP and any ADFS (Active Directory Federation Services)
+- So we need to make sure we perform logout from all of these.
+
+* So, the user logs out of the application by logging out of IdP
+  - That's why there is usually a logout redirect url, which the IdP will call after a successful logout to redirect the user back to the app.
+
+## Authentication in Web APIs
+
+- Auth in Web APIs uses Access tokens
+- These tokens are sent in the `Authorization`: `Bearer <token>` header
+- The token can be opaque (not to be decoded by the client) or JWT (decodable by the client)
+- These tokens are generally short lived (usually 1 hour or so)
+
+### Validation of Auth Token
+
+- JWK Keys - An OpenID Connect compliant server will have a well known "configuration" endpoint from where JWK keys can be downloaded. The web app is expected to cache these keys.
+- Next step is to decode tokens.
+- Verify the signature of the JWT
+- Verify the claims in the tokens

@@ -50,3 +50,22 @@ AzureAD uses Standards Based Authentication, meaning someone supporting those st
 
 - We can register Enterprise apps (e.g. Docusign, github, G Suite) and manager their sign ins using Azure Ad. (These are also called Gallery applications)
   - we can also add non-gallery apps, but these must conform with the Azure AD known standards like SAML, or SCIM
+
+## Service Principals
+
+- In Azure, Service Principals are distinct from Apps, though the two are frequently confused
+- A Service Principal is an Identity created for use with Applications, Hosted services and other things in Azure.
+- The appropriate uses for Service Principals is usually Automated Scenarios, where we may not have the UI to login, so we can use Azure CLI to login using SP.
+- When we create a managed identity or an app on Azure, Service Principals are being created to handle auth for those apps.
+- We have the ability to add Service principals to Groups, and then assign Roles, credentials to that group.
+
+#### Relation between Apps and Service Principals
+
+- Apps and SPs are different entities.
+- Whenever am app gets any permission, it must be associted with an SP.
+- By default, when we create an App on Azure, it gets the `User.Read` permission
+- When we create an app, we get an SP with it, and when we create an SP, we get an app with it. They are joined at the hip.
+- It is possible to create an app without SP, but it wont have any permissions, as soon as we give it some permission, it gets assigned an SP.
+- It is common to have SPs without Apps (for RBAC or managed identities) but rare to have Apps w/o SPs
+
+---
