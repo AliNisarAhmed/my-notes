@@ -282,6 +282,8 @@ If a tree has a lot of depth, then DFS can end up taking alot of space.
 DFS-In-order for Binary Search Tree results in an ordered, sorted list of values.
 DFS-Pre-order results in the list of values being in the same order as the tree, meaning, from the values array we can easily re-create the whole array. Hence, pre-order results in easy storage and re-creation of that tree.
 
+---
+
 ### Binary Heap
 
 - A Binary Tree where
@@ -293,3 +295,39 @@ A binary heap is defined as a binary tree with two additional constraints:
 - Shape property: a binary heap is a _complete binary tree_; that is, all levels of the tree, except possibly the last one (deepest) are fully filled, and, if the last level of the tree is not complete, the nodes of that level are filled from left to right.
 - Heap property: the key stored in each node is either greater than or equal to (≥) or less than or equal to (≤) the keys in the node's children, according to some total order.
 - (Where parent >= children)(>=) are called max-heaps, (where parent <= children) (<=) are called min-heaps.
+
+### Priority Queues
+
+- Min Binary Heaps are used to represent a Priority Queue when lower number means higher priority.
+
+#### Time Complexity of Binary Heaps
+
+- insert: $O(\log n)$
+- extractMin/extractMax: $O(\log n)$
+- delete a key: $(\log n)$
+- getMin/getMax (return the root of the tree): $O(1)$
+
+---
+
+### Hash Tables
+
+- Hash Tables ares used to store Key Value pairs
+- Like arrays, but the keys are not ordered
+- They are found in all programming languages of the world, as objects (JS), Dictionary (python), Map (JS, Haskell, Java).
+- A function that performs the conversion of a key and maps it into a value, for storage inside the Hash table is called the **hash function**.
+  - What makes a good hash function?
+    - Fast (constant time)
+    - Uniform output (does not cluster the outputs at specific indices, but ditributes uniformly)
+    - Pure (deterministic)
+- **Collisions** - when the output of the hash function is same for two or more keys, meaning that we need to store both keys at one hash index
+  - Two strategies to deal with Collisions
+    - **Separate Chaining** - at each index in the array (the main array), we store multiple values inside another array or a linked list, allowing us to store multiple keys at the same index.
+    - **Linear Probing** - when we find a collision, we search through the main array to find the next empty slot, and insert the duplicate KVP there
+
+### Time Complexity
+
+- Insert: $O(1)$
+- Deletion: $O(1)$
+- Access: $O(1)$
+
+However, a bad hash function, which does not distrbiute the KVPs uniformly (e.g. one that accumulates all the values at one index), may result in degradation of above.

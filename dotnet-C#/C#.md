@@ -404,59 +404,76 @@ using ( type variable = initialization)
 
 ## **Classes**
 
-- `abstract` classes: A class that is meant to be a Base class to other classes, and not be instantiated from (but can be inherited from).
+### `abstract` classes:
+
+A class that is meant to be a Base class to other classes, and not be instantiated from (but can be inherited from).
+
 - Normal or Concrete `clases` may have virtual methods.
-- `sealed` classes: prevents other classes from inheriting from it.
+- Generally, we use abstract class at the time of inheritance.
+- A user must use the `override` keyword before the method which is declared as abstract in child class, the abstract class is used to inherit in the child class.
+- An abstract class cannot be inherited by structures.
+- It can contains constructors or destructors.
+- It can implement functions with non-Abstract methods.
+- It cannot support multiple inheritance.
+- It can’t be static.
 
-  - Unless you consciously design a class with the intention of using it as a base class, it’s extremely unlikely that it will function well as a base class. With C#, you can use the `sealed` keyword to prevent a class from being used as a base class if you decide that it should not be.
+### `sealed` classes:
 
-    ```csharp
-    sealed class Horse : GrazingMammal, ILandBound
-    {
-      // ...
-    }
-    ```
+prevents other classes from inheriting from it.
 
-  - If any class attempts to use `Horse` as a base class, a compile-time error will be generated.
-
-  - Note that a sealed class cannot declare any `virtual` methods (bacause `virtual` methods need an implementation in derived class) and that an `abstract` class cannot be sealed (`abstract` classes are meant to be derived from).
-
-- `static` classes:
-
-  - class that cannot be instantiated, nor can be inherited from (hence they cannot be `Base` Class to other classes).
-  - A static class can contain only static members.
-  - The purpose of a static class is purely to act as a holder of utility methods and fields.
-  - A static class cannot contain any instance data or methods, and it does not make sense to try to create an object from a static class by using the new operator.
-  - In fact, you can’t actually use new to create an instance of an object using a static class even if you want to. (The compiler will report an error if you try.)
-
-- `partial` classes: When you split a class across multiple files, you define the parts of the class by using the partial keyword in each file
-
-- Anonymous Classes: You create an anonymous class simply by using the `new` keyword and a pair of braces defining the fields and values that you want the class to contain.
+- Unless you consciously design a class with the intention of using it as a base class, it’s extremely unlikely that it will function well as a base class. With C#, you can use the `sealed` keyword to prevent a class from being used as a base class if you decide that it should not be.
 
   ```csharp
-    var myAnonymousObject = new { Name = "John ", Age = 47 };
-
-    var anotherAnonymousObject = new { Name = "Diana ", Age = 53 };
+  sealed class Horse : GrazingMammal, ILandBound
+  {
+    // ...
+  }
   ```
 
-  - The C# compiler uses the names, types, number, and order of the fields to
-    determine whether two instances of an anonymous class have the same type.
+- If any class attempts to use `Horse` as a base class, a compile-time error will be generated.
 
-  - In the case above, the variables myAnonymousObject and anotherAnonymousObject have the same number of fields, with the same name and type, in the same order, so both variables are instances of the same anonymous class. This means that you
-    can perform assignment statements such as this:
+- Note that a sealed class cannot declare any `virtual` methods (bacause `virtual` methods need an implementation in derived class) and that an `abstract` class cannot be sealed (`abstract` classes are meant to be derived from).
 
-    ```csharp
+## `static` classes:
 
-    anotherAnonymousObject = myAnonymousObject;
+- class that cannot be instantiated, nor can be inherited from (hence they cannot be `Base` Class to other classes).
+- A static class can contain only static members.
+- The purpose of a static class is purely to act as a holder of utility methods and fields.
+- A static class cannot contain any instance data or methods, and it does not make sense to try to create an object from a static class by using the new operator.
+- In fact, you can’t actually use new to create an instance of an object using a static class even if you want to. (The compiler will report an error if you try.)
 
-    ```
+## `partial` classes:
 
-  - There are quite a few restrictions on the contents of an anonymous class.
+When you split a class across multiple files, you define the parts of the class by using the partial keyword in each file
 
-    - anonymous classes can contain only public fields,
-    - the fields must all be initialized,
-    - they cannot be static,
-    - and you cannot define any methods for them.
+## Anonymous Classes:
+
+You create an anonymous class simply by using the `new` keyword and a pair of braces defining the fields and values that you want the class to contain.
+
+```csharp
+  var myAnonymousObject = new { Name = "John ", Age = 47 };
+
+  var anotherAnonymousObject = new { Name = "Diana ", Age = 53 };
+```
+
+- The C# compiler uses the names, types, number, and order of the fields to
+  determine whether two instances of an anonymous class have the same type.
+
+- In the case above, the variables myAnonymousObject and anotherAnonymousObject have the same number of fields, with the same name and type, in the same order, so both variables are instances of the same anonymous class. This means that you
+  can perform assignment statements such as this:
+
+  ```csharp
+
+  anotherAnonymousObject = myAnonymousObject;
+
+  ```
+
+- There are quite a few restrictions on the contents of an anonymous class.
+
+  - anonymous classes can contain only public fields,
+  - the fields must all be initialized,
+  - they cannot be static,
+  - and you cannot define any methods for them.
 
 - The string type in C# is actually a class. This is because there is no standard size for a string (different strings can contain different numbers of characters), and allocating memory for a string dynamically when the program runs is far more efficient than doing so statically at compile time. In fact, the string keyword in C# is just an alias for the `System.String` class.
 

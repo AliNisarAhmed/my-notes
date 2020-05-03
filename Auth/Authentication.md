@@ -206,3 +206,20 @@ and
 - Next step is to decode tokens.
 - Verify the signature of the JWT
 - Verify the claims in the tokens
+
+## Scopes & Consent
+
+- The process of exposing and granting permission is scopes and consent.
+- when an API defines what an App wants to do with user can do e.g. Read and Write.
+
+* Consent is allowing the app, by the user or the admin, the use of a certain scope
+
+### Delegated vs Application Permission
+
+- Delegated permission: Your application needs to access the API as the signed-in user.
+- Your application runs as a background service or daemon without a signed-in user
+
+### user_impersonation scope
+
+- specific to azure ad
+- allows the application to access a protected resource on behalf of a user
