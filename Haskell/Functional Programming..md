@@ -1,5 +1,7 @@
 # Functional Programming.
+
 #### Variadic Function
+
 A function which accepts an indeterminate number of arguments.
 
 ---

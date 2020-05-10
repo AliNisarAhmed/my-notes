@@ -331,3 +331,56 @@ A binary heap is defined as a binary tree with two additional constraints:
 - Access: $O(1)$
 
 However, a bad hash function, which does not distrbiute the KVPs uniformly (e.g. one that accumulates all the values at one index), may result in degradation of above.
+
+---
+
+## Graphs
+
+- A graph DS consists of finite (& possibly mutable) set of **vertices** (nodes or points, along with a set of (edges) which are either
+  - unordered pairs of these vetices for an undirected graph
+  - or ordered pairs for directed graphs
+
+### Uses
+
+- Social networks
+- Location / Mapping
+- Routing Algos
+- Visual Hierarchy
+- File System Optimizations
+
+### Terms
+
+- Vertex: a node
+- Edge: lines connecting nodes
+- Weighted/Unweighted: values assigned to the "lines" or distance between vertices
+- Directed/Undirected: directions of the lines between vertices
+
+### How to store graphs
+
+#### Adjacency Matrix
+
+![Adjacency Matric](../images/adjMatrix.PNG)
+
+#### Adjacency List
+
+![Adjacenct List](../images/adjList.PNG)
+
+### Big O
+
+![Graph Big O](../images/graphBigo.PNG)
+
+### Pros and Cons of each
+
+![Comparison](../images/listVsMatrix.PNG)
+
+## Graph Traversal
+
+### Depth First Travesal
+
+- visit one node, then visit its first child, then visit the fist child of that child, and so on
+- So, DFT, just keeps going to next child, and visits the siblings only after all childs have been visited
+- can be implemented recursively or iteratively
+
+### Breadth First Traversal
+
+- In BFS, the siblings or neighbors are visted first before we start to visit any children

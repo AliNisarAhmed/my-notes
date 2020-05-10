@@ -1,4 +1,6 @@
-# Authentication vs Authorization
+# Authorization
+
+## Authentication vs Authorization
 
 - Authentication means checking that the user is the same person that they claim to be
 - Authorization is checking if the user has access to resouces that they claim to have.

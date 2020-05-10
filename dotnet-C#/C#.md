@@ -510,6 +510,44 @@ class Horse : Mammal // derived class
 
 ---
 
+## Field
+
+### readonly field
+
+- A field marked as `private readonly` can only be changed inside the constructor of the class
+
+### static field
+
+- A static variable is declared with the help of `static` keyword. When a variable is declared as static, then a single copy of the variable is created and shared among all objects at the class level. Static variables are accessed with the name of the class, they do not require any object for access.
+
+```csharp
+
+using System;
+
+class Vehicle
+{
+
+	// Creating static variable
+	// Using static keyword
+	public static string Model_color = "Black";
+}
+
+// Driver Class
+public class GFG
+{
+
+	static public void Main()
+	{
+
+		// Accessing the static variable
+		// using its class name
+		Console.WriteLine("Color of XY model is : {0} ",
+									Vehicle.Model_color);
+	}
+}
+
+```
+
 ## Property
 
 ### Static property

@@ -179,3 +179,188 @@ Some concerns you'll need to watch out for are:
 ### Azure Support Plans
 
 ![Support plans](../images/azure-support.PNG)
+
+---
+
+## Module 4
+
+### Data Centers
+
+- Microsoft Azure is made up of datacenters located around the globe. When you leverage a service or create a resource such as a SQL database or virtual machine, you are using physical equipment in one or more of these locations.
+
+- The specific datacenters aren't exposed to end users directly; instead, Azure organizes them into regions.
+
+### Regions
+
+- A region is a geographical area on the planet containing at least one, but potentially multiple datacenters that are nearby and networked together with a low-latency network. Azure intelligently assigns and controls the resources within each region to ensure workloads are appropriately balanced.
+
+### Geographies
+
+- Azure divides the world into geographies that are defined by geopolitical boundaries or country borders.
+- An Azure geography is a discrete market typically containing two or more regions that preserve data residency and compliance boundaries.
+
+Geographies are broken up into the following areas:
+
+- Americas
+- Europe
+- Asia Pacific
+- Middle East and Africa
+
+### Availability Zones
+
+Availability Zones are physically separate datacenters within an Azure region.
+
+Each Availability Zone is made up of one or more datacenters equipped with independent power, cooling, and networking. It is set up to be an isolation boundary. If one zone goes down, the other continues working. Availability Zones are connected through high-speed, private fiber-optic networks.
+
+You can use Availability Zones to run mission-critical applications and build high-availability into your application architecture by co-locating your compute, storage, networking, and data resources within a zone and replicating in other zones. Keep in mind that there could be a cost to duplicating your services and transferring data between zones.
+
+Availability Zones are primarily for VMs, managed disks, load balancers, and SQL databases. Azure services that support Availability Zones fall into two categories:
+
+- Zonal services – you pin the resource to a specific zone (for example - virtual machines, managed disks, IP addresses)
+- Zone-redundant services – platform replicates automatically across zones (for example, zone-redundant storage, SQL Database).
+
+### Region Pairs
+
+- Availability zones are created using one or more datacenters, and there is a minimum of three zones within a single region. However, it's possible that a large enough disaster could cause an outage large enough to affect even two datacenters. That's why Azure also creates region pairs.
+
+- Each Azure region is always paired with another region within the same geography (such as US, Europe, or Asia) at least 300 miles away. This approach allows for the replication of resources (such as virtual machine storage) across a geography that helps reduce the likelihood of interruptions due to events such as natural disasters, civil unrest, power outages, or physical network outages affecting both regions at once. If a region in a pair was affected by a natural disaster, for instance, services would automatically fail over to the other region in its region pair.
+
+= Additional advantages of region pairs include:
+
+- If there's an extensive Azure outage, one region out of every pair is prioritized to make sure at least one is restored as quick as possible for applications hosted in that region pair.
+- Planned Azure updates are rolled out to paired regions one region at a time to minimize downtime and risk of application outage.
+- Data continues to reside within the same geography as its pair (except for Brazil South) for tax and law enforcement jurisdiction purposes.
+
+### Service Level Agreements (SLAs)
+
+Formal documents called Service-Level Agreements (SLAs) capture the specific terms that define the performance standards that apply to Azure.
+
+- SLAs describe Microsoft's commitment to providing Azure customers with specific performance standards.
+- There are SLAs for individual Azure products and services.
+- SLAs also specify what happens if a service or product fails to perform to a governing SLA's specification.
+
+There are three key characteristics of SLAs for Azure products and services:
+
+- Performance Targets
+- Uptime and Connectivity Guarantees
+- Service credits
+
+A typical SLA specifies performance-target commitments that range from 99.9 percent ("three nines") to 99.999 percent ("five nines"), for each corresponding Azure product or service. These targets can apply to such performance criteria as uptime or response times for services.
+
+Service credits (discounts) is given if a performance taget is not met.
+
+### Composite SLAs
+
+- When combining SLAs across different service offerings, the resultant SLA is called a Composite SLA. The resulting composite SLA can provide higher or lower uptime values, depending on your application architecture.
+
+- Consider a web app (99.95% SLA) which talks to a SQL db (99.99% SLA)
+- Composite SLA for this application will be
+  - 99.95% x 99.99% = 99.94 %
+    -This means the **combined probability** of failure is higher than the individual SLA values. This isn't surprising, because an application that relies on multiple services has more potential failure points.
+- We can improve the composite SLA by using, for example, a queue (99.95%) for tasks when the DB is not available
+- now the application will fail when both db and queue fail (let say the probability of that is 0.0001 x 0.001)
+- The composite SLA for DB + QUEUE will be
+  - 1.0 - (0.0001 x 0.001) = 99.99999 %
+- The composite SLA for the app would become
+  - 99.95% x 99.99999 % = ~99.95 %
+- Notice we've improved our SLA behavior. However, there are trade-offs to using this approach: the application logic is more complicated, you are paying more to add the queue support, and there may be data-consistency issues you'll have to deal with due to retry behavior.
+
+### Application SLAs
+
+By creating your own SLAs, you can set performance targets to suit your specific Azure application. This approach is known as an Application SLA.
+
+#### Resiliency
+
+Resiliency is the ability of a system to recover from failures and continue to function. It's not about avoiding failures, but responding to failures in a way that avoids downtime or data loss. The goal of resiliency is to return the application to a fully functioning state following a failure. High availability and disaster recovery are two crucial components of resiliency.
+
+#### Failure Mode Analysis (FMA)
+
+When designing your architecture you need to design for resiliency, and you should perform a **Failure Mode Analysis (FMA)**. The goal of an FMA is to identify possible points of failure and to define how the application will respond to those failures.
+
+#### Availability
+
+Availability refers to the time that a system is functional and working.
+
+Tip: For example: A workload that requires 99.99 percent uptime shouldn't depend upon a service with a 99.9 percent SLA.
+
+Most providers prefer to maximize the availability of their Azure solutions by minimizing downtime. However, as you increase availability, you also increase the cost and complexity of your solution.
+
+#### Considerations for defining application SLAs
+
+- If your application SLA defines four 9's (99.99%) performance targets, recovering from failures by manual intervention may not be enough to fulfill your SLA. Your Azure solution must be self-diagnosing and self-healing instead.
+- It is difficult to respond to failures quickly enough to meet SLA performance targets above four 9's.
+- Carefully consider the time window against which your application SLA performance targets are measured. The smaller the time window, the tighter the tolerances. If you define your application SLA as hourly or daily uptime, you need to understand these tighter tolerances might not allow for achievable performance targets.
+
+---
+
+## Module 5
+
+- There are Four common techniques for performing compute in Azure:
+  1. Virtual Machines
+  2. Containers
+  3. Azure App Service
+  4. Serverless Computing
+
+### Virtual Machines
+
+- Virtual machines, or VMs, are software emulations of physical computers.
+- They provide infrastructure as a service (IaaS) in the form of a virtualized server and can be used in many ways. Just like a physical computer, you can customize all of the software running on the VM.
+
+- You can run single VMs for testing, development, or minor tasks; or you can group VMs together to provide high availability, scalability, and redundancy.
+
+#### Availability Sets
+
+- An availability set is a logical grouping of two or more VMs that help keep your application available during planned or unplanned maintenance.
+- A **_planned maintenance_** event is when the underlying Azure fabric that hosts VMs is updated by Microsoft.
+- When the VM is part of an availability set, the Azure fabric updates are sequenced so not all of the associated VMs are rebooted at the same time. VMs are put into different update domains.
+- **_Update domains_** indicate groups of VMs and underlying physical hardware that can be rebooted at the same time. Update domains are a logical part of each data center and are implemented with software and logic.
+- **_Unplanned maintenance_** events involve a hardware failure in the data center, such as a power outage or disk failure.
+- VMs that are part of an availability set automatically switch to a working physical server so the VM continues to run.
+- The group of virtual machines that share common hardware are in the same **_fault domain_**.
+- A fault domain is essentially a rack of servers.
+
+![Example](../images/avset.PNG)
+
+- Azure **_Virtual Machine Scale Sets_** let you create and manage a group of identical, load balanced VMs.
+- Azure Batch enables large-scale job scheduling and compute management with the ability to scale to tens, hundreds, or thousands of VMs.
+
+### Containers
+
+A container is a modified runtime environment built on top of a host OS that executes your application. A container doesn't use virtualization, so it doesn't waste resources simulating virtual hardware with a redundant OS. This environment typically makes containers more lightweight than VMs.
+
+- Azure Supports Docker Containers
+- Several Ways to manager containers in Azure
+  - Azure Container Instances (ACI)
+    - Azure Container Instances (ACI) offers the fastest and simplest way to run a container in Azure. You don't have to manage any virtual machines or configure any additional services. It is a PaaS offering that allows you to upload your containers and execute them directly with automatic elastic scale.
+  - Azure Kubernetes Service (AKS)
+    - The task of automating, managing, and interacting with a large number of containers is known as orchestration. Azure Kubernetes Service (AKS) is a complete orchestration service for containers with distributed architectures with multiple containers.
+
+#### MicroService Architecture
+
+- Containers are often used to create solutions using a microservice architecture. This architecture is where you break solutions into smaller, independent pieces. For example, you may split a website into a container hosting your front end, another hosting your back end, and a third for storage. This split allows you to separate portions of your app into logical sections that can be maintained, scaled, or updated independently.
+
+### App Service
+
+- This platform as a service (PaaS) allows you to focus on the website and API logic while Azure handles the infrastructure to run and scale your web applications.
+- You pay for the Azure compute resources your app uses while it processes requests based on the App Service Plan you choose.
+- With Azure App Service, you can host most common web app styles including:
+  - Web Apps
+  - API Apps
+  - WebJobs
+    - WebJobs allows you to run a program (.exe, Java, PHP, Python, or Node.js) or script (.cmd, .bat, PowerShell, or Bash) in the same context as a web app, API app, or mobile app. They can be scheduled, or run by a trigger. WebJobs are often used to run background tasks as part of your application logic
+  - Mobile Apps
+
+### Serverless Computing
+
+- Serverless computing encompasses three ideas:
+  - the abstraction of servers
+  - an event-driven scale
+  - and micro-billing:
+- Two implementations of Serverless
+  - Azure Functions
+    - Azure Functions scale automatically based on demand, so they're a solid choice when demand is variable.
+    - Using a VM-based approach, you'd incur costs even when the VM is idle. With functions, Azure runs your code when it's triggered and automatically deallocates resources when the function is finished.
+    - Azure Functions can be either stateless (the default), where they behave as if they're restarted every time they respond to an event, or stateful (called "Durable Functions"), where a context is passed through the function to track prior activity.
+  - Azure Logic Apps - Where Functions execute code, Logic Apps execute workflows designed to automate business scenarios and built from predefined logic blocks.
+
+**NOTE**: Azure Functions are best suited for variable high demands, as containers and VMs are not as responsive as Functions. Functions are event-based and can scale instantly to process spikes in traffic. They are cost effective as well.
