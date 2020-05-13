@@ -632,3 +632,97 @@ for `www.google.com`
 - Once a lease has expired, the DHCP client would need to negotiate a new lease by performing the entire DHCP discovery process all over again.
 - A client can also release its lease to the DHCP server, which it would do when it disconnects from the network.
 - This would allow the DHCP server to return the IP address that was assigned to its pool of available IPs.
+
+---
+
+## Network Address Translation (NAT)
+
+- It's a technique rather than a standard, with OS based implementation.
+- NAT takes one IP Address and translates/maps it onto another (usually host to router)
+- NAT allows networks to use non-routable address space for their internal devices.
+- At its most basic level NAT, is a technology that allows a gateway usually a router or a
+  firewall to rewrite the source IP of an outgoing IP datagram, while retaining the original IP in order to rewrite it into the response.
+  - So, lets say a computer A wants to talk to a Computer B on a different network, via a Router R.
+  - whaat R normally does is inspect the contents of an IP Datagram, decrement TTL, recalculate the checksum and forward the rest of the data on the network layer without touching it.
+  - if NAT is enabled, R will also re-write the IP address to its own, thus hiding the IP of the source.
+  - This is known as **_IP masquerading_**
+
+### NAT and the Transport layer
+
+- With one to many NAT, we've talked about how hundreds even thousands of computers can all have
+  their outbound traffic translated via NAT to a single IP. This is pretty easy to understand when the traffic is outbound, but a little more complicated once return traffic is involved.
+- Several Additional techniques need to be employed to indentify the originator of a request after NAT.
+- One simple way is Port Preservation
+
+#### Port Preservation
+
+- Port preservation is a technique where the source port chosen by a client,
+  is the same port used by the router.
+- Remember that outbound connections choose a source port at random, from the ephemeral ports or the ports in the range 49,152 through 65,535
+- In the simplest setup, a router setup to NAT outbound traffic, will just keep track of what this source port is, and use that to direct traffic back to the right computer.
+- Even with how large the set of ephemeral ports is,it's still possible for two different computers on a network to both choose the same source port around the same time. When this happens, the router normally selects an unused port at random to use instead.
+
+#### Port Forwarding
+
+- Port forwarding is a technique where a specific destination ports can be configured to always be delivered to specific nodes.
+- This technique allows for complete IP masquerading, while still having services that can respond to incoming traffic.
+- Let's say there's a web server configured with an IP of 10.1.1.5. With port forwarding, no one would even have to know this IP. Prospective web clients would only have to know about the external IP of the router. Let's say it's 192.168.1.1. Any traffic directed at port 80 on 192.168.1.1, would get automatically forwarded to 10.1.1.5.
+
+**_NOTE_**: Read the answer to understand port forwarding [link](https://superuser.com/questions/284051/what-is-port-forwarding-and-what-is-it-used-for)
+
+### IPv4 Exhaustion
+
+- The IANA has been in charge of distributing IP addresses since 1988. Since that time, the internet has expanded at an incredible rate. The 4.2 billion possible IPv4 addresses have been predicted to run out for a long time and they almost have.
+- For some time now, the IANA has primarily been responsible with assigning address blocks to the five **Regional Internet Registries** or **RIRs**.
+  - AFRINIC: Africa
+  - ARIN: US, Canada, parts of the carribean
+  - APNIC: Asia, Australia, New Zealand and Pacific Islands
+  - LACNIC: Central and South America
+  - RIPE: Europe, Russia, Middle East and portions of Central Asia.
+- These five RIRs have been responsible for assigning IP address blocks to organizations within their geographic areas and most have already run out.
+- This is of course, a major crisis for the internet.
+- IPv6 will eventually resolve these problems
+
+* For now, we wanted to continue to grow and we want more people and devices to connect to it but without IP addresses to assign, a workaround is needed.
+* This is enabled by NAT and Non-routable address space.
+* Non-routable address space was defined in RFC1918 and consists of several different IP ranges that anyone can use.
+* An unlimited number of networks can use non-routable address space internally because internet routers won't forward traffic to it.
+* This means there's never any global collision of IP addresses when people use those address spaces.
+* Non-routable address space is largely usable today
+  because of technologies like NAT.
+* With NAT, you can have hundreds even thousands of machines using non-routable address space.
+* Yet, with just a single public IP, all those computers can still send traffic to and receive traffic from the internet.
+* All you need is one single IPv4 address and via NAT, a router with that IP can represent lots and lots of computers behind it.
+* It's not a perfect solution, but until IPv6 becomes more globally available, non-routable address space and NAT will have to do
+
+---
+
+## Virtual Private Networks (VPNs)
+
+- Virtual Private Networks or VPNs, are a technology that allows for the extension of a private or local network, to a host that might not work on that same local network.
+- When establishing a VPN connection, you might also say that a VPN tunnel has been established.
+- Most VPNs work by using the payload section of the transport layer to carry an encrypted payload that actually contains an entire second set of packets, The network, the transport, and the application layers of a packet intended to traverse the remote network.
+- Basically, this payload is carried to the VPNs endpoint, where all the other layers are stripped away and discarded. Then, the payload is unencrypted, leaving the VPN server with the top three layers of a new packet.
+- This gets encapsulated with the proper data link layer information, and sent out across the network. This process is completed in the inverse, in the opposite direction.
+- PNs, usually requires strict authentication procedures in order to ensure that they can only be connected to by computers and users authorized to do so.
+- In fact, VPNs were one of the first technologies where two-factor authentication became common.
+
+## Proxy Services
+
+- A proxy service is a server that acts on behalf of a client in order to access another service.
+- Proxies sit between clients and other servers, providing some additional benefit, anonymity,
+  security, content filtering, increased performance, a couple other things.
+- Proxy is a concept, there are tons of specific implementations. for example
+  - Web Proxy
+    - specifically built for web traffic.
+    - Many years ago, when most Internet connections were much slower than they are today, lots of organizations used web proxies for increased performance.
+    - Using a web proxy, an organization would direct all web traffic through it, allowing the proxy server itself to actually retrieve the webpage data from the Internet.
+    - It would then cache this data. This way, if someone else requested the same webpage, it could just return the cached data instead of having to retrieve the fresh copy every time.
+    - A more common use of a web proxy today might be to prevent someone from accessing sites, like Twitter, during office hours, for example.
+  - Reverse Proxy
+    - A reverse proxy is a service that might appear to be a single server to external clients, but actually represents many servers living behind it. A good example of this is how lots of popular websites are architected today.
+    - A reverse proxy, in situation where one web server is not enough to handle load and we need multiple servers, could act as a single front-end for many web servers living behind it.
+    - From the clients' perspective, it looks like they're all connected to the same server.
+    - But behind the scenes, this reverse proxy server is actually distributing these incoming requests to lots of different physical servers. Much like the concept of DNS Round Robin, this is a form of load balancing.
+    - Another way that reverse proxies are commonly used by popular websites is to deal with decryption
+    - Reverse proxies are now implemented in order to use hardware built specifically for cryptography, to perform the enryption and decryption work. So that the web servers are free to just serve content.

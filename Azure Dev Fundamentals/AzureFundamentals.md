@@ -364,3 +364,148 @@ A container is a modified runtime environment built on top of a host OS that exe
   - Azure Logic Apps - Where Functions execute code, Logic Apps execute workflows designed to automate business scenarios and built from predefined logic blocks.
 
 **NOTE**: Azure Functions are best suited for variable high demands, as containers and VMs are not as responsive as Functions. Functions are event-based and can scale instantly to process spikes in traffic. They are cost effective as well.
+
+---
+
+## Module 6
+
+### Type of Data
+
+- Structured or Relational: Usually with a schema and in tabular form
+- Semi-Structured: Key Value pairs, or NoSQL
+- UnStructured: Blobs
+
+### Various Storage Options in Azure
+
+- Azure SQL: relational Db as a service (DaaS)
+- Azure Cosmos DB: supports schema less data
+- Azure Blob Storage
+- Azure Data Lake Storage: The Data Lake feature allows you to perform analytics on your data usage and prepare reports. Data Lake is a large repository that stores both structured and unstructured data.
+- Azure Files: Azure Files offers fully managed file shares in the cloud that are accessible via the industry standard Server Message Block (SMB) protocol.
+- Azure Queue
+  - Create a backlog of work and to pass messages between different Azure web servers.
+  - Distribute load among different web servers/infrastructure and to manage bursts of traffic.
+  - Build resilience against component failure when multiple users access your data at the same time.
+- Disk Storage: Disk storage provides disks for virtual machines, applications, and other services to access and use as they need, similar to how they would in on-premises scenarios.
+
+#### Storage Tiers
+
+1. Hot Storage Tiers: for data that is accessed frequently.
+2. Cool Storage tier: infrequently accessed and stored for at least 30 days
+3. Archive storage tier: rarely accessed & stored for 180 days
+
+#### Encryption for storage services
+
+1. Azure Storage Service Encryption (SSE) for data at rest. It encrypts the data before storing it and decrypts the data before retrieving it
+2. Client side encryption: is where the data is already encrypted by the client libraries. Azure stores the data in the encrypted state at rest, which is then decrypted during retrieval.
+
+### On premises vs Azure Storage
+
+- Cost Effectiveness: Azure data storage provides a pay-as-you-go pricing model, which is often appealing to businesses as an operating expense instead of an upfront capital cost.
+- Reliability: Azure data storage provides data backup, load balancing, disaster recovery, and data replication
+- Agility
+
+---
+
+## Module 7
+
+### Networking options in Azure
+
+#### N-tier architecture
+
+An N-tier architecture divides an application into two or more logical tiers. Architecturally, a higher tier can access services from a lower tier, but a lower tier should never access a higher tier.
+
+Tiers help separate concerns and are ideally designed to be reusable. Using a tiered architecture also simplifies maintenance. Tiers can be updated or replaced independently, and new tiers can be inserted if needed.
+
+The following is a 3-tier application, running on 3 VMs
+
+![3-tier](../images/3tier.PNG)
+
+In the above diagram:
+
+- Azure Region: East US above
+  - A Region is one or more Azure data centers within a specific geographical location.
+- Virtual Network:
+  - A virtual network is a logically isolated network on Azure
+  - A virtual network is scoped to a single region; however, multiple virtual networks from different regions can be connected together using virtual network peering.
+  - Virtual networks can be segmented into one or more **subnets**. Subnets help you organize and secure your resources in discrete sections. The web, application, and data tiers each have a single VM. All three VMs are in the same virtual network but are in separate subnets.
+  - Users interact with the web tier directly, so that VM has a public IP address along with a private IP address. Users don't interact with the application or data tiers, so these VMs each have a private IP address only.
+  - You can also keep your service or data tiers in your on-premises network, placing your web tier into the cloud, but keeping tight control over other aspects of your application. A **VPN gateway (or virtual network gateway)**, enables this scenario.
+  - Azure manages the physical hardware for you. You configure virtual networks and gateways through software, which enables you to treat a virtual network just like your own network.
+- Network Security Group
+  - A network security group, or NSG, allows or denies inbound network traffic to your Azure resources. Think of a network security group as a cloud-level firewall for your network.
+  - For example, notice that the VM in the web tier allows inbound traffic on ports 22 (SSH) and 80 (HTTP). This VM's network security group allows inbound traffic over these ports from all sources. You can configure a network security group to accept traffic only from known sources, such as IP addresses that you trust.
+
+### Availability and Load Balancers
+
+#### Availability
+
+- Availability refers to how long your service is up and running without interruption. High availability, or highly available, refers to a service that's up and running for a long period of time.
+- Five nines availability means that the service is guaranteed to be running 99.999 percent of the time.
+
+#### Resiliency
+
+- Resiliency refers to a system's ability to stay operational during abnormal conditions.
+- e.g
+  - Natural Disasters
+  - Planned or Unplanned System Maintenance
+  - Spikes in traffic
+  - threats and attacks (e.g DDoS)
+
+#### Load Balancer
+
+- A load balancer distributes traffic evenly among each system in a pool. A load balancer can help you achieve both high availability and resiliency.
+- If because of load, we start to add VMs, the problem is that each of those VMs have their own IP Address.
+- The answer is to use a load balancer to distribute traffic. The load balancer becomes the entry point to the user. The user doesn't know (or need to know) which system the load balancer chooses to receive the request.
+
+Azure Load Balancer distributes traffic among similar systems, making your services more highly available.
+
+If one system is unavailable, Azure Load Balancer stops sending traffic to it. It then directs traffic to one of the responsive servers.
+
+#### Azure Load Balancer
+
+- Azure Load Balancer is a load balancer service that Microsoft provides that helps take care of the maintenance for you.
+- Load Balancer supports inbound and outbound scenarios, provides low latency and high throughput, and scales up to millions of flows for all Transmission Control Protocol (TCP) and User Datagram Protocol (UDP) applications.
+- You can use Load Balancer with incoming internet traffic, internal traffic across Azure services, port forwarding for specific traffic, or outbound connectivity for VMs in your virtual network.
+
+#### Azure Application Gateway
+
+- If all your traffic is HTTP, a potentially better option is to use Azure Application Gateway. Application Gateway is a load balancer designed for web applications. It uses Azure Load Balancer at the transport level (TCP) and applies sophisticated URL-based routing rules to support several advanced scenarios.
+- This type of routing is known as application layer (OSI layer 7) load balancing since it understands the structure of the HTTP message.
+- Benefits
+  - **Cookie affinity**. Useful when you want to keep a user session on the same backend server.
+  - **SSL termination**. Application Gateway can manage your SSL certificates and pass unencrypted traffic to the backend servers to avoid encryption/decryption overhead. It also supports full end-to-end encryption for applications that require that.
+  - **Web application firewall**. Application gateway supports a sophisticated firewall (WAF) with detailed monitoring and logging to detect malicious attacks against your network infrastructure.
+  - **URL rule-based routes**. Application Gateway allows you to route traffic based on URL patterns, source IP address and port to destination IP address and port. This is helpful when setting up a content delivery network.
+  - **Rewrite HTTP headers**. You can add or remove information from the inbound and outbound HTTP headers of each request to enable important security scenarios, or scrub sensitive information such as server names.
+
+#### Content Delivery Network (CDN)
+
+- A content delivery network (CDN) is a distributed network of servers that can efficiently deliver web content to users.
+- It is a way to get content to users in their local region to minimize latency.
+- CDN can be hosted in Azure or any other location. You can cache content at strategically placed physical nodes across the world and provide better performance to end users.
+- Typical usage scenarios include web applications containing multimedia content, a product launch event in a particular region, or any event where you expect a high-bandwidth requirement in a region.
+
+#### DNS
+
+- You can bring your own DNS server or use Azure DNS, a hosting service for DNS domains that runs on Azure infrastructure.
+
+### Network Latency
+
+Latency refers to the time it takes for data to travel over the network. Latency is typically measured in milliseconds.
+
+Compare latency to bandwidth. Bandwidth refers to the amount of data that can fit on the connection. Latency refers to the time it takes for that data to reach its destination.
+
+Factors such as the type of connection you use and how your application is designed can affect latency. But perhaps the biggest factor is distance.
+
+#### Azure Traffic Manager
+
+Azure Traffic Manager. Traffic Manager uses the DNS server that's closest to the user to direct user traffic to a globally distributed endpoint.
+
+Traffic Manager doesn't see the traffic that's passed between the client and server. Rather, it directs the client web browser to a preferred endpoint. Traffic Manager can route traffic in a few different ways, such as to the endpoint with the lowest latency.
+
+#### Load Balancer vs Traffic Manager
+
+- Azure Load Balancer distributes traffic within the same region to make your services more highly available and resilient. Traffic Manager works at the DNS level, and directs the client to a preferred endpoint. This endpoint can be to the region that's closest to your user.
+
+- Load Balancer and Traffic Manager both help make your services more resilient, but in slightly different ways. When Load Balancer detects an unresponsive VM, it directs traffic to other VMs in the pool. Traffic Manager monitors the health of your endpoints. When Traffic Manager finds an unresponsive endpoint, it directs traffic to the next closest endpoint that is responsive.
