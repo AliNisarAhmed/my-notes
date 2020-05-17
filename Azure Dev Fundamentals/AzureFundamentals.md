@@ -509,3 +509,140 @@ Traffic Manager doesn't see the traffic that's passed between the client and ser
 - Azure Load Balancer distributes traffic within the same region to make your services more highly available and resilient. Traffic Manager works at the DNS level, and directs the client to a preferred endpoint. This endpoint can be to the region that's closest to your user.
 
 - Load Balancer and Traffic Manager both help make your services more resilient, but in slightly different ways. When Load Balancer detects an unresponsive VM, it directs traffic to other VMs in the pool. Traffic Manager monitors the health of your endpoints. When Traffic Manager finds an unresponsive endpoint, it directs traffic to the next closest endpoint that is responsive.
+
+---
+
+## Module 8
+
+### Defense in Depth
+
+Defense in depth is a strategy that employs a series of mechanisms to slow the advance of an attack aimed at acquiring unauthorized access to information. Each layer provides protection so that if one layer is breached, a subsequent layer is already in place to prevent further exposure. Microsoft applies a layered approach to security, both in physical data centers and across Azure services. The objective of defense in depth is to protect and prevent information from being stolen by individuals who are not authorized to access it.
+
+### Security is a shared responsibility
+
+The responsibility of the user increases as we move from SaaS to PaaS to IaaS.
+
+### Azure Security Center
+
+Security Center is a monitoring service that provides threat protection across all of your services both in Azure, and on-premises.
+
+You can reduce the chances of a significant security event by configuring a security policy, and then implementing the recommendations provided by Azure Security Center.
+
+A security policy defines the set of controls that are recommended for resources within that specified subscription or resource group. In Security Center, you define policies according to your company's security requirements.
+
+Security Center analyzes the security state of your Azure resources. When Security Center identifies potential security vulnerabilities, it creates recommendations based on the controls set in the security policy.
+
+### Azure Active Directory
+
+- Cloud based Id service
+- provides services such as
+  - Authentication
+  - Single-Sign-On (SSO)
+    - SSO enables users to remember only one ID and one password to access multiple applications. A single identity is tied to a user, simplifying the security model. As users change roles or leave an organization, access modifications are tied to that identity, greatly reducing the effort needed to change or disable accounts.
+  - Application Mgmt
+  - B2B Id Services
+  - B2C
+  - Device Management
+
+#### Multi Factor Auth
+
+is done based on 3 things
+
+- something you know
+- something you possess
+- something you are
+
+#### Providing Identities to services
+
+##### Identity
+
+- An identity is just a thing that can be authenticated. Obviously, this includes users with a user name and password, but it can also include applications or other servers, which might authenticate with secret keys or certificates.
+
+##### Principal
+
+- A principal is an identity acting with certain roles or claims.
+
+- Usually, it is not useful to consider identity and principal separately, but think of using 'sudo' on a Bash prompt in Linux or on Windows using "run as Administrator.".
+
+- In both those cases, you are still logged in as the same identity as before, but you've changed the role under which you are executing.
+
+- Groups are often also considered principals because they can have rights assigned.
+
+##### Service Principal
+
+- A service principal is an identity that is used by a service or application. And like other identities, it can be assigned roles.
+
+##### Managed identities for Azure services
+
+The creation of service principals can be a tedious process, and there are a lot of touch points that can make maintaining them difficult. Managed identities for Azure services are much easier and will do most of the work for you.
+
+A managed identity can be instantly created for any Azure service that supports it—and the list is constantly growing. When you create a managed identity for a service, you are creating an account on your organization's Active Directory (a specific organization's Active Directory instance is known as an **"Active Directory Tenant"**). The Azure infrastructure will automatically take care of authenticating the service and managing the account. You can then use that account like any other Azure AD account, including allowing the authenticated service secure access of other Azure resources.
+
+#### Role Based Access Control
+
+- Roles are sets of permissions, like "Read-only" or "Contributor", that users can be granted to access an Azure service instance.
+
+- Identities are mapped to roles directly or through group membership. Separating security principals, access permissions, and resources provides simple access management and fine-grained control. Administrators are able to ensure the minimum necessary permissions are granted.
+
+- Roles can be granted at the individual service instance level, but they also flow down the Azure Resource Manager hierarchy.
+
+- Roles assigned at a higher scope, like an entire subscription, are inherited by child scopes, like service instances.
+
+#### Privileged Identity Management
+
+In addition to managing Azure resource access with role-based access control (RBAC), a comprehensive approach to infrastructure protection should consider including the ongoing auditing of role members as their organization changes and evolves.
+
+Azure AD Privileged Identity Management (PIM) is an additional, paid-for offering that provides oversight of role assignments, self-service, and just-in-time role activation and Azure AD and Azure resource access reviews.
+
+### Encryption
+
+Encryption is the process of making data unreadable and unusable to unauthorized viewers.
+
+#### Symmetric encryption
+
+uses the same key to encrypt and decrypt the data.
+
+#### Asymmetric encryption
+
+uses a public key and private key pair. Either key can encrypt but a single key can't decrypt its own encrypted data. To decrypt, you need the paired key. Asymmetric encryption is used for things like Transport Layer Security (TLS) (used in HTTPS) and data signing.
+
+Encryption is typically approached in two ways:
+
+- Encryption at rest
+  - Data at rest is the data that has been stored on a physical medium. This data could be stored on the disk of a server, data stored in a database, or data stored in a storage account.
+  - Regardless of the storage mechanism, encryption of data at rest ensures that the stored data is unreadable without the keys and secrets needed to decrypt it.
+  - If an attacker was to obtain a hard drive with encrypted data and did not have access to the encryption keys, the attacker would not compromise the data without great difficulty.
+- Encryption in transit
+  - Data in transit is the data actively moving from one location to another, such as across the internet or through a private network.
+  - Secure transfer can be handled by several different layers. It could be done by encrypting the data at the application layer prior to sending it over a network. HTTPS is an example of application layer in transit encryption.
+
+#### Encryption in Azure
+
+- Encrypt raw storage: **Azure Storage Service Encryption** for data at rest in Azure Managed Disks, Azure Blob storage, Azure Files, or Azure Queue storage
+- Encrypt virtual machine disks: **Azure Disk Encryption** is a capability that helps you encrypt your Windows and Linux IaaS virtual machine disks.
+  - Azure Disk Encryption leverages the industry-standard BitLocker feature of Windows and the dm-crypt feature of Linux to provide volume encryption for the OS and data disks. The solution is integrated with Azure Key Vault
+- Encrypt databases: **Transparent data encryption (TDE)** helps protect Azure SQL Database and Azure Data Warehouse
+  - TDE encrypts the storage of an entire database by using a symmetric key called the database encryption key. By default, Azure provides a unique encryption key per logical SQL Server instance and handles all the details. Bring your own key (BYOK) is also supported with keys stored in Azure Key Vault
+- Encrypt secrets
+  - **Azure Key Vault** is a centralized cloud service for storing your application secrets.
+  - Secrets Mgmt
+  - Key Management
+  - Certificate Management: like SSL/TLS (Secure Sockets Layer)
+
+### Azure Certificates
+
+- Transport Layer Security (TLS) is the basis for encryption of website data in transit. TLS uses certificates to encrypt and decrypt data. However, these certificates have a lifecycle that requires administrator management. A common security problem with websites is having expired TLS certificates that open security vulnerabilities.
+
+- Certificates used in Azure are x.509 v3 and can be signed by a trusted certificate authority, or they can be self-signed. A self-signed certificate is signed by its own creator; therefore, it is not trusted by default. Most browsers can ignore this problem. However, you should only use self-signed certificates when developing and testing your cloud services. These certificates can contain a private or a public key and have a thumbprint that provides a means to identify a certificate in an unambiguous way. This thumbprint is used in the Azure configuration file to identify which certificate a cloud service should use.
+
+#### Types of Certificates
+
+##### Service certificates
+
+Service certificates are attached to cloud services and enable secure communication to and from the service. For example, if you deploy a web site, you would want to supply a certificate that can authenticate an exposed HTTPS endpoint.
+
+You can upload service certificates to Azure either using the Azure portal or by using the classic deployment model. Service certificates are associated with a specific cloud service. They are assigned to a deployment in the service definition file.
+
+##### Management certificates
+
+Management certificates allow you to authenticate with the classic deployment model. Many programs and tools (such as Visual Studio or the Azure SDK) use these certificates to automate configuration and deployment of various Azure services. However, these types of certificates are not related to cloud services.
