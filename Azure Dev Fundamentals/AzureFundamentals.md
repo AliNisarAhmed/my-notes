@@ -646,3 +646,192 @@ You can upload service certificates to Azure either using the Azure portal or by
 ##### Management certificates
 
 Management certificates allow you to authenticate with the classic deployment model. Many programs and tools (such as Visual Studio or the Azure SDK) use these certificates to automate configuration and deployment of various Azure services. However, these types of certificates are not related to cloud services.
+
+### Network Protection
+
+#### Firewall
+
+Firewall is a service that grants server access based on the originating IP address of each request.
+
+Multiple options for inbound protection in Azure
+
+##### Azure Firewall
+
+It is a fully stateful firewall as a service with built-in high availability and unrestricted cloud scalability. Azure Firewall provides inbound protection for non-HTTP/S protocols. Examples of non-HTTP/S protocols include: Remote Desktop Protocol (RDP), Secure Shell (SSH), and File Transfer Protocol (FTP). It also provides outbound, network-level protection for all ports and protocols, and application-level protection for outbound HTTP/S.
+
+##### Azure Application Gateway
+
+is a load balancer that includes a Web Application Firewall (WAF) that provides protection from common, known vulnerabilities in websites. It is designed to protect HTTP traffic.
+
+##### Network Virtual appliances (NVAs)
+
+are ideal options for non-HTTP services or advanced configurations, and are similar to hardware firewall appliances.
+
+#### Azure DDoS Protection
+
+#### Virtual Network Security
+
+Once inside a virtual network (VNet), it's crucial that you limit communication between resources to only what is required.
+
+For communication between virtual machines, Network Security Groups (NSGs) are a critical piece to restrict unnecessary communication.
+
+You can completely remove public internet access to your services by restricting access to service endpoints. With service endpoints, Azure service access can be limited to your virtual network.
+
+Virtual private network (VPN) connections are a common way of establishing secure communication channels between networks. Connections between Azure Virtual Network and an on-premises VPN device are a great way to provide secure communication between your network and your VNet on Azure.
+
+To provide a dedicated, private connection between your network and Azure, you can use Azure ExpressRoute. ExpressRoute lets you extend your on-premises networks into the Microsoft cloud over a private connection facilitated by a connectivity provider
+
+#### Microsoft Azure Information Protection
+
+(sometimes referred to as AIP) is a cloud-based solution that helps organizations classify and optionally protect documents and emails by applying labels.
+
+#### Azure Advanced Threat Protection (Azure ATP)
+
+is a cloud-based security solution that identifies, detects, and helps you investigate advanced threats, compromised identities, and malicious insider actions directed at your organization.
+
+#### The Microsoft Security Development Lifecycle (SDL)
+
+introduces security and privacy considerations throughout all phases of the development process. It helps developers build highly secure software, address security compliance requirements, and reduce development costs.
+
+---
+
+## Module 9
+
+### Azure Policy
+
+Azure Policy is an Azure service you use to create, assign and, manage policies. These policies enforce different rules and effects over your resources so that those resources stay compliant with your corporate standards and service level agreements.
+
+Azure Policy meets this need by evaluating your resources for noncompliance with assigned policies. For example, you might have a policy that allows virtual machines of only a certain size in your environment. After this policy is implemented, new and existing resources are evaluated for compliance. With the right type of policy, existing resources can be brought into compliance.
+
+#### How are Azure Policy and RBAC different?
+
+At first glance, it might seem like Azure Policy is a way to restrict access to specific resource types similar to role-based access control (RBAC). However, they solve different problems. RBAC focuses on user actions at different scopes. You might be added to the contributor role for a resource group, allowing you to make changes to anything in that resource group. Azure Policy focuses on resource properties during deployment and for already-existing resources. Azure Policy controls properties such as the types or locations of resources. Unlike RBAC, Azure Policy is a default-allow-and-explicit-deny system.
+
+To apply a policy, you will:
+
+- Create a policy definition
+- Assign a definition to a scope of resources
+- View policy evaluation results
+
+## What is a policy definition?
+
+A policy definition expresses what to evaluate and what action to take. For example, you could ensure all public websites are secured with HTTPS, prevent a particular storage type from being created, or force a specific version of SQL Server to be used.
+
+Examples
+
+- Allowed Storage Account SKUs
+- Allowed Resource Type
+- Allowed Locations
+- Allowed Virtual Machine SKUs
+- Not allowed resource types
+
+The policy definition itself is represented as a JSON file - you can use one of the pre-defined definitions in the portal or create your own (either modifying an existing one or starting from scratch).
+
+Once you've defined one or more policy definitions, you'll need to assign them. A policy assignment is a policy definition that has been assigned to take place within a specific scope.
+
+This scope could range from a full subscription down to a resource group. Policy assignments are inherited by all child resources. This inheritance means that if a policy is applied to a resource group, it is applied to all the resources within that resource group. However, you can exclude a subscope from the policy assignment. For example, we could enforce a policy for an entire subscription and then exclude a few select resource groups.
+
+#### Policy effects
+
+Requests to create or update a resource through Azure Resource Manager are evaluated by Azure Policy first.
+
+Azure Policy can allow a resource to be created even if it doesn't pass validation. In these cases, you can have it trigger an audit event that can be viewed in the Azure Policy portal, or through command-line tools.
+
+### Initiatives
+
+Managing a few policy definitions is easy, but once you have more than a few, you will want to organize them. That's where initiatives come in.
+
+An initiative definition is a set or group of policy definitions to help track your compliance state for a larger goal.
+
+### Enterprise governance management
+
+Access management occurs at the Azure subscription level. This control allows an organization to configure each division of the company in a specific fashion based on their responsibilities and requirements. Planning and keeping rules consistent across subscriptions can be challenging without a little help.
+
+#### Azure Management Group
+
+Azure Management Groups are containers for managing access, policies, and compliance across multiple Azure subscriptions.
+
+### Azure BluePrints
+
+Adhering to security or compliance requirements, whether government or industry requirements, can be difficult and time-consuming. To help you with auditing, traceability, and compliance of your deployments, use Azure Blueprint artifacts and tools.
+
+Just as a blueprint allows an engineer or an architect to sketch a project's design parameters, Azure Blueprints enables cloud architects and central information technology groups to define a repeatable set of Azure resources that implements and adheres to an organization's standards, patterns, and requirements.
+
+Azure Blueprints makes it possible for development teams to rapidly build and deploy new environments with the trust they're building within organizational compliance using a set of built-in components, such as networking, to speed up development and delivery.
+
+Azure Blueprints is a declarative way to orchestrate the deployment of various resource templates and other artifacts, such as:
+
+- Role assignments
+- Policy assignments
+- Azure Resource Manager templates
+- Resource groups
+
+The Azure Blueprints service is backed by the globally distributed Azure Cosmos database. Blueprint objects are replicated to multiple Azure regions. This replication provides low latency, high availability, and consistent access to your blueprint objects, regardless of which region Blueprints deploys your resources to.
+
+#### How is it different from Resource Manager templates?
+
+The Azure Blueprints service is designed to help with environment setup. This setup often consists of a set of resource groups, policies, role assignments, and Resource Manager template deployments. A blueprint is a package to bring each of these artifact types together and allow you to compose and version that package—including through a CI/CD pipeline. Ultimately, each setup is assigned to a subscription in a single operation that can be audited and tracked.
+
+Nearly everything that you want to include for deployment in Blueprints can be accomplished with a Resource Manager template. However, a Resource Manager template is a document that doesn't exist natively in Azure. Resource Manager templates are stored either locally or in source control. The template gets used for deployments of one or more Azure resources, but once those resources deploy there's no active connection or relationship to the template.
+
+With Blueprints, the relationship between the blueprint definition (what should be deployed) and the blueprint assignment (what was deployed) is preserved. This connection supports improved tracking and auditing of deployments. Blueprints can also upgrade several subscriptions at once that are governed by the same blueprint.
+
+#### How it's different from Azure Policy
+
+A blueprint is a package or container for composing focus-specific sets of standards, patterns, and requirements related to the implementation of Azure cloud services, security, and design that can be reused to maintain consistency and compliance.
+
+A policy is a default-allow and explicit-deny system focused on resource properties during deployment and for already existing resources. It supports cloud governance by validating that resources within a subscription adhere to requirements and standards.
+
+Including a policy in a blueprint enables the creation of the right pattern or design during assignment of the blueprint. The policy inclusion makes sure that only approved or expected changes can be made to the environment to protect ongoing compliance to the intent of the blueprint.
+
+A policy can be included as one of many artifacts in a blueprint definition. Blueprints also support using parameters with policies and initiatives.
+
+### Compliance Manager
+
+Governing your own resources and how they are used is only part of the solution when using a cloud provider. You also have to understand how the provider manages the underlying resources you are building on.
+
+Microsoft takes this management seriously and provides full transparency with four sources:
+
+- Microsoft Privacy Statement
+- Microsoft Trust Center
+- Service Trust Portal
+- Compliance Manager
+
+The Microsoft privacy statement explains what personal data Microsoft processes, how Microsoft processes it, and for what purposes.
+
+Trust Center is a website resource containing information and details about how Microsoft implements and supports security, privacy, compliance, and transparency in all Microsoft cloud products and services
+
+The Service Trust Portal (STP) hosts the Compliance Manager service, and is the Microsoft public site for publishing audit reports and other compliance-related information relevant to Microsoft's cloud services.
+
+Compliance Manager is a workflow-based risk assessment dashboard within the Service Trust Portal that enables you to track, assign, and verify your organization's regulatory compliance activities related to Microsoft professional services and Microsoft cloud services such as Office 365, Dynamics 365, and Azure.
+
+### Monitor Service Health
+
+Defining policy and access provides fine-grained control over resources in your cloud IT infrastructure. Once those resources are deployed, you will want to know about any issues or performance problems they might encounter.
+
+Azure provides two primary services to monitor the health of your apps and resources.
+
+- Azure Monitor
+- Azure Service Health
+
+#### Azure Monitor
+
+Azure Monitor maximizes the availability and performance of your applications by delivering a comprehensive solution for collecting, analyzing, and acting on telemetry from your cloud and on-premises environments. It helps you understand how your applications are performing and proactively identifies issues affecting them and the resources they depend on.
+
+#### Azure Service Health
+
+is a suite of experiences that provide personalized guidance and support when issues with Azure services affect you. It can notify you, help you understand the impact of issues, and keep you updated as the issue is resolved. Azure Service Health can also help you prepare for planned maintenance and changes that could affect the availability of your resources.
+
+### Questions
+
+You can download published audit reports and other compliance-related information related to Microsoft’s cloud service from the Service Trust Portal (True)
+
+Which Azure service allows you to configure fine-grained access management for Azure resources, enabling you to grant users only the rights they need to perform their jobs? (Role Based Access Control)
+
+Which Azure service allows you to create, assign, and, manage policies to enforce different rules and effects over your resources and stay compliant with your corporate standards and service-level agreements (SLAs)? (Azure Policy)
+
+Which of the following services provides up-to-date status information about the health of Azure services? (Azure Service Health)
+
+Where can you obtain details about the personal data Microsoft processes, how Microsoft processes it, and for what purposes?
+
+Trust Center provides you with information about security, compliance, privacy, and transparency options available from Microsoft.
