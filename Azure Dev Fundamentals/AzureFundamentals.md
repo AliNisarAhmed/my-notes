@@ -835,3 +835,59 @@ Which of the following services provides up-to-date status information about the
 Where can you obtain details about the personal data Microsoft processes, how Microsoft processes it, and for what purposes?
 
 Trust Center provides you with information about security, compliance, privacy, and transparency options available from Microsoft.
+
+---
+
+## Module 10
+
+### Usage Meters
+
+When you provision an Azure resource, Azure creates one or more meter instances for that resource. The meters track the resources' usage, and generate a usage record that is used to calculate your bill.
+
+For example, a single virtual machine that you provision in Azure might have the following meters tracking its usage:
+
+- Compute Hours
+- IP Address Hours
+- Data Transfer In
+- Data Transfer Out
+- Standard Managed Disk
+- Standard Managed Disk Operations
+- Standard IO-Disk
+- Standard IO-Block Blob Read
+- Standard IO-Block Blob Write
+- Standard IO-Block Blob Delete
+
+### Factors affecting costs
+
+#### Resource type
+
+Costs are resource-specific, so the usage that a meter tracks and the number of meters associated with a resource depend on the resource type.
+
+Each meter tracks a particular kind of usage. For example, a meter might track bandwidth usage (ingress or egress network traffic in bits-per-second), the number of operations, size (storage capacity in bytes), or similar items.
+
+The usage that a meter tracks correlates to a number of billable units. The rate per billable unit depends on the resource type you are using. Those units are charged to your account for each billing period.
+
+#### Services
+
+Azure usage rates and billing periods can differ between Enterprise, Web Direct, and Cloud Solution Provider (CSP) customers. Some subscription types also include usage allowances, which affect costs.
+
+#### Location
+
+Azure has datacenters all over the world. Usage costs vary between locations that offer particular Azure products, services, and resources based on popularity, demand, and local infrastructure costs.
+
+#### Azure Billing Zones
+
+Bandwidth refers to data moving in and out of Azure datacenters. Most of the time inbound data transfers (data going into Azure datacenters) are free. For outbound data transfers (data going out of Azure datacenters), the data transfer pricing is based on Billing Zones.
+
+A Zone is a geographical grouping of Azure Regions for billing purposes. The following zones exist and include the listed countries (regions).
+
+- Zone 1: United States, US Government, Europe, Canada, UK, France, Switzerland
+- Zone 2: East Asia, Southeast Asia, Japan, Australia, India, Korea
+- Zone 3: Brazil, South Africa, UAE
+- DE Zone 1: Germany
+
+In most zones, the first outbound 5 gigabytes (GB) per month are free. After that amount, you are billed a fixed price per GB.
+
+**Note:** Billing zones aren't the same as an Availability Zone. In Azure, the term zone is for billing purposes only, and the full term Availability Zone refers to the failure protection that Azure provides for datacenters.
+
+**Note:** PaaS is typically less expensive than IaaS
