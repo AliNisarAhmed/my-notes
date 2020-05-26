@@ -153,6 +153,36 @@ Some concerns you'll need to watch out for are:
 
 ![Cloud Types](../images/cloud-types.PNG)
 
+### Summary
+
+- Cloud providers offer **service-level agreements (SLAs)** that guarantee a certain level of availability, but only for those systems that are controlled by them.
+
+- Moving to the cloud can help **avoid downtime** caused by network outages, system outages, and power outages. It can also help you if you need to diagnose problems with an application or problems with an external system that your application uses.
+
+- You can scale up (or vertically) when you want to add additional CPUs or more memory using a more powerful VM.
+
+- You can scale out (or horizontally) if you want to add more VMs to handle additional load.
+
+- Cloud providers give you ways to automatically scale based on usage patterns, resource utilization, and times of day. This is referred to as **elasticity**.
+
+- Cloud providers monitor the health of the infrastructure. When a VM becomes unhealthy, the cloud provider can automatically move you to a healthy VM without you having to do anything. This is called **fault tolerance**.
+
+- Cloud providers also operate across multiple data centers that are in different regions of the world. If a natural disaster (or any other disaster) happens in one region, you can switch over to another region, assuming you have replicated your environment in multiple regions. This kind of planning is called **Business Continuity and Disaster Recovery planning**, and cloud providers often have features in place to make implementing a plan easy. This is often referred to as disaster recovery.
+
+- Because you are using infrastructure owned by the cloud provider, moving to the cloud reduces your **capital expenses**, the major expenses that are incurred for infrastructure and other major purchases. Cloud providers take advantage of the principle of economies of scale by purchasing large amounts of infrastructure to be used by cloudconsumers.
+
+- Day-to-day expenses ( **operational expenses** ) can also be reduced in the cloud because you pay only for those resources you are using at any particular time. This consumption-based model is a key benefit of the cloud.
+
+- **Infrastructure-as-a-Service** (IaaS) offers infrastructure running in the cloud, but you have to maintain the operating system and what’s installed on that infrastructure. IaaS services offer you the most control in the cloud, but they also carry the largest management burden.
+
+- **Platform-as-a-Service** (PaaS) offloads the management of the infrastructure, and it also offloads the operating system and components installed on the VMs to the cloud provider. You are responsible for your application. PaaS services also offer many additional features that make it easy to add functionality to an application without having to write complex code. Development teams also have a wide variety of deployment methods available, and the cloud provider often automates much of that process.
+
+- **Software-as-a-Service** (SaaS) provides a hosted application in the cloud that is most commonly accessed using a web browser. In a SaaS service, the cloud provider manages everything for you. You are essentially renting the use of the software from the cloud provider. A big benefit of SaaS is that it makes applications easily-accessible by employees in the field on any device.
+
+- **The public cloud model is sometimes referred to as a multi-tenant environment**. Multiple companies and users share the same infrastructure. VMs and other infrastructure are allocated to users as they need them, and when they no longer need them, they are returned to the pool to be used by other users. The network is available publicly over the Internet, but you do have the ability to put security methods in place to control access to your resources.
+
+- **The private cloud model is sometimes referred to as a single-tenant environment**. All infrastructure is private to an individual or a company, and the network is only available within the private cloud itself. It is not exposed to the Internet. In many cases, the infrastructure used in a private cloud is owned by the company, but not always. It’s possible to host a private cloud in a third-party data
+
 ---
 
 ## Module 2
@@ -194,10 +224,18 @@ Some concerns you'll need to watch out for are:
 
 - A region is a geographical area on the planet containing at least one, but potentially multiple datacenters that are nearby and networked together with a low-latency network. Azure intelligently assigns and controls the resources within each region to ensure workloads are appropriately balanced.
 
+At each region, Microsoft has built datacenters (physical buildings) that contain the physical hardware that Azure uses. These datacenters contain climate-controlled buildings that house the server racks containing physical computer hardware. They also have complex and reliable network infrastructure to provide the networking power.
+
+To ensure that data in Azure is safe from disasters and failures due to possible problems in a particular region, customers are encouraged to replicate data in multiple regions. If, for example, the South Central US region is hit by a devastating tornado (not out of the question in Texas), data that is also replicated to the North Central US region in Illinois is still safe and available.
+
+In order to ensure that applications are still performing as quickly as possible, Microsoft guarantees round-trip network performance of 2-milliseconds or less between regions.
+
 ### Geographies
 
+- In order to provide Azure services to people around the world, Microsoft has created boundaries called geographies. A geography boundary is oftentimes the border of a country.
 - Azure divides the world into geographies that are defined by geopolitical boundaries or country borders.
 - An Azure geography is a discrete market typically containing two or more regions that preserve data residency and compliance boundaries.
+- **Exam Tip**: The fact that each geography contains at least two regions separated by a large physical distance is important. That’s how Azure maintains disaster recovery, and it’s likely this concept will be included on the exam.
 
 Geographies are broken up into the following areas:
 
@@ -212,12 +250,29 @@ Availability Zones are physically separate datacenters within an Azure region.
 
 Each Availability Zone is made up of one or more datacenters equipped with independent power, cooling, and networking. It is set up to be an isolation boundary. If one zone goes down, the other continues working. Availability Zones are connected through high-speed, private fiber-optic networks.
 
+There are at least three availability zones within each enabled region, and because each availability zone exists within its own datacenter in that region, each has a water supply, cooling system, network, and power supply that is isolated from other zones. By deploying an Azure service in two or more availability zones, you can achieve high-availability in a situation where there is a problem in one zone.
+
 You can use Availability Zones to run mission-critical applications and build high-availability into your application architecture by co-locating your compute, storage, networking, and data resources within a zone and replicating in other zones. Keep in mind that there could be a cost to duplicating your services and transferring data between zones.
 
 Availability Zones are primarily for VMs, managed disks, load balancers, and SQL databases. Azure services that support Availability Zones fall into two categories:
 
-- Zonal services – you pin the resource to a specific zone (for example - virtual machines, managed disks, IP addresses)
-- Zone-redundant services – platform replicates automatically across zones (for example, zone-redundant storage, SQL Database).
+- Zonal services
+  - you pin the resource to a specific zone (for example - virtual machines, managed disks, IP addresses)
+  - Zonal services are services such as virtual machines, managed disks used in a virtual machine, and public IP addresses used in virtual machines.
+  - In order to achieve high-availability, you must explicitly deploy zonal services into two or more zones.
+- Zone-redundant services
+  - platform replicates automatically across zones (for example, zone-redundant storage, SQL Database).
+  - Zone-redundant services are services such as zone-redundant storage and SQL Databases. To use availability zones with these services, you specify the option to make them zone-redundant when you create them. (For storage, the feature is called ZRS or zone-redundant storage. For SQL Database, there is an option to make the database zone-redundant.)
+  - Azure takes care of the rest for you by replicating data to automatically multiple availability zones.
+
+**Exam Tip**: Availability zones provide high-availability and fault tolerance, but they may not help you with disaster recovery. If there is a localized disaster, such as a fire in a datacenter housing one zone, you will benefit from availability zones. Because availability zones are located in the same Azure region, if there is a large-scale natural disaster such as a tornado, you may not be protected. In other words, availability zones are just one facet to an overall disaster recovery and fault tolerant design.
+
+By deploying your service to two or more availability zones, you ensure the maximum availability for that resource. In fact, Microsoft guarantees a service level agreement (SLA) of 99.99% uptime for Azure Virtual Machines only if two or more VMs are deployed into two or more zones.
+
+**Exam Tip**: Don’t confuse availability zones with availability sets.
+
+- Availability sets allow you to create two or more virtual machines in different physical server racks in an Azure datacenter. Microsoft guarantees a 99.95% SLA with an availability set.
+- An availability zone allows you to deploy two or more Azure services into two distinct datacenters within a region. Microsoft guarantees a 99.99% SLA with availability zones.
 
 ### Region Pairs
 
@@ -230,6 +285,41 @@ Availability Zones are primarily for VMs, managed disks, load balancers, and SQL
 - If there's an extensive Azure outage, one region out of every pair is prioritized to make sure at least one is restored as quick as possible for applications hosted in that region pair.
 - Planned Azure updates are rolled out to paired regions one region at a time to minimize downtime and risk of application outage.
 - Data continues to reside within the same geography as its pair (except for Brazil South) for tax and law enforcement jurisdiction purposes.
+
+### Azure Resource Manager (ARM)
+
+In order to make it easier to deploy and manage Azure services, Microsoft developed Azure Resource Manager, or ARM.
+
+ARM is a service that runs in Azure, and it’s responsible for all interaction with Azure services. When you create a new Azure service, ARM authenticates you to make sure you have the right access to create that resource, and then it talks to a resource provider for the service you’re creating.
+
+For example, if you’re creating a new web app in Azure App Service, ARM will pass your request on to the Microsoft.Web resource provider, because it knows all about web apps and how to create them.
+
+**Exam Tip**: There are resource providers for every Azure service, but the names might not always make sense. For example, the Microsoft. Compute resource provider is responsible for creating virtual machine resources.
+
+#### ARM Templates
+
+an ARM template contains a list of resources that you want to either create or modify. Each resource is accompanied by properties such as the name of the resource and properties that are specific to that resource.
+
+ARM has many benefits, and you should be aware of these for your exam:
+
+- ARM allows you to easily deploy multiple Azure resources at once.
+- ARM makes it possible to reproduce any deployment with consistent results at any point in the future.
+- ARM allows you to create declarative templates for deployment instead of requiring you to write and maintain complex deployment scripts.
+- ARM makes it possible to set up dependencies so that your resources are deployed in the right order every time.
+
+### Resource Groups
+
+A resource group is a logical container for Azure services.
+
+By creating all Azure services associated with a particular application in a single resource group, you can then deploy and manage all of those services as a single entity.
+
+**Exam Tip**: An Azure resource can only exist in one resource group. You can move Azure resources from one resource group to another.
+
+### Azure Tags
+
+A tag consists of a name and a value
+
+**Exam Tips**: Tags can also help you organize your Azure billing expenses. When you download your Azure invoice, resource tags will appear in one of the columns, and because Azure invoices can be downloaded as comma-separated values, you can use tools like Microsoft Excel to filter based on tags.
 
 ### Service Level Agreements (SLAs)
 
@@ -307,6 +397,7 @@ Most providers prefer to maximize the availability of their Azure solutions by m
 - They provide infrastructure as a service (IaaS) in the form of a virtualized server and can be used in many ways. Just like a physical computer, you can customize all of the software running on the VM.
 
 - You can run single VMs for testing, development, or minor tasks; or you can group VMs together to provide high availability, scalability, and redundancy.
+- You are charged for Azure VMs as long as they are running.
 
 #### Availability Sets
 
@@ -314,24 +405,40 @@ Most providers prefer to maximize the availability of their Azure solutions by m
 - A **_planned maintenance_** event is when the underlying Azure fabric that hosts VMs is updated by Microsoft.
 - When the VM is part of an availability set, the Azure fabric updates are sequenced so not all of the associated VMs are rebooted at the same time. VMs are put into different update domains.
 - **_Update domains_** indicate groups of VMs and underlying physical hardware that can be rebooted at the same time. Update domains are a logical part of each data center and are implemented with software and logic.
+  - Update domains are designed to protect you from a situation where the host computer is being rebooted. When you create an availability set, Azure creates five update domains by default. \
+  - These update domains are spread across the fault domains in the availability set. If a reboot is required on computers in the availability set (whether host computers or VMs within the availability set), Azure will only reboot computers in one update domain at a time and it will wait 30 minutes for computers to recover from the reboot before it moves on to the next update domain. Update domains protect you from planned maintenance events.
 - **_Unplanned maintenance_** events involve a hardware failure in the data center, such as a power outage or disk failure.
 - VMs that are part of an availability set automatically switch to a working physical server so the VM continues to run.
 - The group of virtual machines that share common hardware are in the same **_fault domain_**.
-- A fault domain is essentially a rack of servers.
+- A fault domain is essentially a rack of servers. Fault domains are a logical representation of the physical rack in which a host computer is installed.
 
 ![Example](../images/avset.PNG)
 
 - Azure **_Virtual Machine Scale Sets_** let you create and manage a group of identical, load balanced VMs.
 - Azure Batch enables large-scale job scheduling and compute management with the ability to scale to tens, hundreds, or thousands of VMs.
 
+**Some disadvantages**
+
+- Every machine in an availability set has to be explicitly created. While you can use an ARM template to deploy multiple virtual machines in one deployment, you still have to configure those machines with the software and configuration necessary to support your application.
+- An availability set also requires that you configure something in front of your VMs that will handle the distribution of traffic to those VMs. (load balancer)
+- Another disadvantage to availability sets relates to cost. In a situation where your VM needs changed often based on things like load on the application, you might find yourself paying for many more VMs than you need.
+
+#### Scale Sets
+
+Azure offers another feature for VMs called scale sets that solves these problems nicely. When you create a scale set, you tell Azure what operating system you want to run and then you tell Azure how many VMs you want in your scale set. You have many other options such as creating a load balancer or gateway and so forth. Azure will create as many VMs as you specified (up to 1,000) in one easy step.
+
+you can also scale a scale set in a situation where you need more or fewer VMs. You might start with only one VM in a scale set, but as load on that VM increases, you might want to automatically add additional VMs. Scale sets provide that functionality by using Azure’s auto-scale feature. You define scaling rules that use metrics like CPU, disk usage, network usage, and so forth. You can configure when Azure should add additional instances and when it should scale back and deallocate instances. This is a great way to ensure availability while reducing costs by taking advantage of the elasticity that auto-scale provides.
+
 ### Containers
 
 A container is a modified runtime environment built on top of a host OS that executes your application. A container doesn't use virtualization, so it doesn't waste resources simulating virtual hardware with a redundant OS. This environment typically makes containers more lightweight than VMs.
 
+A container is created using a zipped version of an application called an image , and it includes everything the application needs to run.
+
 - Azure Supports Docker Containers
 - Several Ways to manager containers in Azure
   - Azure Container Instances (ACI)
-    - Azure Container Instances (ACI) offers the fastest and simplest way to run a container in Azure. You don't have to manage any virtual machines or configure any additional services. It is a PaaS offering that allows you to upload your containers and execute them directly with automatic elastic scale.
+    - Azure Container Instances (ACI) is a PaaS service offers the fastest and simplest way to run a container in Azure. You don't have to manage any virtual machines or configure any additional services. It is a PaaS offering that allows you to upload your containers and execute them directly with automatic elastic scale.
   - Azure Kubernetes Service (AKS)
     - The task of automating, managing, and interacting with a large number of containers is known as orchestration. Azure Kubernetes Service (AKS) is a complete orchestration service for containers with distributed architectures with multiple containers.
 
@@ -485,6 +592,9 @@ If one system is unavailable, Azure Load Balancer stops sending traffic to it. I
 - It is a way to get content to users in their local region to minimize latency.
 - CDN can be hosted in Azure or any other location. You can cache content at strategically placed physical nodes across the world and provide better performance to end users.
 - Typical usage scenarios include web applications containing multimedia content, a product launch event in a particular region, or any event where you expect a high-bandwidth requirement in a region.
+- Azure Content Delivery Network (CDN) is an effective way of delivering large files or streaming content over the Internet. It makes the downloading of large files much faster by caching the files in multiple geographical locations so that users can get the files from a server as close to them as possible. CDNs are typically used with images, videos, and other similarly large files.
+- A CDN works by storing a cached version of files on a point-of-presence (POP) server that is located on the outside edge of a network. These servers (called edge servers) are able to serve content without having to go through the entire network, a process which adds time to a request.
+- The content on an edge server has a time-to-live (TTL) property associated with it that tells the edge server how long it should keep the cached copy. If a TTL isn’t specified, the default TTL time is seven days.
 
 #### DNS
 
@@ -500,15 +610,124 @@ Factors such as the type of connection you use and how your application is desig
 
 #### Azure Traffic Manager
 
-Azure Traffic Manager. Traffic Manager uses the DNS server that's closest to the user to direct user traffic to a globally distributed endpoint.
+Azure Traffic Manager uses the DNS server that's closest to the user to direct user traffic to a globally distributed endpoint.
 
 Traffic Manager doesn't see the traffic that's passed between the client and server. Rather, it directs the client web browser to a preferred endpoint. Traffic Manager can route traffic in a few different ways, such as to the endpoint with the lowest latency.
 
 #### Load Balancer vs Traffic Manager
 
+- Azure Traffic Manager is a domain name system (DNS) -based system that’s designed to enhance the speed and reliability of your application.
+- To use Traffic Manager, you configure endpoints within Traffic Manager.
+- An endpoint is simply a resource that you want users to connect to. Traffic Manager supports public IP addresses connected to Azure VMs, web apps running in App Service, and cloud services hosted in Azure. An endpoint can also be a resource located on-premises or even at another hosting provider. Once you’ve configured your endpoints, you specify routing rules that you want Traffic Manager to apply to them.
+
 - Azure Load Balancer distributes traffic within the same region to make your services more highly available and resilient. Traffic Manager works at the DNS level, and directs the client to a preferred endpoint. This endpoint can be to the region that's closest to your user.
 
 - Load Balancer and Traffic Manager both help make your services more resilient, but in slightly different ways. When Load Balancer detects an unresponsive VM, it directs traffic to other VMs in the pool. Traffic Manager monitors the health of your endpoints. When Traffic Manager finds an unresponsive endpoint, it directs traffic to the next closest endpoint that is responsive.
+
+### Azure Blob Storage
+
+- **Block blobs** Used to store files used by an application.
+- **Append blobs** They are like block blobs, but append blobs are specialized for append operations. For that reason, they are often used to store constantly updated data like diagnostic logs.
+- **Page blobs** They are used to store virtual hard drive (.vhd) files that are used in Azure virtual machines.
+
+Microsoft offers numerous storage tiers that are priced according to how often the data is accessed, how long you intend to store the data, and so on.
+
+- **The Hot storage** tier is for data you need to access often. It has the highest cost of storage, but the cost for accessing the data is low.
+- **The Cool storage** tier is for data that you intend to store for a longer period and not access quite as often. It has a lower storage cost than the Hot tier, but access costs are higher. You’re also required to keep data in storage for at least 30 days.
+- **Archive storage tier** for long-term data storage. Data stored in the Archive tier enjoys the lowest storage costs available, but the access costs are the highest. You must keep data in storage for a minimum of 180 days in the Archive tier.
+
+Azure disks are available as either **Managed Disks or unmanaged disks**.
+
+- All Azure disks are backed by page blobs in Azure Storage. When you use unmanaged disks, they use an Azure Storage account in your Azure subscription, and you have to manage that account. This is particularly troublesome because there are limitations in Azure Storage, and if you have heavy disk usage, you may end up experiencing downtime due to throttling.
+- When you move to Managed Disks, Microsoft handles the storage account, and all storage limitations are removed. All you have to worry about is your disk. You can leave the Storage account in Microsoft’s hands.
+
+**Exam Tip**: Azure Blob Storage can also be used as a data store for big data. However, SQL Data Warehouse and Data Lake Storage are explicitly designed for this purpose. Microsoft has also recently released Data Lake Storage Gen2, which combines the features of Blob Storage with Data Lake Storage, so the usage of Blob Storage for data warehousing is becoming unnecessary.
+
+### Azure SQL Database
+
+Azure SQL Database lets you easily purchase a fully managed platform as a service (PaaS) database engine that fits your performance and cost needs. Depending on the deployment model you've chosen for Azure SQL Database, you can select the purchasing model that works for you:
+
+Virtual core (vCore)-based purchasing model (recommended) VS Database transaction unit (DTU)-based purchasing model.
+
+We can deploy our SQL DB as a "Single DB" vs "Elastic Pool"
+
+- An elastic pool consists of more than one database (and often many databases) all managed by the same SQL Database server. This solution is geared towards SaaS offerings where you may want to have multiple users (or maybe even each user) to be assigned their own database. You can easily move databases into and out of an elastic pool, making it ideal for SaaS.
+
+**Exam Tip:** While you can scale up and down easily with Azure SQL Database by moving to a higher tier or adding compute, memory, and storage resources, relational databases don’t scale horizontally. There are some options available for scaling out a read-only copy of your database, but in general, relational databases don’t offer the capability of scaling out to provide additional copies of your data in multiple regions.
+
+### Azure No-SQL DB (Azure Cosmos DB)
+
+Microsoft offers a hosted NoSQL database system in Azure called Cosmos DB, and Cosmos DB supports all of the NoSQL database types.
+
+No-SQL DB Types
+
+- **Key-value** Stores data that is tied to a unique key. Pass in the key and the database returns the data. Since the value can be just about anything, key-value databases have many uses.
+- **Column** NoSQL databases are called keyspaces , and a keyspace contains column families. A column contains rows and columns like a relational table, but each row can have its own set of columns. You aren’t locked into a schema. Storing user-profile data for a website. Also, because column databases scale well and are extremely fast, they are well-suited to storing large amounts of data.
+- **Document**: Document Data is stored as a structured string of text called a document. This can be HTML, JSON, and so forth. Ths is similar to a key-value database except that the document is a structured value. Same as key-value, but document databases have advantages. They scale well horizontally, and they allow you to query against the value and return portions of the value. A key-value database query returns the entire value associated with the key.
+- **Graph** Stores data and the relationships between each piece of data. Data is stored in nodes, and relationships are drawn between nodes. Many systems use graph databases because they are extremely fast. A social network might use a graph database because it would be easy to store relationships between people and also things those people like, and so forth.
+
+Another huge advantage to Cosmos DB is a feature Microsoft calls turnkey global distribution. This feature takes advantage of the horizontal scalability of NoSQL databases and allows you to replicate your data globally with a few clicks.
+
+### Azure SQL Data Warehouse
+
+is designed for storing big data that’s in the form of relational data. Data stored in SQL Data Warehouse is in a form quite similar to tables in a SQL Server data base.
+
+### Azure Data Lake Storage
+
+Like SQL Data Warehouse, Azure Data Lake Storage is designed for storing large amounts of data that you’d like to analyze, but Data Lake Storage is designed for a wide array of data instead of relational data.
+
+**Exam Tip**: The terms data lake and data warehouse aren’t specific to Azure. They are generic terms. A data lake refers to a repository of unordered data, and a data warehouse refers to a repository of ordered data.
+
+### Summary
+
+- An Azure region is an area within a specific geographical boundary, and each region is typically hundreds of miles apart.
+- A geography is usually a country, and each geography contains at least two regions.
+- A datacenter is a physical building within a region, and each datacenter has its own power, cooling supply, water support, generators, and network. • Round-trip latency between two regions must be no greater than 2ms, and this is why regions are sometimes defined as a “latency boundary.”
+- Customers should deploy Azure resources to multiple regions to ensure availability.
+- Availability zones ensure that your resources are deployed into separate datacenters in a region. There are at least three availability zones in every region.
+- Azure Resource Manager (ARM) is how Azure management tools create and manage Azure resources.
+- ARM uses resource providers to create and manage resources.
+- An ARM template allows you to ensure consistency of large Azure deployments.
+- Resource groups allow you to separate Azure resources in a logical way, and you can tag resources for easier management.
+- Azure Virtual Machines are an IaaS offering where you manage the operating system and configuration.
+- Availability sets protect your VMs with fault domains and update domains. Fault domains protect your VM from a hardware failure in a hardware rack. You are protected from VM reboots by update domains.
+- Scale sets allow you to set up auto-scale rules to scale horizontally when needed.
+- Containers allow you to create an image of an application and everything needed to run it. You can then deploy this image to Azure Container Instances, Azure Kubernetes Service, or Web App for Containers.
+- An Azure virtual network (VNET) allows Azure services to communicate with each other and the Internet.
+- You can add a public IP address to a VNET for inbound Internet connectivity. This is useful if a website is running in your VNET and you want to allow people to access it.
+- Azure Load Balancer can distribute traffic from the Internet across multiple VMs in your VNET.
+- Azure Application Gateway is a load balancer well-suited to HTTP traffic and is a good choice for websites.
+- VPN Gateway allows you to configure secure VPN tunnels in your VNET. This can be used to connect across Azure regions or even to on-premises machines/
+- Azure Content Delivery Network caches resources so that users can get a faster experience across the globe.
+- Azure Traffic Manager is a DNS-based solution that can help to load balance web requests, send traffic to a new region in an outage, or send users to a particular region that’s closest to them.
+- Azure Blob Storage is a good storage option for unstructured data such as binary files.
+- If you need to move a large amount of data to Blob Storage, Azure Data Box is a good option. You can have hard drives of numerous sizes shipped to you. Add your data to them and ship them back to Microsoft where they’ll be added to your storage account.
+- Azure Queue Storage stores messages from applications in a queue so they can be processed securely.
+- Azure Disk Storage is virtual disk storage for Azure VMs. Managed Disks allow you to remove the management burden of disks.
+- Azure Files allows you to have disk space in the cloud that you can map to a drive on-premises.
+- Azure SQL Database is a relational database system in the cloud that is completely managed by Microsoft.
+- Azure Cosmos DB is a NoSQL database in the cloud for unstructured data.
+- The Azure Marketplace is a source of templates for creating Azure resources. Some are provided by Microsoft and some are provided by third-parties.
+- The Internet of Things (IoT) refers to devices with sensors that communicate with each other and with the Internet.
+- Azure IoT Hub allows you to manage IoT devices and route message to and from those devices.
+- Azure IoT Hub Provisioning Service makes it easy to provision a large number of devices into IoT Hub.
+- Azure IoT Central is a SaaS offering for monitoring IoT devices.
+- Big data refers to more data that you can analyze through conventional means within a desired time-frame.
+- Big data is stored in a data warehouse. In Azure, that can be Azure SQL Data Warehouse or Azure Data Lake Storage. SQL Data Warehouse is good for relational data. Data Lake Storage is good for any type of data.
+- HDInsight is Microsoft’s solution for clustered Hadoop processing of big data.
+- The process of AI decision making at several points along the neural network is referred to as the ML pipeline.
+- Azure Databricks is a good solution for modeling data from a data warehouse so that it can be effectively used in ML modeling.
+- Databricks clusters are made up of notebooks that can store all types of information.
+- Azure Machine Learning Service uses cloud-based resources to train ML models much faster.
+- Azure Machine Learning Studio allows you to build, train, and score ML models in a drag-and-drop interface.
+- Serverless computing refers to using surplus VMs in Azure to run your code on-demand. You pay only for when your code runs.
+- Azure Functions is the compute component of serverless in Azure.
+- Azure Logic Apps is a workflow serverless solution that uses connectors, triggers, and actions.
+- Azure Event Grid makes it possible to raise and handle events as you interact with your Azure resources.
+- The Azure portal is a web-based interface for interacting with your Azure services. It uses ARM API calls under the hood to talk to Azure Resource Manager.
+- Azure PowerShell Az is a cross-platform PowerShell module that makes it easy to manage Azure resources in PowerShell.
+- The Azure CLI is a command-line tool that is cross-platform and can be scripted in multiple languages.
+- Azure Advisor provides best practice recommendations in the area of high-availability, security, performance, and cost.
 
 ---
 
