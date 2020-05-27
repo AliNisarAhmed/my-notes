@@ -763,6 +763,10 @@ Security Center analyzes the security state of your Azure resources. When Securi
   - B2C
   - Device Management
 
+Azure AD offers a feature called Azure AD B2B (business-to-business) collaboration that allows you to add users who don’t belong to your company. So, you can invite other users from outside of your company to be members of your Azure AD. Those users can then be given access to your resources. Users who are not part of your company are called guest users.
+
+**Exam Tip:** Azure AD B2B allows you to invite guest users to your Azure AD from other businesses. Another AD feature called Azure AD B2C allows you to give users access to Azure AD applications by signing in with existing accounts such as a Facebook or Google account.
+
 #### Multi Factor Auth
 
 is done based on 3 things
@@ -807,6 +811,48 @@ A managed identity can be instantly created for any Azure service that supports 
 
 - Roles assigned at a higher scope, like an entire subscription, are inherited by child scopes, like service instances.
 
+Role-based access control (RBAC) is a generic term that refers to the concept of authorizing users to a system based on defined roles to which the user belongs. Azure implements RBAC across all Azure resources so that you can control how users and applications can interact with your Azure resources.
+
+There are four elements to RBAC.
+
+- **Security principal**
+  - The security principal represents an identity.
+  - It can be a user, a group, an application (which is called a service principal), or a special AAD entity called a managed identity.
+  - A managed identity is how you authorize another Azure service to access your Azure resource.
+- **Role**
+  - A role (sometimes called a role definition) is what defines how the security principal can interact with an Azure resource.
+  - For example a role might define that a security principal can read the properties of a resource but cannot create new resources or delete existing resources.
+- **Scope**
+  - The scope defines the level at which the role is applied, and it controls how much control the security principal has.
+  - For example, if the scope is to a resource group, the role defines activities that can be performed on all matching resources in the resource group.
+- **Role assignments**
+  - Roles are assigned to a security principal at a particular scope, and that’s what ultimately defines the level of access for the security principal.
+
+RBAC includes many built-in roles. Three of these built-in roles apply to all Azure resources.
+
+- **Owner**
+  - Members of this role have full access to the resources.
+- **Contributor**
+  - Members of this role can create resources and manage resources, but they cannot delegate that right to anyone else.
+- **Reader**
+  - Members of this role can see Azure resources, but they cannot create, delete, or manage those resources. All of the other built-in roles are specific to certain types of Azure resources.
+
+RBAC roles can be scoped to the management group, subscription, resource group, or resource level.
+
+**Exam Tip** The scope of RBAC is defined by where the RBAC role is assigned. For example, if you open a resource group in the portal and assign an RBAC role to a user, the scope is at the resource group level. On the other hand, if you open a web app within that resource group and assign the role, the scope is to that web app only. That user will not have access to other apps in the resource group unless you apply other role assignments to the user.
+
+**Exam Tip** It’s important to understand that role assignments are additive. Your RBAC abilities at any particular scope are the result of all role assignment up to that level. In other words, if I have the Owner role on a resource group and you assign me the Website Contributor role on a web app within that resource group, the Website Contributor assignment will have no effect because I already have the Owner role on the entire resource group.
+
+RBAC is enforced by Azure Resource Manager (ARM). When you attempt to interact with an Azure resource, whether in the Azure portal or by using a command line tool, you are authenticated by ARM and a token is generated for you. That token is a representation of your identity and all of your role assignments, and it’s included with all operations you perform on the resource. ARM is able to determine if the action you are performing is allowed by the roles to which you are assigned. If it is, the call succeeds. If not, you are denied access.
+
+##### Locks
+
+RBAC is a great way to control access to an Azure resource, but in cases where you just want to prevent changes to a resource, or prevent that resource from being deleted, locks are a simpler solution. Unlike RBAC, locks apply to everyone with access to the resource.
+
+**Exam Tip** In order to create a lock, you must either be in the Owner or the User Access Administrator role in RBAC. Alternatively, an administrator can create a custom role that grants the right to create a lock. Locks can be applied at the resource level, the resource group level, or at the subscription level.
+
+**Exam Tip** Locks are also inherited by newly-created resources. If you apply a delete lock to a resource group, and add a new resource to the resource group at a later time, the new resource will automatically inherit the delete lock.
+
 #### Privileged Identity Management
 
 In addition to managing Azure resource access with role-based access control (RBAC), a comprehensive approach to infrastructure protection should consider including the ongoing auditing of role members as their organization changes and evolves.
@@ -848,6 +894,10 @@ Encryption is typically approached in two ways:
   - Key Management
   - Certificate Management: like SSL/TLS (Secure Sockets Layer)
 
+**Exam Tip:** Keeping encryption keys in an HSM boundary is required for Federal Information Processing Standard (FIPS) 140-2, so companies that need to maintain compliance with FIPS 140-2 can do so by using the Premium tier of Key Vault.
+
+**Exam Tip** A key stored in Azure Key Vault would typically be accessed programmatically by an application. To protect the key, the application developers can retrieve the key each time it’s needed instead of retrieving it once and storing it in memory. This ensures that the key remains secure.
+
 ### Azure Certificates
 
 - Transport Layer Security (TLS) is the basis for encryption of website data in transit. TLS uses certificates to encrypt and decrypt data. However, these certificates have a lifecycle that requires administrator management. A common security problem with websites is having expired TLS certificates that open security vulnerabilities.
@@ -872,11 +922,44 @@ Management certificates allow you to authenticate with the classic deployment mo
 
 Firewall is a service that grants server access based on the originating IP address of each request.
 
+In computing parlance, a firewall is an appliance through which network traffic into and out of a particular network travels. The purpose of a firewall is to allow only desired traffic on the network, and to reject any traffic that might be malicious or that comes from an unknown origin. A firewall imposes control on the network using rules that specify a source and destination IP address range and port combination.
+
+In a typical firewall configuration, all traffic is denied by default. In order for the firewall to allow traffic to pass through it, a rule must match that traffic. For example, if you want to allow someone on the public Internet to access a web application you have running on a particular server, create a firewall rule that allows communication to ports 80 and 443 (the ports for HTTP and HTTPS traffic).You then configure the rule to send that traffic to your web server.
+
 Multiple options for inbound protection in Azure
 
 ##### Azure Firewall
 
+Azure Firewall is a PaaS offering in Azure, and it’s easily managed and offers a 99.95% SLA.
+
 It is a fully stateful firewall as a service with built-in high availability and unrestricted cloud scalability. Azure Firewall provides inbound protection for non-HTTP/S protocols. Examples of non-HTTP/S protocols include: Remote Desktop Protocol (RDP), Secure Shell (SSH), and File Transfer Protocol (FTP). It also provides outbound, network-level protection for all ports and protocols, and application-level protection for outbound HTTP/S.
+
+**NOTE:** Azure Firewall is a stateful firewall. That means that it stores data in its memory about the state of network connections that flow through it. When new network packets for an existing connection hit the firewall, it’s able to tell if the state of that connection represents a security threat.
+
+For example, if someone spoofs your IP address and attempts to gain access to your virtual network in Azure, the firewall would recognize that the hardware address of the computer being used has changed and reject the connection.
+
+###### Hub and Spoke configuration
+
+A typical setup for Azure Firewall consists of the following:
+
+- A centralized hub network that contains the Azure Firewall and a VM that operates as a jumpbox . The firewall exposes a public IP address, but the jumpbox VM does not.
+- One or more additional networks (called spoke networks) that don’t expose a public IP address. These networks contain your various Azure resources.
+
+The jumpbox is a VM that you can remote into in order to manage other VMs in your networks.
+
+All other VMs are configured to only allow remote access from the jumpbox VM’s IP address. If you want to access a VM in a spoke network, you first remote into the jumpbox VM, and then you remote into the spoke network VM from the jumpbox.
+
+This setup is referred to as a hub and spoke configuration, and it provides additional security for your network resources.
+
+![hub and spoke](./hubandspoke.PNG)
+
+While the PaaS nature of Azure Firewall does remove much of the complexity, using a firewall isn’t as simple as enabling it in your virtual network.
+
+You will also need to tell Azure to send traffic to the firewall, and then you’ll need to configure rules in the firewall so that it knows what to do with that traffic.
+
+To send traffic to your firewall, you need to create a route table. A route table is an Azure resource that is associated with a subnet, and it contains rules (called routes ) that define how network traffic in the subnet is handled.
+
+**Exam Tip:** It’s important to understand that a firewall can (and should) be used to filter traffic flowing into and out of a network. For example, you want the firewall to handle traffic into your jumpbox, but you also want to ensure that traffic flowing from the subnet where other servers are located is secure and not inappropriately sending data out of your network.
 
 ##### Azure Application Gateway
 
@@ -888,11 +971,35 @@ are ideal options for non-HTTP services or advanced configurations, and are simi
 
 #### Azure DDoS Protection
 
+Cloud applications that are accessible from the Internet over a public IP address are susceptible to distributed denial of service (DDoS) attacks.
+
+DDoS attacks can overwhelm an application’s resources and can often make the application completely unavailable until the attack is mitigated.
+
+DDoS attacks can also be used to exploit security flaws in an application and attack systems that an application connects to.
+
+Azure can help protect against DDoS attacks with DDoS protection. DDoS protection is a feature of Azure Virtual Networks.
+
+There are two tiers of DDoS protection; Basic and Standard.
+
+Basic protects you from volume-based DDoS attacks by distributing large amounts of volume across all of Azure’s network infrastructure.
+
+- Basic DDoS protection applies to both IPv4 and IPv6 public IP addresses.
+
+- With the Basic tier, you have no logging or reporting of any DDoS mitigation, and there’s no way to configure alerts, so that you’re notified if a problem is detected. However, the Basic tier is free and provides basic protection.
+
+The DDoS Standard tier offers protection not only from volume-based DDoS attacks, but when used in combination with Azure Application Gateway, it also protects from attacks designed to target the security of your applications. It offers logging and alerting of DDoS events and mitigations, and if you need help during a DDoS attack, Microsoft provides access to experts who can help you. The DDoS Standard tier applies only to IPv6 public IP addresses.
+
+Virtual networks that use the DDoS protection plan aren’t required to be in the same subscription, so in most cases, an organization will only need a single DDoS protection plan to protect all of their virtual networks.
+
+**Exam Tip:** The fact that you can add virtual networks from multiple Azure subscriptions to the same DDoS protection plan is an important concept. You are billed a large monthly charge for the DDoS protection plan, and if you create two DDoS protection plans, you have just doubled your costs.
+
 #### Virtual Network Security
 
 Once inside a virtual network (VNet), it's crucial that you limit communication between resources to only what is required.
 
 For communication between virtual machines, Network Security Groups (NSGs) are a critical piece to restrict unnecessary communication.
+
+**Exam Tip** An NSG that’s associated with a subnet impacts all VMs inside of that subnet, as well as traffic to and from the subnet. For example, if you configure an NSG to prevent all traffic except traffic from the Internet, and you then associate that NSG with a subnet containing two VMs, those two VMs will no longer be able to communicate with each other because only traffic from the Internet is allowed by the NSG.
 
 You can completely remove public internet access to your services by restricting access to service endpoints. With service endpoints, Azure service access can be limited to your virtual network.
 
@@ -918,9 +1025,13 @@ introduces security and privacy considerations throughout all phases of the deve
 
 ### Azure Policy
 
+Azure Policy allows you to define rules that are applied when Azure resources are created and managed. For example, you can create a policy that specifies that only a certain size VM can be created and that the VMs must be created in the South Central US region. Azure will take care of enforcing this policy so you remain in accordance with your corporate policies.
+
 Azure Policy is an Azure service you use to create, assign and, manage policies. These policies enforce different rules and effects over your resources so that those resources stay compliant with your corporate standards and service level agreements.
 
 Azure Policy meets this need by evaluating your resources for noncompliance with assigned policies. For example, you might have a policy that allows virtual machines of only a certain size in your environment. After this policy is implemented, new and existing resources are evaluated for compliance. With the right type of policy, existing resources can be brought into compliance.
+
+Azure Policy makes it easy to impose a full suite of policies by combining them into a group called an **_initiative_** . By defining an initiative, you can easily define complex rules that ensure governance of your company’s policies.
 
 #### How are Azure Policy and RBAC different?
 
