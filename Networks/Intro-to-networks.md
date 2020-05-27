@@ -10,6 +10,8 @@
 | 2   | Data Link / Nw Access | Ethernet, WiFi    | Frames             | MAC Address  |
 | 1   | Physical              | 10 Base T, 802.11 | Bits               | n/a          |
 
+---
+
 ## Network Switches vs Hubs
 
 - A **hub** is a physical layer device that allows for connections from many computers at once.
@@ -21,6 +23,8 @@
   protocol data being sent around the network, determine which system
   the data is intended for and then only send that data to that one system.
 
+---
+
 ## Routers
 
 - A router is a device that knows how to forward data between independent networks.
@@ -30,6 +34,8 @@
   between lots of different networks all over the world.
 - The most common type of router you'll see is one for a home network, or
   a small office. These devices generally don't have very detailed routing tables.
+
+---
 
 ## Ethernet
 
@@ -223,6 +229,8 @@ There are two main Categories
   - 10.0.0.0/8
   - 172.16.0.0/12
   - 192.168.0.0/16
+
+---
 
 ## Transport Layer
 
@@ -418,6 +426,8 @@ Not all operating systems follow the ephemeral port recommendations of the IANA.
   a firewall is performed by the same device.
   And firewalls can run on individual hosts instead of being a network device.
   All major modern operating systems have firewall functionality built-in.
+
+---
 
 ## Application Layer
 
@@ -707,7 +717,7 @@ for `www.google.com`
 - PNs, usually requires strict authentication procedures in order to ensure that they can only be connected to by computers and users authorized to do so.
 - In fact, VPNs were one of the first technologies where two-factor authentication became common.
 
-## Proxy Services
+### Proxy Services
 
 - A proxy service is a server that acts on behalf of a client in order to access another service.
 - Proxies sit between clients and other servers, providing some additional benefit, anonymity,
@@ -726,3 +736,98 @@ for `www.google.com`
     - But behind the scenes, this reverse proxy server is actually distributing these incoming requests to lots of different physical servers. Much like the concept of DNS Round Robin, this is a form of load balancing.
     - Another way that reverse proxies are commonly used by popular websites is to deal with decryption
     - Reverse proxies are now implemented in order to use hardware built specifically for cryptography, to perform the enryption and decryption work. So that the web servers are free to just serve content.
+
+---
+
+## Connecting to the Internet
+
+A dial-up connection uses POTS (Plain old telephone system, aka PSTN public switched Telephone n/w) for data transfer, and gets its name because the connection is established by actually dialing a phone number
+
+A baud rate is a measurement of the number of bits that can be sent across a telephone every second.
+
+### BroadBand
+
+The term broadband has a few definitions.
+
+In terms of internet connectivity, it's used to refer to any connectivity technology that isn't dial-up Internet.
+
+Broadband Internet is almost always much faster than even the fastest dial-up connections and refers to connections that are always on.
+
+Without broadband internet connection technologies, the Internet as we know it today wouldn't exist.
+
+- A single picture taken on a smartphone today can easily be several megabytes in size.
+- Two megabytes would translate to 16,777,216 bits.
+- At a baud rate of 14.4 kilobits per second, that many bits would take nearly 20 minutes to download.
+
+### T-Carrier Technologies
+
+- T-Carrier Technologies were first invented by AT&T in order to provision a system that allowed lots of phone calls to travel across a single cable.
+- Every individual phone call was made over individual pairs of copper wire before Transmission System 1, the first T-Carrier specification called T1 for short.
+- With the T1 specification, AT&T invented a way to carry up to 24 simultaneous phone calls across a single piece of twisted pair copper.
+- Years later, the same technology was re-purposed for data transfers.
+- Each of the 24 phone channels was capable of transmitting data at 64 kilobits per second, making a single T1 line capable of transmitting data at 1.544 megabits per second.
+- Over the years, the phrase T1 has come to mean any twisted-pair copper connection capable of speeds of 1.544 megabits per second even, if it doesn't strictly follow the original Transmission System 1 specification
+- Originally, T1 technology was only used to connect different telecom company sites to each other and to connect these companies to other telecom companies. But with the rise of the internet as a useful business tool in the 1990s, more and more businesses started to pay to have T1 lines
+  installed at their offices to have faster internet connectivity.
+- More improvements to the T1 line were made by developing a way of multiple T1s to act as a single link.
+- So, T3 line is 28 T1s all multiplexed achieving a total throughput speed of 44.736 megabits per second.
+
+### Digital Subscriber Link (DSL)
+
+- Twisted pair copper used by modern telephone lines was capable of transmitting way more data than what was needed for voice-to-voice calls.
+- By operating at a frequency range that didn't interfere with normal phone calls, a technology known as digital subscriber line or
+  DSL was able to send much more data across the wire than traditional dial-up technologies.
+- To top it all off, this allowed for normal voice phone calls and data transfer to occur at the same time on the same line.
+- DSL technologies also use their own modems. They're known as DSLAMs or Digital Subscriber Line Access Multiplexers.
+  Just like dial-up modems, these devices establish data connections across phone lines, but unlike dial-up connections, they're usually long-running.
+  This means that the connection is generally established when the DSLAM is powered on and isn't torn down until the DSLAM is powered off.
+- the two most common types of DSL are ADSL and SDSL.
+  - **ADSL** stands for Asymmetric Digital Subscriber Line.
+  - ADSL connections feature different speeds for outbound and incoming data.
+  - Generally, this means faster download speeds and slower upload speeds
+  - **SDSL** stands for Symmetric Digital Subscriber Line.
+  - SDSL technology is basically the same as ADSL except the upload and download speeds are the same.
+
+### Cable Broadband
+
+- Much like how DSL was developed, cable companies quickly realized that the coaxial cables generally used by cable television delivery into a person's
+  home were capable of transmitting much more data than what was required for TV viewing.
+
+- By using frequencies that don't interfere with television broadcast, cable-based Internet access technologies were able to deliver high speed Internet access across these same cables. This is the technology that we refer to when we say cable broadband.
+
+- These are Shared bandwidth broadband connections
+
+### Fiber Connections
+
+- In recent years, it's become popular to use fiber to deliver data closer and closer to the end user.
+- Exactly how close to the end user can vary a ton across implementations, which is why the phrase FTTX was developed.
+- FTTX stands for fiber to the X, where the X can be one of many things.
+- FTTN, which means fiber to the neighborhood.
+- FTTB is a setup where fiber technologies are used for data delivery to an individual building
+- FTTH, which stands for fiber to the home.
+- FTTH and FTTB may both also be referred to as FTTP, fiber to the premises.
+- Instead of a modem, the demarcation point for fiber technologies is known as Optical Network Terminator, or ONT.
+- An ONT converts data from protocols the fiber network can understand to those that are more traditional twisted pair copper networks can understand.
+
+#### Protocols related to Fibers
+
+In computer networking, Point-to-Point Protocol (PPP) is a data link layer (layer 2) communications protocol between two routers directly without any host or any other networking in between. It can provide connection authentication, transmission encryption, and compression.
+
+Two derivatives of PPP, Point-to-Point Protocol over Ethernet (PPPoE) and Point-to-Point Protocol over ATM (PPPoA), are used most commonly by ISPs to establish a digital subscriber line (DSL) Internet service connection with customers.
+
+### Wide Area Networks
+
+- A wide area network acts like a single network but spans across multiple physical locations.
+  WAN technologies usually require that you contract a link across the Internet with your ISP.
+- This ISP handles sending your data from one side to the other. So, it could be like all of your computers are in the same physical location.
+- In a WAN, the area between a demarcation point (the point where the n/w ends) and the ISP's core network is known as a local loop
+
+### Point-to-Point VPNs
+
+A popular alternative to WAN technologies are point-to-point VPNs.
+
+A point-to-point VPN, also called a site-to-site VPN, establishes a VPN tunnel between two sites.
+
+This operates a lot like the way that a traditional VPN setup lets individual users act as if they are on the network they're connecting to.
+
+It's just that the VPN tunneling logic is handled by network devices at either side, so that users don't all have to establish their own connections
