@@ -196,6 +196,9 @@ Some concerns you'll need to watch out for are:
 - When you sign up, an Azure subscription is created by default.
 - An Azure subscription is a logical container used to provision resources in Azure. It holds the details of all your resources like virtual machines (VMs), databases, and more.
 - When you create an Azure resource like a VM, you identify the subscription it belongs to. - As you use the VM, the usage of the VM is aggregated and billed monthly.
+- Each Azure subscription has limits (sometimes called quotas) assigned to it. For example, you can have up to 200 Azure Storage accounts per region in a subscription, up to 25,000 virtual machines per region, and up to 980 resource groups per subscription across all regions. [limits](https://docs.microsoft.com/azure/azure-subscription-service-limits)
+
+**Exam Tip:** Each subscription is associated with a unique identifier called a subscription ID . You can give each subscription a descriptive name to help you identify it, but Azure will always use the subscription ID to identify your subscription. When you talk to Microsoft about your Azure account, they’ll also often ask for your subscription ID.
 
 #### Create additional Azure subscriptions
 
@@ -328,6 +331,12 @@ Formal documents called Service-Level Agreements (SLAs) capture the specific ter
 - SLAs describe Microsoft's commitment to providing Azure customers with specific performance standards.
 - There are SLAs for individual Azure products and services.
 - SLAs also specify what happens if a service or product fails to perform to a governing SLA's specification.
+
+SLAs establish specific targets for availability, and they also define what the service provider will do when those targets aren’t met. SLAs are expressed as a percentage and are almost always 99% or higher. The highest level of availability expressed in an SLA is 99.999%, commonly referred to as 5 nines . To provide you with some context as we discuss SLAs, a service with an SLA of 5 nines guarantees that downtime over an entire year will not exceed 5.56 minutes. A more reasonable SLA of 99.9% guarantees that downtime over the period of a month will not exceed 43.2 minutes.
+
+**Exam Tip** In order to be eligible for a credit due to a failure to meet SLA, you must submit a claim to Microsoft within two months of the end of the billing cycle during which the downtime occurred.
+
+An important concept in cloud service SLAs is that the cloud provider considers an application to be outside of SLA only when the availability percentage is not met due to an issue that the cloud provider can control. In other words, if you deploy new code to your application, and it causes your application to crash, the cloud provider is not going to consider that a breach of SLA.
 
 There are three key characteristics of SLAs for Azure products and services:
 
@@ -1043,7 +1052,7 @@ To apply a policy, you will:
 - Assign a definition to a scope of resources
 - View policy evaluation results
 
-## What is a policy definition?
+#### What is a policy definition?
 
 A policy definition expresses what to evaluate and what action to take. For example, you could ensure all public websites are secured with HTTPS, prevent a particular storage type from being created, or force a specific version of SQL Server to be used.
 
@@ -1168,9 +1177,53 @@ Trust Center provides you with information about security, compliance, privacy, 
 
 ---
 
+## Summary
+
+- The primary attack vector for cloud applications is the network, and Azure Firewall is a stateful firewall that can protect your network from attacks.
+- All traffic to the firewall is blocked by default and rules are configured to allow certain traffic to pass.
+- A route table is used to direct traffic into your firewall’s subnet.
+- DDoS Basic protection in Azure Firewall protects from common network attacks.
+- DDoS Standard protection is available for an extra charge and it will protect from additional attacks using Advanced Threat Protection.
+- Network Security Groups (NSGs) can be used to control which subnets and resources can talk to each other in a virtual network.
+- Service tags can be used to allow Azure services or the Internet by a NSG.
+- Azure Active Directory is a cloud-based identify service in Azure that authenticate and authorizes users.
+- Enterprise applications in Azure AD allow you to integrate third-parties with Azure AD so users can experience a single-sign-on experience.
+- Multi-factor authentication in Azure AD requires that users have both a password and an owned device in order to log in
+- Azure Security Center provides a single portal for monitoring and managing the security of Azure resources and on-premises resources.
+- Just in time VM access in Security Center makes it easy to control when and for how long management ports are open on VMs.
+- Azure Key Vault provides a secure way to store secrets, keys, and certificates.
+- Azure Information Protection helps you to categorize emails and documents and protect them from being accessed by unauthorized people.
+- Advanced Threat Protection makes it possible to protect on-premises domain controllers and servers from attacks.
+- Azure Policy allows you to define rules that are applied with Azure resources are created and managed.
+- Role-based access control makes it possible to give users and applications access to your Azure resources and to control what they can and can’t do.
+- Locks allow you to lock down properties that go through ARM from being changed on a resource or to prevent a resource from being deleted.
+- Azure Advisor provides a portal for analyzing and reporting on best-practices related to your Azure resources.
+- Azure Monitor can display charts with data metrics for your Azure resources.
+- Azure Monitor alerts can notify you based on conditions. They can also call a webhook, run a Function App, start a Logic App flow, and more.
+- Azure Service Health provides an overview of the health of Azure and your Azure resources that is scoped to only those regions where you have resources.
+- The Microsoft Privacy Statement is Micrsosoft’s promise to customers related to how it will protect personal data.
+- Trust Center is a portal where you can learn about Microsoft’s approach to security, privacy, and compliance.
+- The Service Trust Portal provides access to compliance tools and information on compliance.
+- Compliance Manager is part of Service Trust Portal and makes it easy to manage compliance with industry standard regulations using assessments.
+- Azure Government is a private cloud for governments that is operated with distinct datacenters within the United States. All employees are screened and are US citizens.
+- Azure Government is aimed at ensuring compliancy with government standards.
+- DoD datacenters within Azure Government provide stricter control to comply with DoD standards.
+- Azure Germany is a private cloud operated out of Germany that is designed to comply with strict EU guidelines.
+- Individual data in Azure Germany is controlled and accessible only by a data trustee. Microsoft has no access to any system that touches customer data.
+
+---
+
 ## Module 10
 
+There are a couple of ways to purchase Azure products and services. You can purchase products and services directly from Microsoft, or you can purchase through a Microsoft Cloud Solution Partner (CSP).
+
+### The factors affecting costs
+
+The primary factors that impact costs are the resource type, how you purchase the resource, the Azure regions you’re using, and the billing zone your resources are in.
+
 ### Usage Meters
+
+Azure services are billed according to meters associated with a resource. These meters track how much a specific metric has been used by the resource. For example, there is no charge specifically for an Azure virtual network, and you aren’t charged for any network traffic within a virtual network, but you are charged per gigabyte for traffic into and out of the virtual network from peered virtual networks.
 
 When you provision an Azure resource, Azure creates one or more meter instances for that resource. The meters track the resources' usage, and generate a usage record that is used to calculate your bill.
 
@@ -1207,6 +1260,8 @@ Azure has datacenters all over the world. Usage costs vary between locations tha
 
 #### Azure Billing Zones
 
+Azure geographies are broken out into four separate groups for billing purposes. These groups are called billing zones , or more commonly, simply zones. Microsoft’s costs for network traffic out of each zone differs, so your costs will differ as well.
+
 Bandwidth refers to data moving in and out of Azure datacenters. Most of the time inbound data transfers (data going into Azure datacenters) are free. For outbound data transfers (data going out of Azure datacenters), the data transfer pricing is based on Billing Zones.
 
 A Zone is a geographical grouping of Azure Regions for billing purposes. The following zones exist and include the listed countries (regions).
@@ -1216,8 +1271,69 @@ A Zone is a geographical grouping of Azure Regions for billing purposes. The fol
 - Zone 3: Brazil, South Africa, UAE
 - DE Zone 1: Germany
 
+The cheapest outbound networking costs are in Zone 1. DE Zone 1 is the second cheapest, followed by Zone 2 and Zone 3.
+
 In most zones, the first outbound 5 gigabytes (GB) per month are free. After that amount, you are billed a fixed price per GB.
 
 **Note:** Billing zones aren't the same as an Availability Zone. In Azure, the term zone is for billing purposes only, and the full term Availability Zone refers to the failure protection that Azure provides for datacenters.
 
 **Note:** PaaS is typically less expensive than IaaS
+
+**Exam Tip** Choosing the least expensive region for each of your Azure resources usually isn’t a good way to control costs. You may end up having to pay for network traffic across regions, and that may increase your costs above the amount you’re saving. Many Azure resources do not charge for network traffic within the same region, but they will charge for traffic across regions.
+
+**Note**: It’s also important to keep in mind that you’re not charged for network traffic into an Azure datacenter, but you are charged for network traffic out of a datacenter. However, your first 5GB of outbound data is free. After that point, you are charged a set amount on a tiered model. The amount you’re charged depends on the billing zone. [link](https://azure.microsoft.com/pricing/details/bandwidth)
+
+### TCO Calculator
+
+The pricing calculator is helpful for estimating your expenses for new applications in Azure, but if you have on-premises applications you want to migrate to Azure and you want an estimate of how much you can save in Azure, the TCO calculator is a better choice.
+
+**Exam Tip** An important part of minimizing costs in Azure is to ensure that you fully use all of your cloud resources. Because most cloud usage is billed on consumption of a resource, not using portions of a resource represents unnecessary expenses. Proper planning can help avoid non-utilized cloud resources.
+
+**Exam Tip** As you’re planning your cloud deployments, make sure to account for the fact that Azure can scale your resources based on application needs. Don’t default to the most powerful servers and other resources you think you will need. Instead, choose product SKUs that meet your minimum needs and configure scaling rules that can accommodate additional resource needs as application usage patterns increase.
+
+### Support plans
+
+**Business hours** Microsoft defines business hours for most countries as weekdays from 9:00 AM to 5:00 PM local time.
+**Severity A** case Microsoft uses Severity A to refer to a production application that is entirely down, or when a critical component of a production app is unavailable.
+**Severity B** case Microsoft uses Severity B to refer to a production application that is moderately impacted. This severity level is subjective and agreed to by Microsoft support and the customer.
+**Severity C** case Microsoft uses Severity C to refer to a situation that is causing minimal impact. These are cases that refer to problems no longer happening or cases that aren’t impacting a production application.
+
+Microsoft offers the following support plans for Azure.
+
+- Basic Limited support that’s free for all Azure subscriptions.
+- Developer Azure support for free trial and non-production applications. \$29/month, Severity C
+- Standard Azure support for production applications. \$100/month, All Severity
+- Professional Direct Azure support for business-critical applications. \$1000/month, All Severity
+- Premier Contracted support for all Microsoft products, including Azure. varies, All Severity
+
+---
+
+## Summary
+
+- Azure resources are created within an Azure subscription.
+- Subscriptions have limits associated with them, and you can create additional subscriptions if you need more than these limits allow.
+- Azure offers a free trial subscription and Pay-As-You-Go subscriptions.
+- You can purchase Azure products and services directly from Microsoft or through a Microsoft Cloud Solution Partner (CSP).
+- CSPs sell entire cloud solutions and you don’t manage individual Azure resources.
+- You can purchase Azure products and services from Microsoft in the Azure portal or you can commit to a long-term use of Azure resources and save money with an Enterprise Agreement.
+- A free trial subscription gives you free access to the most popular Azure services for one year. It also provides \$200 in credit towards Azure services and products.
+- Azure services are billed according to meters that are associated with a resource.
+- Costs for Azure services may vary in different regions. Costs also vary by billing zones that include specific geographies.
+- The pricing calculator makes it easy to estimate your Azure costs by selecting the products you intend on using, and estimates can be shared, saved for later reference, or exported to Excel.
+- The TCO calculator allows you to determine your cost savings in Azure over on-premises expenses over a period of five years.
+- You can control your expenses in Azure by ensuring that you fully utilize all Azure resources you’re paying for.
+- You can save money when you need cloud resources for smaller jobs that aren’t time-sensitive by using Azure Batch to run your workloads on non-utilized VMs.
+- Creating budgets in Azure Cost Management can make it easy to see when expenses are approaching pre-defined limits, and alerts can be used to notify the proper people when expenses reach a defined threshold.
+- Cost analysis can help you to see which resources are contributing to your Azure expenses.
+- Microsoft offers free support for subscription issues and billing issues. Technical issues require the purchase of an Azure support plan or a Premier account.
+- Support plan levels dictate when you can speak to Microsoft support personnel and the response time that Microsoft promises when you open a support case.
+- You can open a support case from within the portal using either the home page or the New Support Request menu option while within a specific Azure resource.
+- Microsoft provides MSDN forums and Stack Overflow forums for support outside of support plans. You can also use the @AzureSupport Twitter account for simple issues.
+- The Knowledge Center can help you find support articles for specific Azure products.
+- Azure services offer a service level agreement (SLA) that guarantees a certain level of availability. Services that fail to meet SLA may make you eligible for a credit on your Azure invoice.
+- You can use the SLA web page on the Microsoft website to find SLA details for all Azure services.
+- The Azure service lifecycle can include a private preview and always includes a public preview and general availability (GA).
+- Services and features in preview do not offer an SLA and are usually available at a discount.
+- Private previews are usually made available using command-line tools. Public previews are available to everyone in the Azure portal.
+- Once a feature or service meets the quality level for full support and SLA, it becomes generally available (GA).
+- The Azure Updates page provides details on feature and service updates and lifecycles.
