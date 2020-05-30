@@ -693,3 +693,108 @@ Cellular networks are built around the concept of cells.
 Each cell is assigned a specific frequency band for use. Neighboring cells are set up to use bands that don't overlap, just like how we discussed the optimal setup for a W Lan with multiple access points.
 
 In fact, the cell towers that broadcast and receive cellular transmissions can be thought of like access points, just with a much larger range.
+
+---
+
+## TroubleShooting
+
+### ICMP
+
+- Internet Control Message Protocol
+- This protocol is used by the device that detects the error to communicate the error to the source
+- ICMP is mainly used by router or remote hosts to communicate while transmission has failed back to the origin of the transmission.
+
+### Ping
+
+- Ping is a super simple program and the basics are the same no matter which operating system you're using.
+- Ping lets you send a special type of ICMP message called an Echo Request.
+- An ICMP echo request essentially just ask the destination, "Hey, are you there?"
+- If the destination is up and running and able to communicate on the network, it will send back an ICMP echo reply message type.
+- You can invoke the ping command from the command line of any modern operating system
+
+### TraceRoute
+
+- Traceroute is an awesome utility that lets you discover the paths between two nodes, and gives you information about each hop along the way.
+
+The way traceroute works, is through a clever manipulation technique of the TTL field at the IP level.
+
+We learned earlier that the TTL field is decremented by one, by every router that forwards the packet.
+When the TTL field reaches zero, the packet is discarded and an ICMP Time Exceeded message is sent back to the originating host.
+Traceroute uses the TTL field by first setting it to one for the first packet, then two for the second,
+three for the third and so on.
+By doing this clever little action, traceroute makes sure that the very first packet sent will be discarded by the first router hop.
+This results in an ICMP Time Exceeded message, the second packet will make it to the second router, the third will make it to the third, and so on.
+This continues until the packet finally makes it all the way to its destination. For each hop, traceroute will send three identical packets.
+
+### Registrar
+
+An organization responsible for assigning individual domain names to other organizations or individuals.
+
+Originally, there were only a few registrars. The most notable was a company named Network Solutions Inc. It was responsible for the registration of
+almost all domains that weren't country specific.
+
+As the popularity of the Internet grew, there was eventually enough market demand for competition in this space.
+
+Finally, the United States government and Network Solutions Inc. came to an agreement to let other companies also sell domain names.
+
+Today, there are hundreds of companies like this all over the world.
+
+### Host Files
+
+-A host file is a flat file that contains on each line a network address followed by the host name it can be referred to as. For example. A line in a host file might read, 1.2.3.4 webserver.
+
+- This means that on the computer where this host file resides, a user could just refer to webserver, instead of the IP 1.2.3.4.
+
+### Loopback Address
+
+- A loopback address always points to itself.
+- So, a loopback address is a way of sending network traffic to yourself.
+- Sending traffic to a loopback address bypasses all network infrastructure itself, and traffic like that never leaves the node.
+  The loopback IP for IPV4 is 127.0.0.1.
+- And it's still, to this day, configured on every modern operating system through an entry in a hosts file.
+- Almost every hosts file in existence will in the very least contain a line that reads "127.0.0.1 localhost," most likely followed by "::1 localhost,
+  " where "::1" is the loopback address for IPV6.
+
+### IPv6
+
+- You might wonder what happened to version 5 or IPv5. It's actually a fun bit of trivia.
+- IPv5 was an experimental protocol that introduced the concept of connections.
+- It never really saw wide adoption, and connection state was handled better later on by the transport layer and TCP.
+
+* The biggest difference between IPv4 and IPv6 is the number of bits reserved for an address.
+* While IPv4 addresses are 32 bits, meaning there can be around 4.2 billion individual addresses, IPv6 addresses are 128 bits in size.
+* 2 to the power of 128 would produce a 39-digit-long number.
+
+- A full IPv6 address might look something like this.
+  `2001:0db8:0000:0000:0000:ff00:0012:345`
+
+- There are two rules when it comes to shortening an IPv6 address.
+- The first is that you can remove any leading zeros from a group.
+- The second is that any number of consecutive groups composed of just zeros can be replaced with two colons.
+- I should call out that this can only happen once for any specific address.
+- Otherwise, you couldn't know exactly how many zeros were replaced by the double colons.
+- So the above address would be shortened to this after the first rule
+  `2001:db8:0:0:0:ff00:12:3456`
+- and then after the second rule (replace all :0:0:0 with ::)
+  `2001:db8::ff00:12:3456`
+
+### IPv4 and IPv6 coordination
+
+#### IPv4 mapped address space.
+
+- The IPv6 specifications have set aside a number of addresses that can be directly correlated to an IPv4 address.
+- Any IPv6 address that begins with 80 zeros, and is then followed by 16 ones is understood to be part of the IPv4 mapped address space.
+- The remaining 32 bits of the IPv6 address is just the same 32 bits of the IPv4 address it's meant to represent.
+  `192.168.1.1` = `0:0:0:0:0:ffff:d1ad:35a7`
+- This gives us a way for IPv4 traffic to travel over an IPv6 network.
+- For the other way around, we have
+
+#### IPv6 tunneling
+
+- IPv6 tunnels are conceptually pretty simple.
+- They consist of IPv6 tunnels servers on either end of a connection.
+- These IPv6 tunnel servers take incoming IPv6 traffic and encapsulate it within traditional IPv4 datagrams.
+- This is then delivered across the IPv4 Internet space where it's received by another IPv6 tunnel server.
+- That server performs the de-encapsulation and passes the IPv6 traffic further along in the network.
+- Along with IPv6 tunnel technologies, the concept of an IPv6 tunnel broker has also emerged.
+- These are companies that provide IPv6 tunneling endpoints for you, so you don't have to introduce additional equipment to your network.
