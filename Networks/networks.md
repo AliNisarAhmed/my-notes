@@ -601,3 +601,95 @@ So that every node hears the request, a node sends requests to a link layer broa
 Furthermore, ARP is structured so that it contains redundant data. The request contains the network and link layer address of the requestor. That way, when nodes hear a request (since it’s broadcast), they can insert or refresh a mapping in their cache. Nodes _only_ respond to requests for themselves. This means, assuming nobody is generating packets incorrectly, the only way you can generate a mapping for another node is in response to a packet that node sends. So if that node crashes or disconnects, its state will inevitably leave the network when all of the cached mappings expire. This makes debugging and troubleshooting ARP much easier.
 
 So how long do these dynamically discovered mappings last? It depends on the device: some versions of Mac OSX, for example, keep them around for 20 minutes, while some Cisco devices use timeouts of 4 hours. The assumption is that these mappings do not change very frequently
+
+---
+
+## Wireless networks
+
+- The most common specifications for how wireless networking devices should communicate, are defined by the IEEE 802.11 standards.
+- This set of specifications, also called the 802.11 family, make up the set of technologies we call WiFi.
+- Wireless networking devices communicate with each other through radiowaves.
+- Different 802.11 standards generally use the same basic protocol, but might operate at different frequency bands
+- There are lots of 802.11 specifications including some that exist just experimentally or for testing.
+- The most common specifications you might run into are
+  - 802.11b,
+  - 802.11a,
+  - 802.11g,
+  - 802.11n,
+  - 802.11ac.
+
+### Wireless Network Configurations
+
+There are a few main ways that a wireless network can be configured.
+
+- There are Ad-hoc networks where nodes all speak directly to each other.
+- There are wireless LANS or WLANS where one or more access points act as a bridge between a wireless and a wired network.
+- And there are Mesh networks which are kind of a hybrid of the two.
+
+#### Ad-hoc networks
+
+- Ad-hoc networks are the simplest of the three.
+- In an ad-hoc network, there isn't really any supporting network infrastructure.
+- Every device involved with the network communicates with every other device within range, and all nodes help pass along messages.
+- Even though they are most simple, ad-hoc networks aren't the most common type of wireless network, but they do have some practical applications.
+- Some smartphones can establish ad-hoc networks with other smartphones in the area so that people can exchange photos,
+  video, or contact information.
+- ad-hoc networks can be powerful tools during disaster situations. If a natural disaster like an earthquake or hurricane knocks out all of the existing infrastructure in an area, disaster relief professionals can use an ad-hoc network to communicate with each other while they perform search and rescue efforts.
+
+#### Wireless LAN or WLAN
+
+- A wireless LAN consist of one or more access points which act as bridges between the wireless and wired networks.
+
+#### Mesh Networks
+
+Mesh networks are kind of like ad-hoc networks, since lots of the devices communicate with each other wirelessly forming
+a mesh if you were to draw lines for all the links between all the nodes.
+
+### Wireless Channels
+
+- Within these WiFi frequency bands (2.4 GHz and 5 GHz), we have smaller bands which are referred to as WiFi channels.
+- A WiFi channel is the medium through which our wireless networks can send and receive data.
+- For routers made in the U.S., the 2.4 GHz band has 11 channels and the 5 GHz band has 45 channels.
+- Channels are individual, smaller sections of the overall frequency band used by a wireless network.
+- Channels are super important because they help address a very old networking concern, collision domains.
+  You might remember that a collision domain is any one network segment where one computer can interrupt another.
+
+The reason that certain channels aren't the best choice to use is because they have interference. There are a couple different ways this interference is caused: Co-Channel interference results when there are numerous devices all competing for time to talk on the same channel. Adjacent-Channel interference occurs when devices from overlapping channels are trying to talk over each other.
+
+Channels that have interference from other devices are considered to be 'crowded'. The time it takes to transmit data is increased and you are left waiting for your Internet request to be made. The channels with the most interference are those that overlap with each other.
+
+To further explain channel overlapping, let's look at the 2.4 GHz band, where each channel is allotted 20 MHz and separated by 5 MHz. Considering the 2.4 GHz band is only 100 MHz wide, the 11 channels of 20 MHz overlap with one another. This is what causes the interference on your network and and a lag in your WiFi's performance.
+
+Certain channels yield better WiFi performance than others because they are non-overlapping. Yes, there are some channels in the 2.4 GHz spectrum that don't overlap with the other channels. These are the channels you ought to look for, especially if experiencing WiFi problems: Channels 1, 6, and 11.
+
+(There are also 24 non-overlapping channels in the 5 GHz band spectrum.)
+
+### Wireless Security
+
+#### WEP
+
+- stands for Wired Equivalent Privacy
+- An encryption algo
+- WEP only uses 40 bits for its encryption keys and with the speed of modern computers, this can usually be cracked in just a few minutes
+
+#### WPA
+
+- Stands for Wifi Protected Access
+- uses a 128 bit key
+
+#### WPA2
+
+- uses a 256 bit key
+
+#### MAC Filtering
+
+- With MAC filtering, you configure your access points to only allow for connections from a specific set of MAC addresses belonging to devices you trust.
+- This doesn't do anything more to help encrypt wireless traffic being sent through the air, but it does provide an additional barrier preventing unauthorized devices from connecting to the wireless network itself.
+
+#### Wireless Security
+
+Cellular networks are built around the concept of cells.
+
+Each cell is assigned a specific frequency band for use. Neighboring cells are set up to use bands that don't overlap, just like how we discussed the optimal setup for a W Lan with multiple access points.
+
+In fact, the cell towers that broadcast and receive cellular transmissions can be thought of like access points, just with a much larger range.
