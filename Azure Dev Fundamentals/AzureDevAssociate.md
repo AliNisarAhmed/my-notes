@@ -90,3 +90,64 @@ There are two types of keys: function and host. The difference between the two k
 Host keys apply to all functions inside the function app. If your Authorization level is set to Function, you can use either a function or a host key. If your Authorization level is set to Admin, you must supply a host key.
 
 The Anonymous level means that there's no authentication required.
+
+### Triggers vs Bindings
+
+Triggers are what cause a function to run. A trigger defines how a function is invoked and a function must have exactly one trigger. Triggers have associated data, which is often provided as the payload of the function.
+
+Binding to a function is a way of declaratively connecting another resource to the function; bindings may be connected as input bindings, output bindings, or both. Data from bindings is provided to the function as parameters.
+
+You can mix and match different bindings to suit your needs. Bindings are optional and a function might have one or multiple input and/or output bindings.
+
+Triggers and bindings let you avoid hardcoding access to other services. Your function receives data (for example, the content of a queue message) in function parameters. You send data (for example, to create a queue message) by using the return value of the function.
+
+![Binding](binding.PNG)
+
+#### What is a binding expression?
+
+A binding expression is specialized text in function.json, function parameters, or code that is evaluated when the function is invoked to yield a value. For example, if you have a Service Bus Queue binding, you could use a binding expression to get the name of the queue from App Settings.
+Types of binding expressions
+
+- App settings
+- Trigger file name
+- Trigger metadata
+- JSON payloads
+- New GUID
+- Current date and time
+
+---
+
+### Durable Azure Functions
+
+Durable Functions is an extension of Azure Functions that enables you to perform long-lasting, stateful operations in Azure.
+
+Some benefits of using Durable Functions include:
+
+- They enable you to write event driven code. A durable function can wait asynchronously for one or more external events, and then perform a series of tasks in response to these events.
+- You can chain functions together. You can implement common patterns such as fan-out/fan-in, which uses one function to invoke others in parallel, and then accumulate the results.
+- You can orchestrate and coordinate functions, and specify the order in which functions should execute.
+- The state is managed for you. You don't have to write your own code to save state information for a long-running function.
+
+#### Durable Function Types
+
+You can use three durable function types: Client, Orchestrator, and Activity.
+
+**Client functions** are the entry point for creating an instance of a Durable Functions orchestration. They can run in response to an event from many sources, such as a new HTTP request arriving, a message being posted to a message queue, an event arriving in an event stream. You can write them in any of the supported languages.
+
+**Activity functions** are the basic units of work in a durable function orchestration. An activity function contains the actual work performed by the tasks being orchestrated.
+
+**Orchestrator functions** describe how actions are executed, and the order in which they are run. You write the orchestration logic in code (C# or JavaScript).
+
+#### Application Patterns for Durable Functions
+
+![1](df1.PNG)
+![2](df2.PNG)
+![3](df3.PNG)
+![4](df4.PNG)
+![5](df5.PNG)
+
+#### Durable Functions vs Logic Apps
+
+With Azure Durable Functions, you develop orchestrations by writing code and using the Durable Functions extension.
+
+With Logic Apps, you create orchestrations by using the design surface or editing configuration files.
