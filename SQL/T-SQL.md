@@ -121,6 +121,10 @@ DEFAULT(SYSDATETIME()) FOR orderts;
 
 ---
 
+---
+
+---
+
 ### Logical Query Processing
 
 which simply means how the sql query is actually performed by the DB engine (as opposed to how it is actually written)
@@ -244,3 +248,347 @@ With T-SQL, you also can specify elements in the ORDER BY clause that do not app
 the SELECT clause, meaning you can sort by something you don’t necessarily want to return.
 The big drawback for this is that you can’t check your sorted results by looking at the query
 output.
+
+---
+
+### TOP and OFFSET-FETCH filters
+
+The TOP filter is a proprietary T-SQL feature you can use to limit the number or percentage
+of rows your query returns. It relies on two elements as part of its specification: one is the
+number or percent of rows to return, and the other is the ordering.
+
+Note that when the TOP filter is specified, the ORDER BY clause serves a dual purpose
+in the query. One purpose is to define the presentation ordering for the rows in the query
+result. Another purpose is to define for the TOP option which rows to filter.
+
+You can use the TOP option with the PERCENT keyword, in which case SQL Server
+calculates the number of rows to return based on a percentage of the number of qualifying
+rows, rounded up.
+
+Note that you can even use the TOP filter in a query without an ORDER BY clause. In such a
+case, the ordering is completely undefined—SQL Server returns whichever n rows it happens
+to physically access first, where n is the requested number of rows.
+
+With the OFFSET clause you indicate how many rows to skip, and with the FETCH clause you indicate
+how many rows to filter after the skipped rows.
+
+```sql
+SELECT orderid, orderdate, custid, empid
+FROM Sales.Orders
+ORDER BY orderdate, orderid
+OFFSET 50 ROWS FETCH NEXT 25 ROWS ONLY;
+```
+
+Note that a query that uses OFFSET-FETCH must have an ORDER BY clause.
+
+Also, T-SQL doesn’t support the FETCH clause without the OFFSET clause. If you do not want to skip any
+rows but do want to filter rows with the FETCH clause, you must indicate that by using
+OFFSET 0 ROWS.
+
+However, OFFSET without FETCH is allowed. In such a case, the query
+skips the indicated number of rows and returns all remaining rows in the result.
+
+The singular and plural forms ROW and ROWS are interchangeable. Therefore, you’re allowed to use
+the form FETCH 1 ROW. The same principle applies to the OFFSET clause. Also, if you’re
+not skipping any rows (OFFSET 0 ROWS), you might find the term “first” more suitable than
+“next.” Hence, the forms FIRST and NEXT are interchangeable.
+
+---
+
+### Use of `N` before strings
+
+In the code snippet below:
+
+```sql
+SELECT empid, firstname, lastname
+FROM HR.Employees
+WHERE lastname LIKE N'D%';
+```
+
+Notice the use of the letter N to prefix the string ‘D%’; it stands for National and is used to
+denote that a character string is of a Unicode data type (NCHAR or NVARCHAR), as opposed
+to a regular character data type (CHAR or VARCHAR). Because the data type of the lastname
+attribute is NVARCHAR(40), the letter N is used to prefix the string.
+
+---
+
+### Case Expressions
+
+A CASE expression is a scalar expression that returns a value based on conditional logic. It is
+based on the SQL standard. Note that CASE is an expression and not a statement; that is, it
+doesn’t take action such as controlling the flow of your code. Instead, it returns a value.
+Because CASE is a scalar expression, it is allowed wherever scalar expressions are allowed,
+such as in the SELECT, WHERE, HAVING, and ORDER BY clauses and in CHECK constraints.
+
+#### Simple vs Searched
+
+There are two forms of CASE expressions: simple and searched. You use the simple form to
+compare one value or scalar expression with a list of possible values and return a value for
+the first match. If no value in the list is equal to the tested value, the CASE expression returns
+the value that appears in the ELSE clause (if one exists). If the CASE expression doesn’t have
+an ELSE clause, it defaults to ELSE NULL.
+
+```sql
+SELECT productid, productname, categoryid,
+  CASE categoryid
+    WHEN 1 THEN 'Beverages'
+    WHEN 2 THEN 'Condiments'
+    WHEN 3 THEN 'Confections'
+    WHEN 4 THEN 'Dairy Products'
+    WHEN 5 THEN 'Grains/Cereals'
+    WHEN 6 THEN 'Meat/Poultry'
+    WHEN 7 THEN 'Produce'
+    WHEN 8 THEN 'Seafood'
+    ELSE 'Unknown Category'
+  END AS categoryname
+FROM Production.Products;
+```
+
+The searched CASE form is more flexible in the sense you can specify predicates in the WHEN clauses rather than being
+restricted to using equality comparisons. The searched CASE expression returns the value in
+the THEN clause that is associated with the first WHEN predicate that evaluates to TRUE. If
+none of the WHEN predicates evaluates to TRUE, the CASE expression returns the value that
+appears in the ELSE clause (or NULL if an ELSE clause is not present).
+
+```sql
+SELECT orderid, custid, val,
+  CASE
+    WHEN val < 1000.00 THEN 'Less than 1000'
+    WHEN val BETWEEN 1000.00 AND 3000.00 THEN 'Between 1000 and 3000'
+    WHEN val > 3000.00 THEN 'More than 3000'
+    ELSE 'Unknown'
+  END AS valuecategory
+FROM Sales.OrderValues;
+```
+
+#### Some functions related to CASE
+
+T-SQL supports some functions you can consider as abbreviations of the CASE expression:
+
+##### ISNULL
+
+The ISNULL function accepts two arguments as input and returns the first that is not NULL,
+or NULL if both are NULL. For example ISNULL(col1, ‘’) returns the col1 value if it isn’t
+NULL and an empty string if it is NULL.
+
+##### COALESCE
+
+The COALESCE function is similar, only it supports
+two or more arguments and returns the first that isn’t NULL, or NULL if all are NULL.
+
+#### IIF
+
+is like a ternary operator in JS
+
+#### CHOOSE
+
+Choose from one of the values based on the index given in first argument.
+The expression CHOOSE(3, col1, col2, col3) returns the value of col3.
+
+---
+
+### NULLs
+
+SQL supports the NULL marker to represent missing values and uses three-valued predicate logic,
+meaning that predicates can evaluate to TRUE, FALSE, or UNKNOWN.
+
+SQL has different treatments for UNKNOWN in different language elements (and for some
+people, not necessarily the expected treatments). The treatment SQL has for query filters is
+“accept TRUE,” meaning that both FALSE and UNKNOWN are discarded. Conversely, the
+definition of the treatment SQL has for CHECK constraints is “reject FALSE,” meaning that
+both TRUE and UNKNOWN are accepted.
+
+One of the tricky aspects of the logical value UNKNOWN is that when you negate it, you
+still get UNKNOWN. For example, given the predicate NOT (salary > 0), when salary is
+NULL, salary > 0 evaluates to UNKNOWN, and NOT UNKNOWN remains UNKNOWN.
+
+What some people find surprising is that an expression comparing two NULLs (NULL =
+NULL) evaluates to UNKNOWN. The reasoning for this from SQL’s perspective is that a
+NULL represents a missing value, and you can’t really tell whether one missing value is equal
+to another. Therefore, SQL provides you with the predicates IS NULL and IS NOT NULL,
+which you should use instead of = NULL and <> NULL.
+
+SQL also treats NULLs inconsistently in different language elements for comparison and
+sorting purposes. Some elements treat two NULLs as equal to each other, and others treat them
+as different.
+
+For example, for grouping and sorting purposes, two NULLs are considered equal. That is,
+the GROUP BY clause arranges all NULLs in one group just like present values, and the
+ORDER BY clause sorts all NULLs together. Standard SQL leaves it to the product
+implementation to determine whether NULLs sort before present values or after them, but it
+must be consistent within the implementation. T-SQL sorts NULLs before present values.
+
+For the purposes of enforcing a UNIQUE constraint, standard SQL treats NULLs as
+different from each other (allowing multiple NULLs). Conversely, in T-SQL, a UNIQUE
+constraint considers two NULLs as equal (allowing only one NULL).
+
+---
+
+### All-at-once Operations
+
+SQL supports a concept called all-at-once operations, which means that all expressions that
+appear in the same logical query processing phase are evaluated logically at the same point in
+time. The reason for this is that all expressions that appear in the same logical phase are
+treated as a set, and as mentioned earlier, a set has no order to its elements.
+
+This concept explains why, for example, you cannot refer to column aliases assigned in the
+SELECT clause within the same SELECT clause.
+
+```sql
+-- This will result in an error
+SELECT
+  orderid,
+  YEAR(orderdate) AS orderyear,
+  orderyear + 1 AS nextyear   -- orderyear does not exist as SELECT is all-at-once
+FROM Sales.Orders;
+```
+
+Similarly, WHERE is also all-at-once
+
+```sql
+SELECT col1, col2
+FROM dbo.T1
+WHERE col1 <> 0 AND col2/col1 > 2;
+```
+
+The Not-equal-to-zero check above is not guaranteed (SQL may evaluate the second expression first)
+
+One way to avoid the above is to use CASE-WHEN (the order in which the WHEN
+clauses of a CASE expression are evaluated is guaranteed.)
+
+---
+
+### Character Data Types
+
+SQL Server supports two kinds of character data types: regular and Unicode. Regular data
+types include CHAR and VARCHAR, and Unicode data types include NCHAR and NVARCHAR.
+
+The two kinds of character data types also differ in the way in which literals are expressed.
+When expressing a regular character literal, you simply use single quotes: ‘This is a regular
+character string literal’. When expressing a Unicode character literal, you need to specify the
+character N (for National) as a prefix: N’This is a Unicode character string literal’.
+
+Any data type without the VAR element (CHAR, NCHAR) in its name has a fixed length,
+which means that SQL Server preserves space in the row based on the column’s defined size
+and not on the actual number of characters in the character string. For example, when a
+column is defined as CHAR(25), SQL Server preserves space for 25 characters in the row
+regardless of the length of the stored character string.
+
+A data type with the VAR element (VARCHAR, NVARCHAR) in its name has a variable
+length, which means that SQL Server uses as much storage space in the row as required to
+store the characters that appear in the character string, plus two extra bytes for offset data. For
+example, when a column is defined as VARCHAR(25), the maximum number of characters
+supported is 25, but in practice, the actual number of characters in the string determines the
+amount of storage.
+
+You can also define the variable-length data types with the MAX specifier instead of a
+maximum number of characters. When the column is defined with the MAX specifier, any
+value with a size up to a certain threshold (8,000 bytes by default) can be stored inline in the
+row (as long as it can fit in the row). Any value with a size above the threshold is stored
+external to the row as a large object (LOB).
+
+#### Operators and Functions
+
+##### `+` and `CONCAT` function
+
+`+` concatenates strings, but manual NULL replacement is required
+
+`CONCAT`: accepts a list of inputs for concatenation and automatically substitutes NULLs with empty strings.
+
+##### The `SUBSTRING` function
+
+The SUBSTRING function extracts a substring from a string.
+
+`SUBSTRING(string, start, length)`
+
+If the value of the third argument exceeds the end of the input string, the function returns
+everything until the end without raising an error.
+
+##### The LEFT and RIGHT functions
+
+The LEFT and RIGHT functions are abbreviations of the SUBSTRING function, returning a
+requested number of characters from the left or right end of the input string.
+
+`LEFT(string, n), RIGHT(string, n)`
+
+The first argument, string, is the string the function operates on. The second argument, n, is
+the number of characters to extract from the left or right end of the string.
+
+##### The LEN and DATALENGTH functions
+
+The LEN function returns the number of characters in the input string.
+
+To get the number of bytes, use the DATALENGTH function instead of LEN.
+
+##### The CHARINDEX function
+
+The CHARINDEX function returns the position of the first occurrence of a substring within a
+string.
+
+`CHARINDEX(substring, string[, start_pos])`
+
+##### The PATINDEX function
+
+The PATINDEX function returns the position of the first occurrence of a pattern within a
+string.
+
+`PATINDEX(pattern, string)`
+
+the following example shows how to find the position of the first occurrence of a digit
+within a string:
+
+```sql
+SELECT PATINDEX('%[0-9]%', 'abcd123efgh');
+```
+
+This code returns the output 5. (The index of number `1`, index count starts from 1 in SQL)
+
+##### The REPLACE function
+
+The REPLACE function replaces all occurrences of a substring with another.
+
+`REPLACE(string, substring1, substring2)`
+
+The function replaces all occurrences of substring1 in string with substring2.
+
+##### The REPLICATE function
+
+The REPLICATE function replicates a string a requested number of times.
+
+`REPLICATE(string, n)`
+
+##### The STUFF function
+
+You use the STUFF function to remove a substring from a string and insert a new substring
+instead.
+
+`STUFF(string, pos, delete_length, insert_string)`
+
+This function operates on the input parameter string. It deletes as many characters as the
+number specified in the delete_length parameter, starting at the character position specified in
+the pos input parameter. The function inserts the string specified in the insert_string parameter
+in position pos.
+
+##### The UPPER and LOWER functions
+
+The UPPER and LOWER functions return the input string with all uppercase or lowercase
+characters, respectively.
+
+`UPPER(string), LOWER(string)`
+
+##### The RTRIM and LTRIM functions
+
+The RTRIM and LTRIM functions return the input string with leading or trailing spaces
+removed.
+
+`RTRIM(string), LTRIM(string)`
+
+If you want to remove both leading and trailing spaces, use the result of one function as the
+input to the other.
+
+##### The STRING_SPLIT function
+
+The STRING_SPLIT table function splits an input string with a separated list of values into the
+individual elements. This function was introduced in SQL Server 2016.
+
+`SELECT value FROM STRING_SPLIT(string, separator);`
