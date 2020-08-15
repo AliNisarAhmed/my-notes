@@ -1,5 +1,53 @@
 # C# Notes
 
+## Verbatim string
+
+- Literal strings just use `""` and can use characters like `\n` and `\t`. To use actual `\`, we use additional `\` to escape
+- Verbatim strings being with `@""` and then we do not need to escape, e.g. `@"this is a backslash n \n"`.
+
+## Double vs Decimal Type
+
+Double
+
+- Memory - `8` Bytes
+- Max = `1.797693134862315exp308` (upto about +-2Billion)
+- Max = `-1.797693134862315exp308`
+  Decimal
+- Memory - `16` Bytes
+- Max = `79228162514...M` (less than Double even though uses more memory)
+- Written with an `M` suffix.
+
+This is because decimal has more significant places (is more accurate) than double
+
+That is why, in `double`, `0.1 + 0.2 !== 0.3`. But in `decimal` it is.
+
+In fact, it's a good practice to not compare two `double` values.
+
+Note: The decimal type is accurate because it stores the number as a large integer and
+shifts the decimal point. For example, 0.1 is stored as 1, with a note to shift the
+decimal point one place to the left. 12.75 is stored as 1275, with a note to shift the
+decimal point two places to the left.
+
+**Good Practice**: Use int for whole numbers and double for real
+numbers that will not be compared to other values. Use decimal
+for money, CAD drawings, general engineering, and wherever
+accuracy of a real number is important.
+
+The `double` type has some useful special values; `double.NaN` means not-a-number,
+`double.Epsilon` is the smallest positive number that can be stored in a `double` , and
+`double.Infinity` means an infinitely large value.
+
+## Nullable Reference Types
+
+Reference types have always been able to be assigned `null` values to them.
+
+But what this feature brings is the ability to exclude `null` from the Nullable Reference types.
+
+Just like `int` vs `int?` means `null` can only be assigned to the latter, `string` vs `string?` means
+only the latter can now contain `null`, the former must be initialized.
+
+This feature must be manually enabled in `.csproj` file by using `<Nullable>enable</Nullable>`, and then can be disbaled or enabled per file using `#nullable enable` or `#nullable disable`, respectively
+
 ## **Access Modifiers: Accessibility of `methods` and `fields`**
 
 - **_private_**: a method or field is accessible only from **within the class or struct**.
