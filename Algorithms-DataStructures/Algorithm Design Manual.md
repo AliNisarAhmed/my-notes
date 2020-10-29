@@ -138,3 +138,9 @@ $\log_c a$
 #### Logarithms and Summations of Harmonic Series
 
 $H(n) = \sum_{i=1}^n 1/i == \ln n$ (This shows up in Quicksort)
+
+#### Limits and Dominance Relations
+
+a function `g(n)` dominates `f(n)` is $g(n)/f(n)$ approaches 0 as $n \rightarrow \infin$
+
+if $f(n)/g(n)$ approaches $\infin$, then we can say that $f(n)=\Omega(g(n))$, that is, $g(n)$ is a lower bound of $f(n)$

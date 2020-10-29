@@ -481,7 +481,9 @@ Not all operating systems follow the ephemeral port recommendations of the IANA.
   - The first step always is to contact a Root name Server.
   - There are "13" total Root name servers and they're responsible for directing queries toward the approporiate TLD Name servers.
   - These Root name servers are now globally distributed via anycast.
-  - **Anycast** is a technique that's used to route traffic to different destinations depending on factors like location, congestion, or link health.
+  - **Anycast** is a technique that's used to route traffic to different destinations depending on factors like location, congestion, or link health. - How does anycast routing do this? - Typically, a single IP address is advertised across multiple regions. \
+    - Rather than using a simple DNS query that resolves back to a single IP address that only exists in one location, anycast routing allows the network infrastructure to intelligently determine where a request is coming from and route the customer to the closest advertised
+      region. - This routing allows your customers to connect to your web application more quickly and provides a better overall customer experience.
   - The Root servers respond to a DNS lookup with the name of the TLD Name server that should be contacted next.
 - TLD (Top Level Domain) Name Servers
   - TLD is the last part of any domain name, e.g. dot com part of www.facebook.com
