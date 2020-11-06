@@ -289,6 +289,17 @@ Event Hubs default to 4 partitions. Partitions are the buckets within an Event H
 
 The maximum size for a single publication (individual or batch) that is allowed by Azure Event Hub is 1 MB.
 
+Some used of Event Hub
+
+- Anomaly Detection (fraud/outliers)
+- Application Logging
+- Analytics pipelines, such as click streams.
+- Live dashboarding
+- Archiving data
+- Transaction processing
+- user telemetry processing
+- device telemetry streaming
+
 ### Choose Event Hubs if:
 
 - You need to support authenticating a large number of publishers.
@@ -416,6 +427,16 @@ Carefully evaluate the strong and eventual consistency levels because they are t
 
 ## Azure Blob Storage
 
+### Soft Delete
+
+The soft delete feature allows us to recover deleted blobs and their snapshots as well.
+
+This protection extends to blob data that is erased as the results of an overwrite.
+
+When data is deleted and soft delete is enabled, the data transitions into a soft delete state instead of being permanently deleted.
+
+The amount of time soft delete data is recoverable is configurable.
+
 ### Moving Blob items between containers
 
 1. Create a BlobServiceClient instance for each Storage Account that is involved in the blob item movement.
@@ -474,3 +495,462 @@ A **lifecycle management policy** is a JSON document in which you define several
 
 - **Filter set** The filter set limits the actions to only a group of items that match the filter criteria.
 - **Action set** You use this set to define the actions that are performed on the items that matched the filter.
+
+---
+
+## OAuth2 Roles
+
+- **Resource owner**: This is the person or entity that can grant access to the resources. If the resource owner is a person, it can also be referred to as the user.
+- **Resource server** This is the server that hosts the resources that you want to share. This server needs to be able to accept and respond to the access codes used for accessing the resource.
+- **Client** This is the third-party application that needs to access the resource. The client makes the needed requests to the resource server on behalf of the resource owner. The term “client” does not necessarily imply any specific implementation, like a server, a desktop, or any other kind of device.
+- **Authorization server** This is the server that issues the access token to the client for accessing the resources. The client needs to be authenticated before it can get the correct token.
+- **Authentication request** The client requests access to the protected resource. The resource owner, based on the privileges of the client, grants access to the client for accessing the resource. The authentication of the client can be directly done by the resource owner or preferably by the authentication server.
+- **Protected resource** This is the resource that the client wants to access. The resource server protects the resource. The client needs to send the access token to the resource server every time it needs to access the resource.
+- **Authentication grant** When the resource owner grants the client access to the resource, the client sends an authentication grant, which is a code or credential that represents the permission to access the resource, which has been granted by the resource owner. The client uses this authentication grant credential to request an access token to the authorization server. There are four different mechanisms for handling this authentication:
+  - **Authorization code** The client instructs the resource owner to request authentication to the authentication server. Once the resource owner is authenticated, the authentication server creates an authorization code that the resource owner sends back to the client. The client uses this authorization code as the grant for requesting the access token.
+  - **Implicit** Using this authentication grant flow, the authentication server does not authenticate the client. Instead, the client gets the access token without needing to authenticate to the resource server using an authentication grant. This implicit flow is a simplified authorization code flow. To improve security in this flow, the resource server uses the redirect URI provided by the client.
+  - **Resource owner credentials** Instead of using an authorization code or implicit authentication, the client uses the credentials of the resource owner for authenticating against the resource server. This type of authentication grant should be used only when there is a high level of trust between the client and the resource owner.
+  - **Client credentials** The client provides his or her credentials for accessing the resource. This authentication grant is useful for scenarios in which the client needs access to resources that are protected by the same authorization server as the client and are under 135the control of the client. This type of authentication grant is also useful if the resource server and the client arranged the same authorization for the resources and the client.
+  - **Access token** The client requests an access token from the authorization server that allows the client to access the resource on the resource server. The client sends this access token to the resource server with each request to access the resource. This access token has an expiration date. Once the access token is expired, the token is invalid, and the client needs to request another access token. To ease the process of renewing the access token, the authentication server provides two different tokens—the actual access token and a refresh token. The client uses the refresh token when it needs to renew an expired access token.
+
+---
+
+## Shared Access Signatures (SAS) & Shared Key Authorization
+
+- These two are used for authorization on Azure Storage
+
+- **Shared Key Authorization**:
+
+  - You use one of the two access keys configured at the Azure Storage account level to construct the correct request for accessing the Azure Storage account resources.
+  - You need to use the Authorization Header for using the access key in your request.
+  - The access key provides access to the entire Azure Storage account and all its containers, such as blobs, files, queues, and tables.
+  - You can consider Azure Storage account keys to be like the root password of the Azure Storage account.
+  - The drawback of using shared access keys is that if either of the two access keys is exposed, the Azure Storage account and all the containers and data in the Azure Storage account are also exposed. The access keys also allow us to create or delete elements in the Azure Storage account.
+
+- **Shared Access Signatures**:
+
+  - You use Shared Access Signatures (SAS) for narrowing the access to specific containers inside the Storage Account.
+  - The advantage of using SAS is that you don’t need to share the Azure Storage account’s access key.
+  - You can also configure a higher level of granularity when setting access to your data.
+
+Shared access signatures provide you with a mechanism for sharing access with clients or applications to your Azure Storage account without exposing the entire account. You can configure each SAS with a different level of access to each of the following:
+
+- **Services** You can configure SAS for granting access only to the services that you require, such as blob, file, queue, or table.
+- **Resource types** You can configure access to a service, container, or object. For the Blob service, this means that you can configure the access to API calls at the service level, such as list containers.
+- **Permissions** Configure the action or actions that the user is allowed to perform in the configured resources and services.
+- **Date expiration** You can configure the period for which the configured SAS is valid for accessing the data.
+- **IP addresses** You can configure a single IP address or range of IP addresses that are allowed to access your storage.
+- **Protocols** HTTPS only or both HTTP and HTTPS
+
+Azure Storage uses the values of previous parameters for constructing the signature that grants access to your storage. You can configure three different types of SAS:
+
+- **User delegation SAS** This type of SAS applies only to Blob Storage. You use an Azure Active Directory user account for securing the SAS token. A user delegation SAS is secured with Azure AD credentials.
+- **Account SAS** Account SAS controls access to the entire Storage Account. You can also control access to operations at the service level, like getting service stats or getting or setting service properties. You need to use the storage account key for securing this kind of SAS.
+- **Service SAS** Service SAS delegates access to only specific services inside the Storage Account. You need to use the storage account key for securing this kind of SAS.
+
+Regardless of the SAS type, you need to construct a SAS token for access. You append this SAS token to the URL that you use for accessing your storage resource. One of the parameters of a SAS token is the signature. The Azure Storage Account service uses this signature to authorize access to the storage resources. The way you create this signature depends on the SAS type that you are using.
+
+For user delegation SAS, you need to use a user delegation key created using Azure Active Directory (Azure AD) credentials.
+The user used for creating this delegation key needs to have granted the `Microsoft.Storage/storageAccounts/blobServices/generateUserDelegationKey/action` Role-Base Access Control permission.
+
+For service or account SAS, you need to use the Azure Storage Account key for creating the signature that you have to include in the SAS token.
+
+One drawback of using this approach is that anyone who has access to the SAS URL can access the information protected by that SAS. You can improve the security of the SAS tokens by creating a **Stored Access Policy** and attaching the policy to the SAS token. Stored Access Policies allows you to define access policies that are associated and stored with the table that you want to protect. When you define a Stored Access Policy, you provide an identifier to the policy. Then you use this identifier when you construct the Service SAS token. You need to include this identifier when you construct the signature that authenticates the token and is part of the SAS itself.
+
+The advantage of using a Stored Access Policy is that you define and control the validity and expiration of the policy without needing to modify the Service SAS token. Using a Stored Access Policy also improves security by hiding the details of the Access Policy from the user, as you just provide the name of the Stored Access Policy. You can associate up to five different stored access policies.
+
+If you plan to work with user delegation SAS, you need to consider that this type of SAS is available only for Azure Blob Storage and Azure Data Lake Storage Gen2. You cannot use either Stored Access Policies when working with user delegation SAS.
+
+---
+
+## Azure Active Directory
+
+Microsoft provides OAuth2 authentication through its Azure Active Directory identity service.
+
+Before your application can use the Azure Active Directory service for authenticating your application’s users, you need to register the application in your Azure Active Directory tenant.
+
+When you are registering your application, there are some points that you need to consider before proceeding to the registration:
+
+- **Supported account types** You need to consider whether the users of your application would be
+  - Users from your organization
+  - Users from any organization
+  - Users from any organization or Microsoft
+- **Platform**: The OAuth2 authentication is not limited to web applications. You can also use this type of authentication with mobile platforms, like iOS or Android, or desktop platforms, like macOS, Console, IoT, Windows, or UWP.
+
+When registering an app, `redirect Url`, `Certifcates and Secrets` & API permissions are critical settings we need to consider.
+
+When you are registering a new application in your Azure Active Directory tenant, you need to consider which will be your target user. If you need for any user from any Azure Active Directory organization to be able to log into your application, you need to configure a multitenant app. In those multitenant scenarios, the app registration and management is always performed in your tenant and not in any other external tenant.
+
+---
+
+## Role Based Access Control (RBAC)
+
+Built on top of the Azure Resource Manager, RBAC provides fine-grained access control to the different resources in an Azure subscription.
+
+When working with RBAC, you need to consider the following concepts:
+
+- **Security principal** This is the entity that requests permission for doing an action. A security principal can be one of the following:
+  - **User** This is an individual who has a profile in an Azure Active Directory tenant. You are not limited to your own tenant. You can assign a role to users in other tenants as well.
+  - **Group** This is a set of users.
+  - **Service principal** This is like a user for an application. A service principal represents an application inside the tenant.
+  - **Managed identity** This kind of identity represents cloud applications that need to access resources in your Azure tenant. Azure automatically manages this kind of identity.
+- **Permission** This is the action that you can perform with a resource. An example of an action would be requesting a user delegation key for creating a SAS token. Another example of an action is listing the content of a container. You cannot directly assign a role to a security principal. You always need to use a role or role definition.
+- **Role definition** Usually known as just role for short, a role definition is a collection of permissions. You assign a role to a security principal. There are a lot of predefined roles in Azure that you can use for managing access to the resources.
+  - There are four fundamental roles:
+    - **Owner** Grants full access to all resources in the scope.
+    - **Contributor** Grants modify access to all resources in the scope. You can perform all modification operations, including deleting, with the resources in the scope. You cannot grant roles to other security principals.
+    - **Reader** Grants read access to all resources in the scope.
+    - **User** Access Administrator Useful only for managing user access to Azure resources.
+    - Aside from these four fundamental built-in roles, there are roles specific to each service, like Virtual Machine Contributor or Cosmos DB Account Reader.
+- **Scope** This is the group of resources where you assign the role. You can set a role at four different levels: _management group_ (a group of subscriptions), _subscription_, _resource group_, and _resource_. These four levels are organized in a parent-child relationship where the management group is the highest level and resource is the lowest. When you assign a role to level, those permission are inherited by the lower levels. That means that if you grant the Owner role to a user at the subscription level, that user has the Owner privileges in all the resource groups and resources in that subscription.
+- **Role assignment** This is the junction between the different pieces of RBAC. A role assignment connects a security principal with a role and a scope.
+
+![RBAC Summary](./rbac.PNG)
+
+When you are assigning specific service roles, carefully review the permissions granted by the role. In general, granting access to a resource doesn’t grant access to the data managed by that resource. For example, the Storage Account Contributor grants access for managing Storage Accounts but doesn’t grant access to the data itself.
+
+---
+
+## Azure App Configuration and Azure Key Vault and Managed Identities
+
+**Azure App Configuration** is the appropriate service for securely storing your app configuration settings in centralized storage. Although the Azure App Configuration store provides secure storage by encrypting the value of the key-value pairs representing your settings, you should use Key Vault references in your Azure App Configuration store for that sensitive information that requires a higher level of security. Azure Key Vault uses hardware-based encryption for storing keys, secrets, and certificates.
+
+App Configuration provides two options for organizing keys:
+
+- Key prefixes
+- Labels
+
+You can use either one or both options to group your keys.
+
+Key prefixes are the beginning parts of keys. You can logically group a set of keys by using the same prefix in their names. Prefixes can contain multiple components connected by a delimiter, such as /, similar to a URL path, to form a namespace. Such hierarchies are useful when you're storing keys for many applications, component services, and environments in one App Configuration store.
+
+An important thing to keep in mind is that keys are what your application code references to retrieve the values of the corresponding settings. Keys shouldn't change, or else you'll have to modify your code each time that happens.
+
+Labels are an attribute on keys. They're used to create variants of a key. For example, you can assign labels to multiple versions of a key. A version might be an iteration, an environment, or some other contextual information. Your application can request an entirely different set of key values by specifying another label. As a result, all key references remain unchanged in your code.
+
+**Azure Key Vault** is the service provided by Microsoft for securely storing secret keys and certificates in a centralized, secure store.
+
+By using Azure Key Vault, your developers no longer need to store this sensitive information on their computers while they are developing an application.
+
+Thanks to the identity-based access control, you only need to configure a policy for granting access to the needed service or user principals to the secure store. Another advantage is that you can apply fine-grained access control, allowing access to specific secrets only to the needed application or user.
+
+Azure Key Vault allows you to store three types of objects: keys, secrets, and certificates.
+• You should use managed identities authentication for accessing the Azure Key Vault.
+• You need to define a certificate policy before creating a certificate in the Azure Key Vault.
+• If you import a certificate into the Azure Key Vault, a default certificate policy is automatically created for you.
+
+#### Managed Identities
+
+Azure Active Directory (Azure AD) provides the **Managed Identities** for Azure resources (formerly known as Managed Service Identity) that removes the need to use credentials for authenticating your application to any Azure service that supports Azure AD authentication. This feature automatically creates a managed identity that you can use for authenticating to any service that supports Azure AD authentication without needing to provide any credential.
+
+- **System-assigned managed identities** These are identities that Azure automatically enables when you create an Azure service instance, like an Azure virtual machine (VM) or an Azure data lake store. Azure creates an identity associated with the new instance and stores it to the Azure AD tenant associated with the subscription where you created the service instance. If you decide to delete the service instance, then Azure automatically deletes the managed instance associated with the service instance stored in the Azure AD tenant.
+
+- **User-assigned managed identities** You can create your managed identities in the Azure AD tenant associated with your Azure subscription. You can associate this type of managed identity to one or more service instances. The lifecycle of the managed identity is independent of the service instance. This means that if you delete the service instance, the user-assigned managed identity remains in the Azure AD tenant. You need to remove the managed identity manually.
+
+When you work with managed identities, you need to bear in mind three concepts:
+
+- _Client ID_ This is a unique identifier generated by Azure AD. This ID associates the application and the service principal during its initial provisioning.
+- _Principal ID_ This is the ID of the service principal associated with the managed identity. A service principal and a managed identity are tightly coupled, but they are different objects. The service principal is the object that you use to grant role-based access to an Azure resource.
+- _Azure Instance Metadata Service (IMDS)_ When you use managed identities in an Azure VM, you can use the IMDS for requesting an OAuth Access Token from your application deployed within the VM. The IMDS is a REST endpoint that you can access from your VM using a nonroutable IP address (169.254.169.254).
+
+You can configure two different types of managed identities: system- and user-assigned. System-assigned managed identities are tied to the service instance. If you delete the service instance, the system-assigned managed identity is automatically deleted as well. You can assign the same user-assigned managed identities to several service instances.
+
+---
+
+## Content Delivery Networks (CDN)
+
+The main advantage of using Azure CDN with your application is that Azure CDN caches your application’s static content.
+
+You can use third-party CDN solutions such as Verizon or Akamai with Azure CDN.
+
+To use Azure CDN with your solution, you need to configure a profile. This profile contains the list of endpoints in your application that would be included in the CDN.
+
+The profile also configures the behavior of content delivery and access of each configured endpoint. When you configure an Azure CDN profile, you need to choose between using Microsoft’s CDN or using CDNs from Verizon or Akamai.
+
+You can configure as many profiles as you need for grouping your endpoints based on different criteria, such as internet domain, web application, or any other criteria.
+
+Bear in mind that Azure CDN pricing tiers are applied at the profile level, so you can configure different profiles with different pricing characteristics.
+
+The propagation of the content through the CDN depends on the type of CDN that you configured. For Standard Microsoft CDN, the propagation usually completes in 10 minutes.
+
+CDN Options:
+
+- **Custom DNS domain** By default, when using the CDN, your users access your application by using the URL `https://<your_endpoint’s_name>.azureedge.net`, we can change it to our custom domain.
+- **Compression** You can configure the CDN endpoint to compress some MIME types. This compression is made on the fly by the CDN when the content is delivered from the cache. Compressing the content allows you to deliver smaller files, improving the overall performance of the application.
+- **Caching rules** You can control how the content is stored in the cache by setting different rules for different paths or content types. By configuring a cache rule, you can modify the cache expiration time, depending on the conditions you configure. Caching rules are only available for profiles from Verizon’s Azure CDN Standard and Akamai’s Azure CDN Standard.
+- **Geo-filtering** You can block or allow a web application’s content to specific countries across the globe.
+- **Optimization** You can configure the CDN for optimizing the delivery of different types of content. Depending on the type of profile, you can optimize your endpoint for
+  - General web delivery
+  - Dynamic site acceleration
+  - General media streaming
+  - Video-on-demand media streaming
+  - Large file downloads
+
+NOTE: Although Dynamic Site Acceleration is part of the features provided by the Azure CDN, this is not strictly a cache solution. If you need to use Dynamic Site Acceleration with Microsoft Azure services, you should use Azure Front Door Service instead of Azure CDN .
+
+Tip: Content Delivery Networks (CDN) are appropriate for caching **static content** that changes infrequently. Although Azure CDN from Akamai and Azure CDN from Verizon include Dynamic Site Acceleration (DSA), this feature is not the same as a cache system. You should not confuse Azure CDN DSA optimization with Azure CDN cache.
+
+**Dynamic resources** that change frequently or are unique to an individual user cannot be cached. Those types of resources, however, can take advantage of **dynamic site acceleration** (DSA) optimization on the Azure Content Delivery Network for performance improvements.
+
+When you add content to a CDN cache, the system automatically assigns a **TimeToLive (TTL)** value to the content file instead of continuously comparing the file in the cache with the original content on the web server. The cache system checks whether the TTL is lower than the current time. If the TTL is lower than the current time, the CDN considers the content to be fresh and keeps the content in the cache. If the TTL expires, the CDN marks the content as stale or invalid.
+
+You can configure the default TTL associated with a site by using the `Cache-Control` HTTP Header. You set the value for this header in different ways:
+
+- Default CDN configuration: Set by azure by default if none set
+- Caching rules You can configure TTL values globally or by using custom matching rules. Global caching rules affect all content in the CDN. Custom caching rules control the TTL for different paths or files in your web application. You can even disable the caching for some parts of your web application.
+- Web.config files
+- Programatically by setting the `HttpResponse.Cache` property
+
+Azure CDN is not the only service that Microsoft provides for caching content. The **Azure Front Door service** allows you to route the traffic efficiently to the closest location to the user. As part of the features offered by the Azure Front Door service, it also allows you to cache content by providing a CDN. As with Azure CDN, you can configure the cache and expiration time for the elements in the cache.
+
+**Redis** is an open-source cache system that allows you to work like in an in-memory data structure store, database cache, or message broker. The **Azure Redis Cache** or **Azure Cache for Redis** is a Redis implementation managed by Microsoft.
+
+Azure Redis Cache has three pricing layers that provide you with different levels of features:
+• _Basic_ This is the tier with the fewest features and less throughput and higher latency. You should use this tier only for development or testing purposes. There is no Service Level Agreement (SLA) associated with the Basic tier.
+• _Standard_ This tier offers a two-node, primary-secondary replicated Redis cache that is managed by Microsoft. This tier has associated a high-availability SLA of 99.9 percent.
+• _Premium_ This is an enterprise-grade Redis cluster managed by Microsoft. This tier offers the complete group of features with the highest throughput and lower latencies. The Redis cluster is also deployed on more powerful hardware. This tier has a high-availability SLA of 99.9 percent.
+
+You can scale up your existing Azure Redis cache service to a higher tier, but you cannot scale down your current tier to a lower one.
+
+When you are working with Azure Cache for Redis, you can use different implementation patterns that solve different issues, depending on the architecture of your application:
+
+- **Cache-Aside** In most situations, your application stores the data that it manages in a database. But DB access is slow, and we cannot store the whole DB in memory, so One solution to improve the performance of your application in these scenarios is to store the most-accessed data in the cache. When the back-end system changes the data in the database, the same system can also update the data in the cache, which makes the change available to all clients.
+- **Content caching** some common web page elements such as headers, footers, toolbars, menus, stylesheets, images, and so on are static elements (or at least don’t change often). Storing these elements in Azure Cache for Redis relieves your web servers from serving these elements and improves the time your servers need to generate dynamic content.
+- **User session** caching This pattern is a good idea if your application needs to register too much information about the user history or data that you need to associate with cookies. Storing too much information in a session cookie hurts the performance of your application. You can save part of that information in your database and store a pointer or index in the session cookie that points that user to the information in the database. If you use an in-memory database, such as Azure Cache for Redis, instead of a traditional database, your application benefits from the faster access times to the data stored in memory.
+- **Job and message queuing**
+- **Distributed transactions** A transaction is a group of commands that need to complete or fail together. Any transaction needs to ensure that the data is always in a stable state. If your application needs to execute transactions, you can use Azure Cache for Redis for implementing these transactions.
+
+TIP: You can use Azure Cache for Redis for static content and the most-accessed dynamic data. You can use it for in-memory databases or message queues using a publication/subscription pattern.
+
+---
+
+## Application Insights
+
+instrumentation in your application, it monitors the following points:
+
+- **Request rates, response times, and failure rates**
+- **Dependency rates, response times, and failure rates**
+- **Exceptions** raised by servers and browsers while your application is executing.
+- **Page views and load performance**
+- **AJAX calls** This measures the time taken by AJAX calls made from your application’s web pages. It also measures the failure rates and response time.
+- **User and session counts**
+- **Performance counters** of the server machine (CPU, memory, and network usage) from which your code is executing.
+- **Hosts diagnostics** can get information from your application if it is deployed in a Docker or Azure environment.
+- **Diagnostic trace logs** Trace log messages can be used to correlate trace events with the requests made to the application by your users.
+- **Custom events and metrics**
+
+### Azure Monitor
+
+Azure Monitor is a tool composed of several elements that help you monitor and better understand the behavior of your solutions.
+
+Depending on the information that you need to analyze, you can use **Metric Analytics** or **Log Analytics**.
+
+You can use **Metric Analytics** for reviewing the standard and custom metrics sent from your application. A metric is a numeric value that is related to some aspect at a particular point in time of your solution. CPU usage, free memory, and the number of requests are all examples of metrics; also, you can create your own custom metrics.
+
+You use **Log Analytics** for analyzing the trace, logs, events, exceptions, and any other message sent from your application. Log messages are more complex than metrics because they can contain much more information than a simple numeric value.
+
+Log Analytics for Azure Monitor uses a version of the **Kusto query language**.
+
+NOTE: When you try to query logs from the Azure Monitor, remember that you need to enable the _diagnostics logs for the Azure App Services_. If you get the message, We didn’t find any logs when you try to query the logs for your Azure App Service, that could mean that you need to configure the diagnostic settings in your App Service.
+
+---
+
+## Logic Apps
+
+By using the App Service Logic App, you can create workflows that interconnect different systems based on conditions and rules and easing the process of sharing information between them.
+
+Azure provides the App Service Logic Apps that allows interconnecting two or more services sharing information between them.
+
+A business process defines this interconnection between different services. Azure Logic Apps allows you to build complex interconnection scenarios by using some elements that ease the work:
+
+- **Workflows** Define the source and destination of the information. It connects to different services by using connectors. A workflow defines the steps or actions that the information needs to make to deliver the information from the source to the correct destination.
+- **Managed Connectors** A connector is an object that allows your workflow to access data, services, and systems.
+- **Triggers** Triggers are events that fire when certain conditions are met. You use a trigger as the entry or starting point of a workflow.
+- **Actions** Actions are each of the steps that you configure in your workflow. Actions happen only when the workflow is executed. The workflow starts executing when a new trigger fires.
+- **Enterprise Integration Pack** If you need to perform more advanced integrations, the Enterprise Integration Pack provides you with BizTalk Server capabilities.
+
+The most obvious application for Azure Logic Apps would be implementing business processes.
+
+**NOTE**: In Azure Logic Apps, there is a template that is available that can automatically transfer blobs onto Archive Storage.
+
+You also can use Azure Logic Apps for sending notifications when certain events happen or creating the folder and permission structure in a SharePoint Online document library when a project manager of your company creates a new project.
+
+You can configure two different types of schedules:
+
+- **Recurrence** In this type of trigger, you configure a regular time interval. You can configure a start date and time, and you can also configure the time zone for your schedule. When you configure the time interval, you can choose from seconds to months as the frequency.
+- **Sliding Window** This type of trigger is similar to the Recurrence trigger, except you cannot configure advance scheduling settings, such as specific days in the week or hours or minutes in a day. Another essential difference is that with the Sliding Window trigger, if a recurrence is missing, the Sliding Window trigger goes back and processes the missing recurrence.
+- **Polling** The trigger queries the configured system or service periodically for new data or if a new event happened. Depending on the specific trigger, you can configure the polling schedule. Once the new data or event happens, the trigger creates a new instance of your workflow, collects the information from the system, and passes the information to the newly created workflow instance.
+- **Push** The trigger listens for new events or data to arrive at the configured system or service. As soon as the new data or event happens, the trigger creates a new instance of your workflow, passing the data to the newly created instance.
+
+Triggers and actions are packaged together into connectors. You use the connectors for accessing data, events, and actions available from other applications or services.
+
+Azure Logic Apps offers thousands of **connectors**, but all of them fit in one of the following categories:
+
+- **Built-in** This type of connector contains the fundamental triggers and actions available in Azure Logic Apps.
+- **Managed** These connectors are developed, deployed, and maintained by Microsoft.
+- **On-Premises** You use this kind of connector when you need your Azure Logic App to work with systems deployed in your on-premises infrastructure. you can access data from File Systems, Oracle, MySQL, PostgreSQL, Microsoft SQL Server, IBM DB2, IBM Informix, or Teradata databases.
+- **Integration Account** Allows you to connect your Azure Logic App with third-party business partners for creating Business-to-Business (B2B) solutions. Integrations Accounts are available only through the Enterprise Integration Pack (EIP) in Azure. You use this kind of connector for transforming the messages between the different B2B systems. You can apply AS2, EDIFACT, X12, or Flat files decoding or encoding, Liquid and XML transformations, or XML validations.
+- **ISE** These are the connectors that you need to use when your Azure Logic App needs to run in an **Integration Service Environment (ISE)**.
+
+**ISE** is a dedicated environment where you execute your Azure Logic Apps. There are special connectors designed for working in an ISE.
+
+There are special connectors designed for working in an ISE. Those connectors are marked with the label `CORE` if they are built-in connectors that you can use in an ISE or if they are managed connectors that you can use in an ISE, you will see the `ISE label` below the name of the connector. When using an ISE you are not limited to ISE connectors; you can also use regular connectors in an Integration Service Environment.
+
+Connectors can also be classified as:
+
+**Standard** or **Enterprise**
+
+This classification is essential because it directly affects the costs associated with running your Azure Logic App workflow. When you run a workflow, you are charged when you use the workflow, except when your workflow is running inside an ISE.
+
+There are three pricing levels for Azure Logic Apps:
+
+- Basic: This level includes built-in connectors, triggers, and control workflow actions.
+- Standard: This includes the actions defined in managed connectors. Any custom connector that you create also fits into this category.
+- Enterprise: These are specialized connectors for integrating B2B applications with your Azure Logic App. Some examples of enterprise connectors are SAP, IBM 3270, or IBM MQ.
+
+### Custom Connectors
+
+You can create custom connectors for Microsoft PowerAutomate (formerly known as Flow), PowerApps, and Azure Logic Apps. Although you cannot share Azure Logic Apps connectors with Microsoft PowerAutomate and PowerApps connectors, the principle for creating custom connectors are the same for the three platforms.
+
+A custom connector is basically a wrapper for a REST or SOAP API.
+
+This wrapper allows Azure Logic Apps to interact with the API of the application. The application that you want to include in the custom connector can be a public application, like Amazon Web Services, Google Calendar, or the API of your application published to the Internet. Using the on-premises data gateway, you can also connect the custom connector with an on-premises application deployed in your data center.
+
+Every Custom Connector has the following life cycle:
+
+- Build your API
+- Secure your API
+- Describe the API: Logic Apps support two formats (1) OpenAPI (Swagger) (2) Postman Collections
+- User the connector in an Azure logic Apps
+- Share your connector
+- Certify your connector (submit to Microsoft for review)
+
+### Custom Template for Logic Apps
+
+When you create a template, you are converting the definition of your Azure Logic App into an Azure Resource Manager (ARM) template.
+
+A Logic App template is a JSON file comprised of three main areas:
+
+- **Logic App** resource This section contains basic information about the Logic App itself. This information is the location of the resource, the pricing plans, and the workflow definition.
+- **Workflow definition** This section contains the description of the workflow, including the triggers and actions in your workflow. This section also contains how the Logic App runs these triggers and actions.
+- **Connections** This section stores the information about the connectors that you use in the workflow.
+
+---
+
+## Azure API Management (APIM) service
+
+This service allows you to create an enterprise-grade API for your existing back-end services. Using APIM, you can securely publish your back-end applications, providing your customers with a platform protected against DOS attacks or JWT token validations.
+
+By using the APIM service, you can unify all your back-end APIs in a common interface that you can offer to external users, such as clients or partners, and internal or external developers. In general, the APIM service is a façade of the APIs that you configure in your APIM instance.
+
+You need to create subscriptions in the APIM service for authenticating the access to the API.
+
+You need to create a product for publishing a back-end API.
+You can publish only some operations of your back-end APIs.
+APIM Policies allow you to modify the behavior of the APIM gateway.
+
+#### APIM Policies
+
+A policy is a mechanism that you can use to change the default behavior of the APIM gateway. Policies are XML documents that describe a sequence of inbound and outbound steps or statements.
+
+Each policy is made of four sections:
+
+1. InBound
+2. Back End
+3. Outbound
+4. OnError
+
+APIM Policy different Scopes:
+
+1. Global - applies to all APIs
+2. Product - Applies to all APIs associated with a product
+3. API
+4. Operation
+
+---
+
+## Event Based Solutions
+
+### Using Azure Event Grid
+
+You can use Azure Event Grid for connecting to several types of data sources, like Azure Blob Storage, Azure Subscription, Event Hubs, IoT Hubs, and others; Azure Even Grid also allows you to use different event handlers to manage these events. You can also create your custom events for integrating your application with the Azure Event Grid.
+
+Terminology:
+
+- **Event**: This is a change of state in the source (for example, in an Azure Blob Storage or when an event happens when a new blob is added to the Azure Blob Storage).
+- **Event Source**: This is the service or application when the event happens. There is an event source for every event type.
+- **Event handler** This is the app or service that reacts to the event.
+- **Topics** These are the endpoints where the event source can send the events. You can use topics for grouping several related events.
+- **Event subscriptions** When a new event is added to a topic, that event can be processed by one or more event handlers. The event subscription is an endpoint or built-in mechanism to distribute the events between the different event handlers. Also, you can use subscriptions to filter incoming events.
+
+Event are lightweight that do not themselves contain raw data (In fact, they only point to the raw data).
+
+When you need to work with events, you configure an event source to send events to a topic. Any system, or event handler, that needs to process those events subscribes to that topic.
+
+When new events arise, the event source pushes the event into the topic configured in the Azure Event Grids service.
+
+Any event handler subscribed to that topic reads the event and processes it according to its internal programming.
+
+There is no need for the event source to have event handlers subscribed to the topic; the event source pushes the event to the topic and forgets it.
+
+Another important consideration that you need to deal with when you add a handler to an Azure Event Grid subscription is the handler validation. Depending on the type of handler that you use, this validation process is performed automatically by the SDK, or you need to implement it manually. When you use an HTTP endpoint as an event handler, you need to deal with the subscription verification. This verification process consists of a verification code sent by the Event Grid service to the webhook endpoint. Your application needs to reply to the Event Grid service by using the same verification code.
+
+Failed events are stored in Dead-Letter location, which needs storage account for holding events.
+
+Retry Policy: When creating an Event Grid subscription, you can set values for how long Event Grid should try to deliver the event. By default, Event Grid tries for 24 hours (1440 minutes), or 30 times. You can set either of these values for your event grid subscription. The value for event time-to-live must be an integer from 1 to 1440.
+
+### Notifications Hub
+
+- The mobile app client: This is your actual mobile app, which runs on your user’s device. The user must register with the **Platform Notification System (PNS)** to receive notifications. This generates a PNS handler that is stored in the mobile app back end for sending notifications.
+- The mobile app back end This is the back end for your app client, and it stores the PNS handler that the client received from the PNS. Using this handler, your back-end service can send push notifications to all registered users.
+- A **Platform Notification System (PNS)** These platforms deliver the actual notification to the user’s device. PNSes are platform-dependent, and each vendor has its own PNS. Apple has the Apple Push Notification Service, Google uses the Firebase Cloud Messaging, and Microsoft uses the Windows Notification Service.
+
+### Azure Event Hub
+
+Azure Event Hub is a more suitable solution when you require a service that can receive and process millions of events per second and provide low-latency event processing.
+
+When you work with event hubs, you send events to the hub.
+
+The entity that sends events to the event hub is known as an event **publisher**. An event publisher can send events to the event hub by using any of these protocols: AMQP 1.0, Kafka 1.0 (or later), or HTTPS.
+
+You can publish events to the event hub by sending a single event or grouping several events in a batch operation.
+
+Independently if you publish a single event or a batch of them, you are limited to a maximum size of 1 MB of data per publication.
+
+When Azure Event Hub stores an event, it distributes the different events in different partitions based on the partition key provided as one of the data of the event. Using this pattern, Azure Event Hub ensures that all events sharing the same partition key are delivered in order to the same partition.
+
+A partition stores the events as they arrive at the partition. This way, the newer events are added to the end of the partition. You cannot delete events from a partition. Instead, you need to wait for the event to expire to be removed from the partition.
+
+As each partition is independent of other partitions in the event hub, the growth rates are different from partition to partition.
+
+You can define the number of partitions that your event hub contains during the creation of the event hub. You can create between 2 and 32 partitions, although you can extend the limit of 32 by contacting the Azure Event Hub team.
+
+Bear in mind that once you create the event hub and set the number of the partitions, you cannot change this number later. When planning the number of partitions to assign to the event hub, consider the maximum number of parallels downstream that need to connect to the event hub.
+
+You can connect event receiver applications to an event hub by using **consumer groups**. A consumer group is equivalent to a downstream in a stream processing architecture.
+
+Using consumer groups, you can have different event receivers or consumers, accessing different views (state, position, or offset) of the partitions in the event hub. Event consumers connect to the event hub by using the AMQP protocol that sends the event to the client as soon as new data is available.
+
+---
+
+## Message based solutions
+
+### Azure Service Bus
+
+Azure Service Bus is an enterprise-level integration message broker that allows different applications to communicate with each other in a reliable way.
+
+- **Namespace** Is a container for all the components of the messaging. A single namespace can contain multiple queues and topics. You can use namespaces as application containers associating a single solution to a single namespace. The different components of your solution connect to the topics and queues in the namespace.
+- **Queue** A queue is the container of messages. The queue stores the message until the receiving application retrieves and processes the message. The message queue works as a FIFO (First-In, First-Out) stack. As a new message arrives at the queue, the Service Bus service assigns a timestamp to the message. Once the message is processed, the message is held in redundant storage.
+- **Topic** You use topics for sending and receiving messages. The difference between queues and topics is that topics can have several applications receiving messages used in publish/subscribe scenarios. A topic can have multiple subscriptions in which each subscription in a topic receives a copy of the message sent to the topic.
+
+Message size here is < 256 KB
+
+Can do At-least-Once and At-most-once
+
+### Azure Queue Storage queues
+
+Azure Queue Storage is the first service that Microsoft released for managing message queues. Although Azure Service Bus and Azure Queue Storage share some features, such as providing message queue services, Azure Queue Storage is more appropriate when your application needs to store more than 80 GB of messages in a queue. Another important feature of the Azure Queue Storage service that you need to consider is although the queues in the service work as a FIFO (First-In, First-Out) stack, the order of the message is not guaranteed.
+
+The maximum size of a single message that you can send to an Azure Queue is 64KB, although the total size of the queue can grow to over 80GB.
+
+At-Least-Once
