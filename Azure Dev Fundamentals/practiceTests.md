@@ -137,3 +137,77 @@ is a fully managed service desinged to enable seamless migrations from multiple 
 ## Creating Azure Cosmos DB first and then creating a Table
 
 [Ref](https://docs.microsoft.com/en-us/azure/cosmos-db/scripts/cli/table/create?toc=/cli/azure/toc.json)
+
+---
+
+# Practice Test 2
+
+---
+
+## How CDN Works
+
+- A user (Alice) requests a file (also called an asset) by using a URL with a special domain name, such as <endpoint name>.azureedge.net. This name can be an endpoint hostname or a custom domain. The DNS routes the request to the best performing POP location (Point of Presence, a collection of edge servers in a location), which is usually the POP that is geographically closest to the user.
+
+- If no edge servers in the POP have the file in their cache, the POP requests the file from the origin server. The origin server can be an Azure Web App, Azure Cloud Service, Azure Storage account, or any publicly accessible web server.
+
+- The origin server returns the file to an edge server in the POP.
+
+- An edge server in the POP caches the file and returns the file to the original requestor (Alice). The file remains cached on the edge server in the POP until the time-to-live (TTL) specified by its HTTP headers expires. If the origin server didn't specify a TTL, the default TTL is seven days.
+
+- Additional users can then request the same file by using the same URL that Alice used, and can also be directed to the same POP.
+
+- If the TTL for the file hasn't expired, the POP edge server returns the file directly from the cache. This process results in a faster, more responsive user experience.
+
+---
+
+## Azure Redis best Practice - Memory Management
+
+There are several things related to memory usage within your Redis server instance that you may want to consider. Here are a few:
+
+- Choose an **eviction policy** that works for your application. The default policy for Azure Redis is volatile-lru, which means that only keys that have a TTL value set will be eligible for eviction. If no keys have a TTL value, then the system won't evict any keys. If you want the system to allow any key to be evicted if under memory pressure, then you may want to consider the allkeys-lru policy.
+
+- Set an **expiration value on your keys**. An expiration will remove keys proactively instead of waiting until there's memory pressure. When eviction does kick in because of memory pressure, it can cause additional load on your server.
+
+[Ref](https://docs.microsoft.com/en-us/azure/azure-cache-for-redis/cache-best-practices)
+
+---
+
+## Azure Monitor - user behaviour analytics
+
+To track users over time, Application Insights requires a way to identify them. The Events tool is the only Usage tool that does not require a user ID or a session ID.
+
+- **Funnels**: If your application involves multiple stages, you need to know if most customers are progressing through the entire process, or if they are ending the process at some point. The progression through a series of steps in a web application is known as a funnel.
+- **Users, Sessions and Events segmentation tool**
+  - _User Tool_: How many people used your app and its features. Users are counted by using anonymous IDs stored in browser cookies. A single person using different browsers or machines will be counted as more than one user.
+  - _Sessions tool_: How many sessions of user activity have included certain pages and features of your app. A session is counted after half an hour of user inactivity, or after 24 hours of continuous use.
+  - _Events tool_: How often certain pages and features of your app are used. A page view is counted when a browser loads a page from your app, provided you have instrumented it.
+- **Cohorts**: A cohort is a set of users, sessions, events, or operations that have something in common. In Azure Application Insights, cohorts are defined by an analytics query. In cases where you have to analyze a specific set of users or events repeatedly, cohorts can give you more flexibility to express exactly the set you’re interested in.
+- **Impact** analyzes how load times and other properties influence conversion rates for various parts of your app. To put it more precisely, it discovers how any dimension of a page view, custom event, or request affects the usage of a different page view or custom event.
+- **Retention**: The retention feature in Azure Application Insights helps you analyze how many users return to your app, and how often they perform particular tasks or achieve goals.
+- **The User Flows** tool visualizes how users navigate between the pages and features of your site.
+
+---
+
+## How to set up Azure Service bus for Restaurant Delivery service
+
+1. Create Namespace - i.e. application level container
+2. Create Topic - Useful in pub/sub scenarios - a message is sent to all topics - a topic can have multiple subscriptions
+3. Create One Subscription per Driver - Each user/driver who wants to receive updates when a particular Restaurant has an order will create a subscription. Subscribers can define which messages they want to receive from a topic. These messages are specified in the form of one or more named subscription rules
+
+---
+
+## Query Strings in Azure CDN
+
+With Azure Content Delivery Network (CDN), you can control how files are cached for a web request that contains a query string.
+
+Three query string modes are available:
+
+- **Ignore query strings**: Default mode. In this mode, the CDN point-of-presence (POP) node passes the query strings from the requestor to the origin server on the first request and caches the asset. All subsequent requests for the asset that are served from the POP ignore the query strings until the cached asset expires.
+
+- **Bypass caching for query strings**: In this mode, requests with query strings are not cached at the CDN POP node. The POP node retrieves the asset directly from the origin server and passes it to the requestor with each request.
+
+-**Cache every unique URL**: In this mode, each request with a unique URL, including the query string, is treated as a unique asset with its own cache. For example, the response from the origin server for a request for example.ashx?q=test1 is cached at the POP node and returned for subsequent caches with the same query string. A request for example.ashx?q=test2 is cached as a separate asset with its own time-to-live setting.
+
+---
+
+- "Always On" Setting is available from Basic and above Azure App Service plan

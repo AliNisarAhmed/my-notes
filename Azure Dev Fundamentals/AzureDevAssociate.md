@@ -123,6 +123,21 @@ Protecting your endpoints using the authorization keys is not a recommended prac
 - **Use Azure API Management (APIM)** This secures the incoming request to your API, such as filtering by IP address or using authentication based on certificates.
 - **Deploy your function in an App Service Environment (ASE)** - ASEs provides dedicated hosting environments that allow you to configure a single front-end gateway that can authenticate all incoming requests.
 
+### Configuring Logging
+
+Logging is configured in `host.json` file
+
+### `host.json` vs `function.json`
+
+The `host.json` metadata file contains global configuration options that affect all functions for a function app. Things like
+
+- Application Insights and logging
+- retry policy (fixedDelay or exponentialBackOff)
+- watch Directories
+- singleton?
+
+We define bindings in `function.json`
+
 ---
 
 ## Durable Azure Functions
@@ -228,11 +243,33 @@ Messages in a Queue can be grouped into a transaction, so that all messages succ
 
 - Service Bus is a message broker system intended for enterprise applications. These apps often utilize multiple communication protocols, have different data contracts, higher security requirements, and can include both cloud and on-premises services. Service Bus is built on top of a dedicated messaging infrastructure designed for exactly these scenarios.
 
+Service Bus enables clients to send and receive messages via one of three protocols:
+
+- Advanced Message Queuing Protocol (AMQP)
+- Service Bus Messaging Protocol (SBMP)
+- Hypertext Transfer Protocol (HTTP)
+
+AMQP is the most efficient, because it maintains the connection to Service Bus. It also implements batching and prefetching.
+
+#### Service Bus Performance imporvements
+
+Service Bus client objects, such as implementations of `IQueueClient` or `IMessageSender`, should be registered for dependency injection as singletons (or instantiated once and shared)
+
+Use Storage queues when you want a simple and easy-to-code queue system. For more advanced needs, use Service Bus queues. If you have multiple destinations for a single message, but need queue-like behavior, use topics.
+
+Client-side batching enables a queue or topic client to delay the sending of a message for a certain period of time. If the client sends additional messages during this time period, it transmits the messages in a single batch.
+
+To increase the throughput of a queue, topic, or subscription, Service Bus batches multiple messages when it writes to its internal store. If enabled on a queue or topic, writing messages into the store will be batched. If enabled on a queue or subscription, deleting messages from the store will be batched. If batched store access is enabled for an entity, Service Bus delays a store write operation regarding that entity by up to 20 ms.
+
+There is no risk of losing messages with batching, even if there is a Service Bus failure at the end of a 20ms batching interval.
+
+Prefetching enables the queue or subscription client to load additional messages from the service when it performs a receive operation. The client stores these messages in a local cache. The size of the cache is determined by the QueueClient.PrefetchCount or SubscriptionClient.PrefetchCount properties.
+
+When a message is prefetched, the service locks the prefetched message. With the lock, the prefetched message cannot be received by a different receiver. If the receiver cannot complete the message before the lock expires, the message becomes available to other receivers.
+
 #### Azure Service Bus Topics
 
 - Azure Service Bus topics are like queues, but can have multiple subscribers. When a message is sent to a topic instead of a queue multiple components can be triggered to do their work.
-
-Use Storage queues when you want a simple and easy-to-code queue system. For more advanced needs, use Service Bus queues. If you have multiple destinations for a single message, but need queue-like behavior, use topics.
 
 #### Choose Service Bus Topics if
 
@@ -303,7 +340,7 @@ Some used of Event Hub
 ### Choose Event Hubs if:
 
 - You need to support authenticating a large number of publishers.
-- You need to save a stream of events to Data Lake or Blob storage.
+- You need to save a stream of events to Data Lake or Blob storage. (Enabled by Azure Event Hub Capture), the data is stored in Apache Avro Format.
 - You need aggregation or analytics on your event stream.
 - You need reliable messaging or resiliency.
 
@@ -393,9 +430,25 @@ Using the id property as the partition key means that you end with a logical par
 
 On the other hand, if you select a partition key with just a few possible values, you can end with “hot” partitions. A “hot” partition is a partition that receives most of the requests when working with your data. The main implication for these “hot” partitions is that they usually reach the throughput limit for the partition, which means you need to provision more throughput.
 
-partition. The minimum throughput limit is different from databases to containers. The minimum throughput for databases is 100 request units per second (RU/s). The minimum throughput for containers is 400 RU/s.
+The minimum throughput limit is different from databases to containers. The minimum throughput for databases is 100 request units per second (RU/s). The minimum throughput for containers is 400 RU/s.
 
 Choose partition keys with a wide range of values and access patterns that can evenly distribute requests across logical partitions. This allows you to achieve the right balance between being able to execute cross-document transactions and scalability. Using timestamp-based partition keys is usually a lousy choice for a partition key.
+
+#### Choosing the right Partition Key
+
+The choice should balance the need to enable the use of EGTs aka Entity Group Transactions (to ensure consistency) against the requirement to distribute your entities across multiple partitions (to ensure a scalabale solution)
+
+At one extreme, you can store all your entities in a single partition. But this might limit the scalability of your solution, and would prevent Table storage from being able to load-balance requests.
+
+At the other extreme, you can store one entity per partition. This is highly scalable and enables Table storage to load-balance requests, but prevents you from using entity group transactions.
+
+An ideal PartitionKey enables you to use efficient queries, and has sufficient partitions to ensure your solution is scalable. Typically, you'll find that your entities will have a suitable property that distributes your entities across sufficient partitions.
+
+In Cosmos DB, the second part of a Primary Key is **RowKey** property, a unique identifier for an entity within a given partition. Together, `PartitionKey` and `RowKey` uniquely identify every enttity within a table.
+
+#### EGTs
+
+In Table storage, entity group transactions (EGTs) are the only built-in mechanism for performing atomic updates across multiple entities. EGTs are also referred to as batch transactions. EGTs can only operate on entities stored in the same partition (sharing the same partition key in a particular table), so anytime you need atomic transactional behavior across multiple entities, ensure that those entities are in the same partition. This is often a reason for keeping multiple entity types in the same table (and partition), and not using multiple tables for different entity types. A single EGT can operate on at most 100 entities. If you submit multiple concurrent EGTs for processing, it's important to ensure that those EGTs don't operate on entities that are common across EGTs. Otherwise, you risk delaying processing.
 
 ### Consistency Levels
 
@@ -495,6 +548,21 @@ A **lifecycle management policy** is a JSON document in which you define several
 
 - **Filter set** The filter set limits the actions to only a group of items that match the filter criteria.
 - **Action set** You use this set to define the actions that are performed on the items that matched the filter.
+
+### Copying data between storage accounts
+
+- AzCopy is a command-line utility that you can use to copy blobs or files to or from a storage account.
+
+Two ways to Authenticate with AzCopy
+
+- Azure AD:
+
+  - If you just want to download files, then verify that the **Storage Blob Data Reader** has been assigned to your user identity, managed identity, or service principal.
+  - If you want to upload files, then verify that one of these roles has been assigned to your security principal:
+    - Storage Blob Data Contributor
+    - Storage Blob Data Owner
+
+- Azure Managed Identity (used to w/o user interactions)
 
 ---
 
@@ -701,7 +769,44 @@ You can configure the default TTL associated with a site by using the `Cache-Con
 - Web.config files
 - Programatically by setting the `HttpResponse.Cache` property
 
+#### Caching Rules
+
+Azure Content Delivery Network (CDN) offers two ways to control how your files are cached:
+
+- Caching rules: This article describes how you can use content delivery network (CDN) caching rules to set or modify default cache expiration behavior both globally and with custom conditions, such as a URL path and file extension. Azure CDN provides two types of caching rules:
+
+  - Global caching rules: You can set one global caching rule for each endpoint in your profile, which affects all requests to the endpoint. The global caching rule overrides any HTTP cache-directive headers, if set.
+
+  - Custom caching rules: You can set one or more custom caching rules for each endpoint in your profile. Custom caching rules match specific paths and file extensions, are processed in order, and override the global caching rule, if set.
+
+- Query string caching: You can adjust how the Azure CDN treats caching for requests with query strings. For information, see Control Azure CDN caching behavior with query strings. If the file is not cacheable, the query string caching setting has no effect, based on caching rules and CDN default behaviors.
+
+For global and custom caching rules, you can specify the following Caching behavior settings:
+
+- **Bypass cache**: Do not cache and ignore origin-provided cache-directive headers.
+- **Override**: Ignore origin-provided cache duration; use the provided cache duration instead. This will not override cache-control: no-cache.
+- **Set if missing**: Honor origin-provided cache-directive headers, if they exist; otherwise, use the provided cache duration.
+
+### Azure Front Door Service
+
 Azure CDN is not the only service that Microsoft provides for caching content. The **Azure Front Door service** allows you to route the traffic efficiently to the closest location to the user. As part of the features offered by the Azure Front Door service, it also allows you to cache content by providing a CDN. As with Azure CDN, you can configure the cache and expiration time for the elements in the cache.
+
+Front Door is a modern Content Delivery Network (CDN) with **dynamic site acceleration** and **load balancing**, it also supports caching behaviors just like any other CDN.
+
+Azure Front Door delivers large files without a cap on file size. Front Door uses a technique called **_object chunking_**. When a large file is requested, Front Door retrieves smaller pieces of the file from the backend. After receiving a full or byte-range file request, the Front Door environment requests the file from the backend in chunks of 8 MB.
+
+After the chunk arrives at the Front Door environment, it's cached and immediately served to the user. Front Door then pre-fetches the next chunk in parallel. This pre-fetch ensures that the content stays one chunk ahead of the user, which reduces latency. This process continues until the entire file gets downloaded (if requested) or the client closes the connection.
+
+Front Door can dynamically compress content on the edge, resulting in a smaller and faster response time to your clients. All files are eligible for compression. However, a file must be of a MIME type to be eligible for compression.
+
+Common MIME types are json, xml, ttf, otf, dont, eot, svg+xml, text/css, text/html, text/javascript...
+
+Additionally, the file must also be between 1 KB and 8 MB in size, inclusive.
+
+These profiles support the following compression encodings:
+
+- Gzip (GNU zip)
+- Brotli (takes precedence)
 
 **Redis** is an open-source cache system that allows you to work like in an in-memory data structure store, database cache, or message broker. The **Azure Redis Cache** or **Azure Cache for Redis** is a Redis implementation managed by Microsoft.
 
@@ -722,6 +827,16 @@ When you are working with Azure Cache for Redis, you can use different implement
 
 TIP: You can use Azure Cache for Redis for static content and the most-accessed dynamic data. You can use it for in-memory databases or message queues using a publication/subscription pattern.
 
+#### What are Redis databases?
+
+Redis Databases are just a logical separation of data within the same Redis instance. The cache memory is shared between all the databases and actual memory consumption of a given database depends on the keys/values stored in that database.
+
+NOTE: If we want to invalidate the cache, we must delete the KEY, not the VALUE.
+
+Cache items can be stored and retrieved by using the `StringSet` and `StringGet` methods.
+
+Redis stores most data as Redis strings, but these strings can contain many types of data, including serialized binary data, which can be used when storing .NET objects in the cache.
+
 ---
 
 ## Application Insights
@@ -738,6 +853,16 @@ instrumentation in your application, it monitors the following points:
 - **Hosts diagnostics** can get information from your application if it is deployed in a Docker or Azure environment.
 - **Diagnostic trace logs** Trace log messages can be used to correlate trace events with the requests made to the application by your users.
 - **Custom events and metrics**
+
+### Sampling
+
+Sampling is a feature in Azure Application Insights. It is the recommended way to reduce telemetry traffic, data costs, and storage costs, while preserving a statistically correct analysis of application data. Sampling also helps you avoid Application Insights throttling your telemetry. The sampling filter selects items that are related, so that you can navigate between items when you are doing diagnostic investigations.
+
+There are three different types of sampling: adaptive sampling, fixed-rate sampling, and ingestion sampling.
+
+1. Adaptive sampling is enabled by default
+2. Fixed-rate sampling is available in recent versions of the Application Insights SDKs
+3. Ingestion sampling works on the Application Insights service endpoint. It only applies when no other sampling is in effect. If the SDK samples your telemetry, ingestion sampling is disabled.
 
 ### Azure Monitor
 
@@ -835,6 +960,12 @@ A Logic App template is a JSON file comprised of three main areas:
 - **Workflow definition** This section contains the description of the workflow, including the triggers and actions in your workflow. This section also contains how the Logic App runs these triggers and actions.
 - **Connections** This section stores the information about the connectors that you use in the workflow.
 
+### Monitor VM changes using Azure Event Grid and Logic Apps
+
+VM can publish events to an Azure event grid. In turn, the event grid pushes those events to subscribers that have queues, webhooks, or event hubs as endpoints. As a subscriber, your logic app can wait for those events from the event grid before running automated workflows to perform tasks.
+
+If you want to your logic app to run only when a specific event or operation happens, add a condition that checks for the `Microsoft.Compute/virtualMachines/write` operation. When this condition is true, your logic app sends you email with details about the updated virtual machine.
+
 ---
 
 ## Azure API Management (APIM) service
@@ -899,6 +1030,14 @@ Failed events are stored in Dead-Letter location, which needs storage account fo
 
 Retry Policy: When creating an Event Grid subscription, you can set values for how long Event Grid should try to deliver the event. By default, Event Grid tries for 24 hours (1440 minutes), or 30 times. You can set either of these values for your event grid subscription. The value for event time-to-live must be an integer from 1 to 1440.
 
+#### Event Filtering
+
+Ways to filter which events are sent to your endpoint. When creating an event subscription, you have three options for filtering:
+
+- Event types
+- Subject begins with or ends with
+- Advanced fields and operators
+
 ### Notifications Hub
 
 - The mobile app client: This is your actual mobile app, which runs on your user’s device. The user must register with the **Platform Notification System (PNS)** to receive notifications. This generates a PNS handler that is stored in the mobile app back end for sending notifications.
@@ -914,6 +1053,8 @@ When you work with event hubs, you send events to the hub.
 The entity that sends events to the event hub is known as an event **publisher**. An event publisher can send events to the event hub by using any of these protocols: AMQP 1.0, Kafka 1.0 (or later), or HTTPS.
 
 You can publish events to the event hub by sending a single event or grouping several events in a batch operation.
+
+Data can be persisted from Azure Event Hubs Capture onto Azure Blob Storage with the help of Azure Event Hubs Capture. The data is stored in a format known as Apache Avro.
 
 Independently if you publish a single event or a batch of them, you are limited to a maximum size of 1 MB of data per publication.
 
@@ -954,3 +1095,59 @@ Azure Queue Storage is the first service that Microsoft released for managing me
 The maximum size of a single message that you can send to an Azure Queue is 64KB, although the total size of the queue can grow to over 80GB.
 
 At-Least-Once
+
+---
+
+## Azure Container Instance and Azure Container Registry
+
+Azure Container Instance loads and runs Docker images on demand. The Azure Container Instance service can retrieve the image from a registry such as Docker Hub or Azure Container Registry.
+
+Your organization wants to use Azure to run its web apps. For this reason, it makes sense to store the images in Azure Container Registry, and run them using the Azure Container Instance service.
+
+Geo-replication enables an Azure container registry to function as a single registry, serving several regions with multi-master regional registries.
+
+A geo-replicated registry provides the following benefits:
+
+- Single registry/image/tag names can be used across multiple regions
+- Network-close registry access from regional deployments
+- No additional egress fees, as images are pulled from a local, replicated registry in the same region as your container host
+- Single management of a registry across multiple regions
+
+#### Roles in Az Registry
+
+![ACR Roles](./azrRoles.PNG)
+
+**Azure Container Instances** is useful for scenarios that can operate in isolated containers, including simple applications, task automation, and build jobs. Here are some of the benefits:
+
+- Fast startup: Launch containers in seconds.
+- Per second billing: Incur costs only while the container is running.
+- Hypervisor-level security: Isolate your application as completely as it would be in a VM.
+- Custom sizes: Specify exact values for CPU cores and memory.
+- Persistent storage: Mount Azure Files shares directly to a container to retrieve and persist state.
+- Linux and Windows: Schedule both Windows and Linux containers using the same API.
+
+**Azure Container Registry** is an Azure service that you can use to create your own **_private_** Docker registries.
+
+Security is an important reason to choose Container Registry instead of Docker Hub:
+
+- You have much more control over who can see and use your images.
+- You can sign images to increase trust and reduce the chances of an image becoming accidentally (or intentionally) corrupted or otherwise- infected.
+- All images stored in a container registry are encrypted at rest.
+
+Working with images in Container Registry is like working with Docker Hub, but offers a few unique benefits:
+
+- Container Registry runs in Azure. The registry can be replicated to store images near where they're likely to be deployed.
+- Container Registry is highly scalable, providing enhanced throughput for Docker pulls that can span many nodes concurrently. The Premiu- SKU of Container Registry includes 500 GiB of storage.
+
+You use the **tasks** feature of Container Registry to rebuild your image whenever its source code changes automatically. You configure a Container Registry task to monitor the GitHub repository that contains your code and trigger a build each time it changes. If the build finishes successfully, Container Registry can store the image in the repository. If your web app is set up for continuous integration in App Service, it receives a notification via the webhook and updates the app.
+
+- We can upload a Docker file to ACR and it will use that file to create our image, it can also run container based on the image and run powershell commands, e.g.
+
+```
+FROM mcr.microsoft.com/dotnet/core/aspnet:3.1
+ARG source
+WORKDIR /app
+EXPOSE 80
+COPY ${source:-obj/Docker/publish} .
+ENTRYPOINT ["dotnet", " MySingleContainerWebApp.dll "]
+```
