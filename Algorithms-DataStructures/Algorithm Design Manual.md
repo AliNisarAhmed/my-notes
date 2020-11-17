@@ -95,7 +95,7 @@ of Google stock as a function of time.
 
   - **Upper bound** $f(n) = O(g(n))$ means $c . g(n)$ is an upper bound on $f(n)$
     - In words, there exists some constant $c$ such that $f(n)$ is always $<=c.g(n)$, for large enough $n$ > $n_0$, so once $n$ crosses $n_0$, the upper bound function always remains above $f(n)$.
-  - **Lower bound** $f(n) = \Omega (g(n))$ means $c.g(n)$ is a lower bound on $ f(n) $
+  - **Lower bound** $f(n) = \Omega (g(n))$ means $c.g(n)$ is a lower bound on $f(n)$
     - Thus, there exists some constant c such that f(n) is always >= c.g(n) for all $n > n_0$
   - **Tight bound** $f(n) = \Theta (g(n))$ is a tight bound when c1 and c2 for upper and lower bounds exist.
 
