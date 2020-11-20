@@ -10,3 +10,4 @@ refers to a way of executing code in more that one computer core at once.
 
 This increment in speed can also be applied to tasks that were not thought of as concurrent but whose data dependencies enable running parts of the algorithm independently of each other. Think of the QuickSort algorithm for sorting: at each step the list is divided in two parts, and each of them is sorted separately. In this case, the subsequent sorting of the two lists can be made in parallel.
 
+“Concurrency is about dealing with lots of things at once. parallelism is about doing a lot of things at once.” – Rob Pike
