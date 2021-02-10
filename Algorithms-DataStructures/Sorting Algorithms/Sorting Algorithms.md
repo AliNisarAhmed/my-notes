@@ -18,7 +18,8 @@
 
 # Selection Sort
 
-- Time complexity of $O(n^2)$
+- Select the smallest number in the array, and bring it to the front of the array (put it after the already sorted array if any)
+- Time complexity of $O(n^2)$  (It's actually $O(n^2/2)$ compared to Bubble Sort since it needs half the swaps of the latter)
 
 ## Algo
 
