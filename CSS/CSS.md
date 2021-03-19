@@ -77,6 +77,8 @@ for `margin` & `padding`, `em` looks at the font-size of the element, (not the p
 
   The solution is to give the parent a `padding-top`.
 
+NOTE: Margin collapsing does not happen with flex-box
+
 ## Inline Elements
 
 - `<span>` `<em>` `<strong>`
@@ -190,3 +192,25 @@ p {
 	}
 }
 ```
+
+*** 
+
+## CSS Grid 
+
+### auto-fit vs auto-fill
+
+- auto-fit will fit the columns you've defined into the available space (it's a bit more complicated in spec)
+- auto-fill will keep adding columns, even if they are empty
+
+
+***
+
+## CSS Position
+
+There are a number of `position` values that we can assign to an element.
+
+- `position: static` - the default
+- `position: relative` - allows us to use the `top`, `bottom`, `left`, and `right` properties. It will be positioned relative to it's natural place on the page.
+- `position: fixed` - it is removed from the flow of the document and placed in a fixed position within the viewport. This means it will scroll with the page, alway staying in view.
+- `position: absolute` - it is removed from the flow of the document, but does no flow with the page.
+- `position: sticky` - a new property that works much like fixed, but it will scroll with the page until it reaches a certain point, where it will then "stick".

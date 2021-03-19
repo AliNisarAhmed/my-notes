@@ -47,3 +47,63 @@ Linear search will be $O(n)$ still, but using Binary Search, an ordered array ha
 
 Binary Search takes $\lceil log_2 n \rceil$ steps, thus 200-size array will take 8 steps.
     - Each time we double the amount of data, we add only ONE step
+
+*** 
+
+## Hash Tables
+
+- Hash tables give us $O(1)$ reads and insertions.
+- The process of taking characters and converting them to numbers is known as _hashing_, and a function that does that is called a _hashing function_
+- One classic approach for handling collisions is known as _separate chaining_, when a collision occurs, instead of placing a single value in the cell, it places in it a reference to an array, or a linked list.
+- Because of the above, for a poorly chosen hash function which leads to many collisions, the worst-case performance for a hash table lookup is $O(n)$.
+- A Hash table's efficiency depends on
+    - How much data we're storing in the hash table
+    - How many cells are available in the hash table
+    - Which hash function we're using
+    
+- A good hash function is one that distributes its data across _all_ available cells, which leads to fewer collisions.
+- However, while avoiding collisions is important, we have to balance that with avoiding memory hogging as well (e.g. reserving 1000 cells for 5-10 pieces of data)
+- A good hash table _strikes a balance_ of avoiding collisions while not consuming lots of memory.
+
+**Load Factor**
+- Computer Scientist's Rule of thumb: For every 7 data elements stored in a hash table, it should have 10 cells.
+- This factor (7 elements / 10 cells) is called the load factor.
+
+*** 
+
+## Stacks and Queues
+
+Stack and Queues are an example of **Abstract Data Types** - Data Structure not built into the language, but that can be constructed from primitive data structures, like arrays.
+
+Stack and Queues are also an example of **Constained Data Structure**, that means, an array can do whatever a stack can do.
+Working with contrained DS offers many advantages
+    - we can prevent potential bugs
+        - e.g. programmer can remove an item from the middle of the array, causing bugs, but in stacks, that option is simply not available.
+    - they give us a new mental model for tackling problems.
+        - e.g Stacks give us LIFO, Queues give us FIFO
+    
+
+### Stacks
+
+Stacks have the following three constraints
+- Data can be inserted only at the end of a stack. (push)
+- Data can be deleted onlu from the end of the stack. (pull)
+- Only the last element of a stack can be read. (peak)
+
+Example usage 
+- To find out if opening and closing braces match
+- Browser back button and navigation
+- function calls in a programming language
+
+### Queues
+
+Queues implement FIFO.
+
+Queues have the following three constraints
+- Data can be inserted only at the end of the queue (enqueue) (similar to stacks)
+- Data can be deleted only from the front of the queue (dequeue) (opposite of stack)
+- Only the element _at the front_ of the queue can be read (OPPOSITE of stack)
+  
+Queue usage
+- printing jobs
+- background workers in web applications

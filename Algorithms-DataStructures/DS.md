@@ -65,6 +65,19 @@ Big O of stack
 
 Trees are a non-linear DS that contain a root and child nodes
 
+#### Binary Tree 
+
+At most two children per node.
+
+In a perfect tree (fully filled tree)
+    - The number of nodes double as we move down the tree
+    - The number of nodes on the last level = sum of the number of nodes on all other levels + 1
+
+The relationship between $n$ (the total number of nodes) and $h$  the number of levels in a tree 
+    $n = 2^h - 1$ 
+Or 
+    $h = log_2(n + 1)$ 
+
 #### Binary Search Trees
 
 BSTs are more specific version of Binary Trees, where there are only two children of each node, and every node to the left of a parent is less than its value, and every node to the right is greater than its value.
@@ -172,8 +185,18 @@ However, a bad hash function, which does not distrbiute the KVPs uniformly (e.g.
 - Edge: lines connecting nodes
 - Weighted/Unweighted: values assigned to the "lines" or distance between vertices
 - Directed/Undirected: directions of the lines between vertices
+- Legal Coloring: When all nodes are assigned a color, no adjacent nodes have the same color.
 
 ### How to store graphs
+
+![169c47f18103cb1d3c53c52cb1ba6f67.png](169c47f18103cb1d3c53c52cb1ba6f67.png)
+
+
+#### Edge List 
+
+A list of all the edges in the graph
+
+e.g.: `const graph = [[0,1], [1, 2], [1, 3], [2, 3]];`
 
 #### Adjacency Matrix
 
@@ -202,3 +225,44 @@ However, a bad hash function, which does not distrbiute the KVPs uniformly (e.g.
 ### Breadth First Traversal
 
 - In BFS, the siblings or neighbors are visted first before we start to visit any children
+
+#### BFS and DFS uses 
+
+Q: Is there a path between two nodes in an undirected graph?
+    - Run DFS or BFS from one node and see if we reach the other one.
+
+Q: What's the shortest path between two nodes in an undirected, unweighted graph?
+    - Run BFS from one node, keep track of the path and then backtrack once we reach the second.
+    - BFS always finds the shortest path, in an undirected unweighted graph
+    - DFS does not always find the shortest path
+
+Q: Can an undirected graph be colored with two colors?
+    - run BFS, assigning colors as nodes are visited.
+    - Abort if we ever try to assign a node a color different from the one it was assigned earlier.
+
+Q: Does an undirected graph have a cycle?
+    - run BFS, keeping track of the number of times we are visiting each node.
+    - If we ever visit a node twice, then we have a cycle.
+
+### Graph Coloring
+
+_Degree_ of a graph is the number of edges connected to a node. Maximum degree is thus a node which has the max number of neighbours
+
+We can find a graph coloring using at most D+1 colors.
+
+The lowest number of colors we can use to legally color a graph is called the **chromatic number**
+
+Finding the chromatic number is an NP problem
+
+
+***
+
+## Dynamic Programming 
+
+### Overlapping subproblems
+
+A problem has overlapping subproblems if finding its solution involves solving the same subproblem multiple times. Calculating fibonacci terms using recursion is an overlapping subproblem. 
+
+We can use memoization to speed up such problems.
+
+Going top-down (using recursion) vs Going bottoms-up (using loops) are common strategies in dynamic programming.
