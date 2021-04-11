@@ -72,3 +72,35 @@ Example: `photos` table has a `user_id` column which references `users`
 Postgres has `SERIAL` datatype to indicate to the database that we need a unique Foreign Keys. 
 
 We use `id SERIAL PRIMARY KEY` to define Primary keys
+
+
+*** 
+
+## Joins & Aggregates 
+
+### Joins 
+
+- Produces vales by merging together rows from different related tables 
+- Use a join most times that you're asked to find data that involves multiple resources
+
+### Aggregation 
+
+- Looks at many rows and calculates a single value 
+- Words like 'most', 'average', 'least' are a sign that we need to use aggregation
+
+### Different Joins
+
+#### Inner Join
+
+![b6569abba629fe9e732c922c54bbefcd.png](b6569abba629fe9e732c922c54bbefcd.png)
+
+#### Left Outer Join 
+
+![c1d4997feaada5d508e2ca15a74c4432.png](c1d4997feaada5d508e2ca15a74c4432.png)
+
+#### Right Outer Join
+![1f4dc7efbf538942f417adf2b86e357c.png](1f4dc7efbf538942f417adf2b86e357c.png)
+
+#### Full Join
+
+![b81596e7540fd9e48065921cc55d17d8.png](b81596e7540fd9e48065921cc55d17d8.png)
