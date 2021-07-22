@@ -214,3 +214,156 @@ We can add/subtract intervals from timestamps
 If we addd/substract two timestamps, we get the difference back in interval
 
 - `July 1 2021 9:15 AM MDT'::TIMESTAMP with time zone` - `June 30 2021 10:15 AM MDT' :: TIMESTAMP with time zone` = `23:00:00`
+
+
+---
+
+## DB Structure Design patterns
+
+1. One way to implement a "Like" system - (a user can like multiple posts, a post can be liked by multiple users)
+
+![1efcbcc87d171a5aa495b2106b3642c7.png](1efcbcc87d171a5aa495b2106b3642c7.png)
+
+2. However, if we have more than one "Reaction" type (e.g. "Like", "Frown", "love", "care" etc.), then a technique called `polymorphic associations` is used.
+
+The major problem with polymorphic associations is that we cannot use "foreign keys" for each entry in the polymorphic table, this data consistency becomes difficult.
+
+![f2b801dc21df13e75677c8d8afb7ddce.png](f2b801dc21df13e75677c8d8afb7ddce.png)
+
+3. Alternate way to implement `polymorphic associations`
+
+![442145ce286279a25f82e7b7e12265d5.png](442145ce286279a25f82e7b7e12265d5.png)
+
+We can now use foriegn keys.
+
+The main problem here is that for each reaction type, we have to add a new column and initiate with null values.
+
+Plus, the check/validation must be modified so that no more than 1 column has a non-null value at any given row.
+
+4. Simplest alternative is to have an xref table for each reaction type.
+
+![8ef99f86e191f8d272da07bd3a0e0c92.png](8ef99f86e191f8d272da07bd3a0e0c92.png)
+
+The main drawback here is that the number of table increases, and querying becomes difficult.
+
+---
+
+## Postgres Internals 
+
+- Query: `SHOW data_directory;` will show the directory where postgres is installed. (e.g. `var/lib/postgresql/12/main`)
+
+Inside the above directory, there is a `/base` directory, where each database is stored in individual folders with unique number indentifiers.
+
+- Query: `SELECT oid, datname FROM pg_database;` will show the list of the database with their ids
+
+![10292e29cb2cb10670f55a86cf1d153e.png](10292e29cb2cb10670f55a86cf1d153e.png)
+
+- Inside each database folders, there are tons of files storing raw data stored inside the database.
+
+Query: `SELECT * FROM pg_class;` shows all these files.
+
+![72cdb7cd89fb0236e986f7b049957596.png](72cdb7cd89fb0236e986f7b049957596.png)
+
+
+### Heaps, Blocks and Tuples
+
+![8246d04ac4371c77ad80fa0c0c983b81.png](8246d04ac4371c77ad80fa0c0c983b81.png)
+
+![9b7e345703c8362bd3fa26f2933d2f5a.png](9b7e345703c8362bd3fa26f2933d2f5a.png)
+
+Each Block/Page can store 0 or more Items.
+
+Each Block is 8kb large.
+
+![dfb571b3393c5dd61db0e05f2f3feea9.png](dfb571b3393c5dd61db0e05f2f3feea9.png)
+
+
+![b5d06ee55ff84063188805793cbbd8ea.png](b5d06ee55ff84063188805793cbbd8ea.png)
+The right hand side shows the byte map (a representation for actual bits stored on the hard drive) for each block as shown below.
+
+![1db30d07c6cf7e3ba9f3ac447e2e2635.png](1db30d07c6cf7e3ba9f3ac447e2e2635.png)
+
+Documentation on the above page format: https://www.postgresql.org/docs/current/storage-page-layout.html
+
+### Full Table Scans 
+
+Full Table Scans occur when Postgres has to load many (or all) rows from the heap file (stored on HD) in to Memory. 
+
+Full Table scans, frequently, but not always, result in poor performance, and whenever we find a FTS, we should investigate further to find an alternative way of querying data.
+
+Example FTS Query:
+
+![25fe1f9fc12059a5aea44974920c516f.png](25fe1f9fc12059a5aea44974920c516f.png)
+
+![5895c85d31c01c4901b0efb4cd000c53.png](5895c85d31c01c4901b0efb4cd000c53.png)
+
+
+### Index
+
+Indexes are one way to avoid FTS.
+
+Index are a Data Structure (a B-Tree) that efficiently tells us what block/index a record is stored at.
+
+![12fc59d13440f611b2cca60d310a8a58.png](12fc59d13440f611b2cca60d310a8a58.png)
+
+We can create an index with query: `CREATE INDEX ON users (username);`, this creates an index on `username` column of `users` table.
+
+By default, the index is named in this format: `name of table_name of column_ idx`, e.g `users_username_idx`
+
+To delete an index, we query: `DROP INDEX users_username_idx;`
+
+Postgres creates the following indexes automatically
+- Postgres automatically creates an index for the Primary Key column of every table.
+- Postgres automatically creates an index for any `unique` constraints.
+
+Note: these auto indexes don't get listed under the `indexes` menu item in PGAdmin. We can use the following query to list all indexes: 
+
+`SELECT relname, relkind FROM pg_class WHERE relkind = 'i';`
+
+Indexing on a column can greatly increase performance, but it comes with its own cost.
+
+1. Since index store a tree data structure for speed, the memory footprint of the database increases. 
+2. Indexing slows down insert/update/delete - since the index needs to be updated everytime
+3. Index might not actually get used after all - just because an index exist, does not mean the Postgres is actually going to use it. 
+4. Some queries are faster without indexes.
+
+Index are of several different types in Postgres (Just be aware of this fact).
+
+![bdd3ce6975437587bd6055dd3b83ac44.png](bdd3ce6975437587bd6055dd3b83ac44.png)
+
+
+#### Index under the hood
+
+![93ca13d60f04763537d98ff9ef849680.png](93ca13d60f04763537d98ff9ef849680.png)
+
+![e6d2ccd2f08e103c3a7db56fc6d09952.png](e6d2ccd2f08e103c3a7db56fc6d09952.png)
+
+Index files are indentical in structure to the Heap files.
+
+---
+
+### The Query processing pipeline
+
+
+![599bf404ff4d443eab9d95af692f3645.png](599bf404ff4d443eab9d95af692f3645.png)
+
+- Parser: figuring out the meaning of the query, and validate that the query is valid. This step builds a Query Tree.
+- Rewrite: Decompose views into underlying table references. This checks the Query Tree and modifies it to speeden things.
+- Planner: Important piece: takes a look at Query Tree and come up with different plans to fetch that data.
+- Execute: Run the plan given by the planner.
+
+### EXPLAIN and EXPLAIN ANALYZE
+
+EXPLAIN shows a query plan without executing it.
+EXPLAIN ANALYZE shows a query plan, executes it and shows statistics about the execution.
+
+![8e994816b13fbbf6a43e14ebf504d91f.png](8e994816b13fbbf6a43e14ebf504d91f.png)
+
+
+![86856d7b3263d6a26e65be6677fa1482.png](86856d7b3263d6a26e65be6677fa1482.png)
+
+![55dbc21aa70fb600c4e2a6f821898656.png](55dbc21aa70fb600c4e2a6f821898656.png)
+
+![047891e43bc73c5ecf5a62e8fcd9b47c.png](047891e43bc73c5ecf5a62e8fcd9b47c.png)
+
+![aa1c660c89a81bfbf1e2d64cd9117726.png](aa1c660c89a81bfbf1e2d64cd9117726.png)
