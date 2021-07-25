@@ -366,4 +366,63 @@ EXPLAIN ANALYZE shows a query plan, executes it and shows statistics about the e
 
 ![047891e43bc73c5ecf5a62e8fcd9b47c.png](047891e43bc73c5ecf5a62e8fcd9b47c.png)
 
+The two numbers for the cost (8.31 .. 1756.11) are not a range.
+
+The first number is the Cost for this step to produce the first row. **Startup Cost**
+
+The second number is the Cost for this step to produce all rows. **Total Cost**
+
+The reason is that in case of multiple processing steps, sometimes, as soon as the first row is processed, its result is passed to the next step (kinda like a stream).
+
+
 ![aa1c660c89a81bfbf1e2d64cd9117726.png](aa1c660c89a81bfbf1e2d64cd9117726.png)
+
+
+Another point to note about costs in the second diagram below is that the costs flow up, i.e. a parent's cost is the sum of the cost of all its children + its own cost.
+
+That is why the last HashJoin (blue) has a cost of 8.3, when in fact its own cost is close to zero. That cost is coming from the child Hash.
+
+
+![a550d22edb49d498060ae6fa1b601895.png](a550d22edb49d498060ae6fa1b601895.png)
+
+### How query cost is calculated 
+
+![5912e4964af5804f64a21d85c3867fe2.png](5912e4964af5804f64a21d85c3867fe2.png)
+
+More detailed: 
+
+![5d594320df9de7bedd5dc49414b30ed4.png](5d594320df9de7bedd5dc49414b30ed4.png)
+
+Official docs for each of these costs: https://www.postgresql.org/docs/9.5/runtime-config-query.html
+
+These costs are all comapred to the baseline cost `seq_page_cost`
+
+![66cd4924297b44b31d2d366f20053a35.png](66cd4924297b44b31d2d366f20053a35.png)
+
+#### Quiz 
+
+The formula for calculating the cost of a processing step in a query plan is: 
+
+```
+COST = (# pages read sequentially) * seq_page_cost
+            + (# pages read at random) * random_page_cost
+            + (# rows scanned) * cpu_tuple_cost 
+            + (# index entries scanned) * cpu_index_tuple_cost 
+            + (# times function/operator evalutated) * cpu_operator_cost
+
+where 
+
+seq_page_cost = 1.0 
+random_page_cost = 4.0 
+cpu_tuple_cost = 0.01 
+cpu_index_tuple_cost = 0.005 
+cpu_operator_cost = 0.0025
+```
+
+1. What is the cost for a query node that has to open 5 pages of data sequentially and then process 100 rows total? 
+
+Answer: 5 x 1 + 100 x 0.01 = 6
+
+2. What is the cost for a query node that has to open 4 pages of an index (probably at random), process 75 tuples from the index, then open 20 different pages from a heap file (also at random) and process 214 tuples?
+
+Answer: 4 x 4 + 75 x 0.005 + 20 x 4 + 214 x 0.01 = 98.515
