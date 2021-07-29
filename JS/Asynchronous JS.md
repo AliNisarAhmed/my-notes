@@ -1,5 +1,37 @@
 # Asynchronous JS
 
+## Problems with callbacks 
+
+1. Callback Hell 
+    - call back hell does not only refer to the "pyramid of doom" style indentation that it engenders, it refers to the "criss-cross" nature of code execution when a program is written with callbacks. Our sequential brain is just not adept to deal with such program flows and thus mistakes/bugs become likely.
+2. Inversion of Control (and Trust issues stemming from that)
+    - Call the callback too early
+    - Call the callback too late (or never)
+    - Call the callback too few or too many times 
+    - Fail to pass along any necessary environment/params to your callback
+    - Swallow any errors/exceptions that may happen.
+
+Promises resolve the above issues: 
+1. Callback hell does not happen as `async await` makes the async program pretty linear to read
+2. Inversion of Control 
+    - Calling too early: Not possible in Promise since even an immediately fulfilled promise cannot be observed synchronously. The callback provided to `.then`, even if the promise is fulfilled, will always be called asynchronously.
+    - Calling too late: Similar to the previous point, a Promise's `then(..)` registered observation callbacks are automatically scheduled when either `resolve(..)` or `reject(..)` are called by the Promise creation capability. Those scheduled callbacks will predictably be fired at the next asynchronous moment
+        
+        It's not possible for synchronous observation, so it's not possible for a synchronous chain of tasks to run in such a way to in effect "delay" another callback from happening as expected. That is, when a Promise is resolved, all `then(..)` registered callbacks on it will be called, in order, immediately at the next asynchronous opportunity (again, see "Jobs" in Chapter 1), and nothing that happens inside of one of those callbacks can affect/delay the calling of the other callbacks.
+    - nothing (not even a JS error) can prevent a Promise from notifying you of its resolution (if it's resolved). If you register both fulfillment and rejection callbacks for a Promise, and the Promise gets resolved, one of the two callbacks will always be called.
+
+        Of course, if your callbacks themselves have JS errors, you may not see the outcome you expect, but the callback will in fact have been called.
+        
+    - Promises are defined so that they can only be resolved once. If for some reason the Promise creation code tries to call `resolve(..)` or `reject(..)` multiple times, or tries to call both, the Promise will accept only the first resolution, and will silently ignore any subsequent attempts.
+
+        Because a Promise can only be resolved once, any `then(..)` registered callbacks will only ever be called once (each).
+        
+        Of course, if you register the same callback more than once, (e.g., `p.then(f); p.then(f);`), it'll be called as many times as it was registered. The guarantee that a response function is called only once does not prevent you from shooting yourself in the foot.
+        
+    - Promises can have, at most, one resolution value (fulfillment or rejection).
+
+        If you don't explicitly resolve with a value either way, the value is `undefined`, as is typical in JS. But whatever the value, it will always be passed to all registered (and appropriate: fulfillment or rejection) callbacks, either _now_ or in the future.
+
 #### Execution Context
 
 is an abstract concept of an anvironment where the JS Code is evaluated and executed. Whenever any code is run in JS, it's run inside an Execution Context

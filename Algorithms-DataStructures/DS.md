@@ -65,6 +65,12 @@ Big O of stack
 
 Trees are a non-linear DS that contain a root and child nodes
 
+A Tree cannot contain cycles. 
+
+The nodes may or may not be in a particular order, they could have any data type as values, and they may or may not have links back to their parent nodes.
+
+A node is called a Leaf node if it has no children.
+
 #### Binary Tree 
 
 At most two children per node.
@@ -80,12 +86,37 @@ Or
 
 #### Binary Search Trees
 
+A Binary Seatch Tree is a Binary Tree in which every node fits a specific ordering property: all left descendants <= n < all right descendents. This must be true of each node n.
+
 BSTs are more specific version of Binary Trees, where there are only two children of each node, and every node to the left of a parent is less than its value, and every node to the right is greater than its value.
 
 - Insertion - `O(log n)`
 - Searching - `O(log n)`
 
 Both above are best and average cases, in the worst case (like a completely lop-sided BST), both get worse to `O(n)`
+
+
+#### Complete Binary Trees
+
+A complete Binary Tree is a binary tree in which every level of the tree is fully filled, except for perhaps the last level. To the extend that the last level is filled, it is filled left to right.
+
+![6cc2799ca7450c612c90d6153f05650c.png](6cc2799ca7450c612c90d6153f05650c.png)
+
+#### Full Binary Trees 
+
+A full binary tree is a binary tree in which every node has either zero or two children. That is, no nodes have only one child.
+
+![02ef13d8af4bb6d3ea85ef8b5ecd7962.png](02ef13d8af4bb6d3ea85ef8b5ecd7962.png)
+
+
+#### Perfect Binary Trees 
+
+A perfect binary tree is one that is both full and complete. All lead nodes will be at the same level, and this level has the maximum number of nodes.
+
+![903b1593c1caafdf45ccdf7d6b53b210.png](903b1593c1caafdf45ccdf7d6b53b210.png)
+
+Note that perfect trees are rare in interviews and in real life, as a perfect tree must have exactly $2^k - 1$ nodes (where k is the number of levels). In an interview, do not assume a binary tree is perfect.
+
 
 ---
 
@@ -127,6 +158,20 @@ A binary heap is defined as a binary tree with two additional constraints:
 - Heap property: the key stored in each node is either greater than or equal to (≥) or less than or equal to (≤) the keys in the node's children, according to some total order.
 - (Where parent >= children)(>=) are called max-heaps, (where parent <= children) (<=) are called min-heaps.
 
+![18b7522357a88bd709353efa111db926.png](18b7522357a88bd709353efa111db926.png) a min heap
+
+#### Binary Heap Insert 
+
+![b511766c55c77e9ab3c2a60db21d82f3.png](b511766c55c77e9ab3c2a60db21d82f3.png)
+
+#### Extract Minimum Element 
+
+![87e297f6273ef8f1704adf500b846d78.png](87e297f6273ef8f1704adf500b846d78.png)
+
+
+---
+
+
 ### Priority Queues
 
 - Min Binary Heaps are used to represent a Priority Queue when lower number means higher priority.
@@ -148,7 +193,7 @@ A binary heap is defined as a binary tree with two additional constraints:
 - A function that performs the conversion of a key and maps it into a value, for storage inside the Hash table is called the **hash function**.
   - What makes a good hash function?
     - Fast (constant time)
-    - Uniform output (does not cluster the outputs at specific indices, but ditributes uniformly)
+    - Uniform output (does not cluster the outputs at specific indices, but distributes uniformly)
     - Pure (deterministic)
 - **Collisions** - when the output of the hash function is same for two or more keys, meaning that we need to store both keys at one hash index
   - Two strategies to deal with Collisions
@@ -170,6 +215,11 @@ However, a bad hash function, which does not distrbiute the KVPs uniformly (e.g.
 - A graph DS consists of finite (& possibly mutable) set of **vertices** (nodes or points, along with a set of (edges) which are either
   - unordered pairs of these vetices for an undirected graph
   - or ordered pairs for directed graphs
+
+The graph might consist of multiple isolated subgraphs. If there is a path between every pair of vertices, it is called a "connected graph:'
+    - thus, a tree is a connected graph wihout cycles
+
+The graph can also have cycles (or not). An "acyclic graph" is one without cycles.
 
 ### Uses
 
@@ -225,6 +275,9 @@ e.g.: `const graph = [[0,1], [1, 2], [1, 3], [2, 3]];`
 ### Breadth First Traversal
 
 - In BFS, the siblings or neighbors are visted first before we start to visit any children
+
+![85b843b8b2276442dde94a71bcf9e0fa.png](85b843b8b2276442dde94a71bcf9e0fa.png)
+
 
 #### BFS and DFS uses 
 

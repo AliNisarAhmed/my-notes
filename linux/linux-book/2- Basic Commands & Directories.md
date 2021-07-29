@@ -6,6 +6,8 @@ use `ps` command
 
 possible options to are `ps aux` and `ps auxw`
 
+To find a particular process by name, use: `ps aux | grep <name>`
+
 ## Killing Processes
 
 use `kill <pid>`
