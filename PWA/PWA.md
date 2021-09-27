@@ -232,6 +232,9 @@ stateDiagram-v2
 
 ```
 
+![61d48078abdaf2b1c46a0083056e01c1.png](61d48078abdaf2b1c46a0083056e01c1.png)
+
+
 Pros 
     - Faster - because we fetch a page from the cache whenever it's available 
 
@@ -251,6 +254,9 @@ stateDiagram-v2
     ServiceWorker --> Page: 4
 ```
 
+![9b5684a41e2f16e96f76dfb7fcb8fdaa.png](9b5684a41e2f16e96f76dfb7fcb8fdaa.png)
+
+
 Pros 
     - Best of both worlds?
 
@@ -267,11 +273,21 @@ stateDiagram-v2
     Page --> ServiceWorker: 1
     ServiceWorker --> Network: 2
     Network --> ServiceWorker: 3
-    ServiceWorker --> Cache: 4 - store fetched data
+    ServiceWorker --> Cache: 4 - store fetched data (dynamic caching)
     ServiceWorker --> Page: 5
 ```
+
+![c2c88dc630beb4ff386c604a7bab3eb3.png](c2c88dc630beb4ff386c604a7bab3eb3.png)
+
+ This strategy is useful in a lot of cases.
+     Steps: 
+         - The page directly access the cache in (1), and we get the value back, no SW installed here
+             - Need to be careful about not overwriting the network response if the network response happends to be faster than cache access.
+         - At the same time to (1), we send a request to SW, which sends a network request to fetch the page. 
+         - The response goes back to SW, which stores the response in cache (cache updated)
+         - SW returns the data to the page
  
-- In this startegy, the savving to Cache part (#4 in the diagram) is done in the sw.js file by handling the fetch event fired for the network request in (#3).
+- In this startegy, the saving to Cache part (#4 in the diagram) is done in the sw.js file by handling the fetch event fired for the network request in (#3).
 
 - One drawback of this strategy is that if we use it for all requests (without proper care/handling), offline stops working. 
  
