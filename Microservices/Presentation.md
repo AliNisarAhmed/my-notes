@@ -140,6 +140,8 @@ We have 3 options:
     - The notification microservice would then listen to this queue and send messages accordingly. 
     - If the notification service was restarted or taken down, we would not lose any messages as the messages will be stored on the queue.
 
+    - Disadvantage - Message contract is not enforced
+
 --- 
 
 ### Notification as it's own service - Option 2
@@ -167,10 +169,26 @@ We have 3 options:
 1.  Client 1 needs to put out a notification and calls **Service A** with a POST request.
 2.  **Service A** then accepts POST request (or rejects it for Contract violation).
 3.  **Service A** checks the request, puts it on Queue, responds to the client with 200.
-4.  **Service B** picks up notification request from Kafka queue and issues notification.
+4.  **Service B** picks up notification request from Queue and issues notification.
 
 **Service A** should be run as multiple instances for reliability.
 
 ---
 
 The End
+
+<style>
+    .reveal .slides {
+      height: 100%;
+      top: 0;
+      margin-top: 0;
+    }
+    
+    .reveal .slides>section {
+      min-height: 90%;
+    }
+    
+    .reveal .slides>section>section {
+      min-height: 100%;
+    }
+</style>
