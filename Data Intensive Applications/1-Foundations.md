@@ -1,5 +1,22 @@
 # Foundations
 
+An application has to meet various requirements in order to be useful. 
+
+There are _functional requirements_ 
+    - what it should do 
+    - such as allowing data to be stored
+    - retrieved
+    - searched
+    - processed in various ways 
+
+and some _nonfunctional requirements_ 
+    - general properties like security 
+    - reliability
+    - compliance
+    - scalability
+    - compatibility 
+    - maintainability
+
 #### Data Intensive vs Compute Intensive
 
 For the former, bigger problems are the amount of data, the complexity of data, and the speed at which it is changing, rather than raw CPU power
@@ -159,3 +176,60 @@ As the tools and abstractions for distributed systems get better, this common wi
 ## Maintainability
 
 Over time, many different people will work on the system (engineering and operations, both mainataining current behavious and adapting the system to new use cases), and they should all be aboe to work on it productively.
+
+We can and should design software in such a way that it will hopefully minimize pain during maintenance, and thus avoid creating legacy software ourselves. To this end, we will pay particular attention to three design principles for software systems:
+
+1. Operability
+    - Make it easy for operations teams to keep the system running smoothly.
+2. Simplicity
+    - Make it easy for new engineers to understand the system, by removing as much complexity as possible from the system. (Note this is not the same as simplicity of the user interface.)
+3. Evolvability
+    - Make it easy for engineers to make changes to the system in the future, adapting it for unanticipated use cases as requirements change. Also known as _extensibility_, _modifiability_, or _plasticity_.
+
+
+#### Operability: Making life easy for Operations
+
+Operation teams are vital to keeping a software system running smoothly.
+
+A good operation team typically is responsible for the following, and more:
+    - Monitoring the health of the system and quickly restoring service if it goes into a bad state
+    - Tracking down the cause of problems, such as system failures or degraded performance
+    - Keeping software and platforms up to date, including security patches
+    - Keeping tabs on how different systems affect each other, so that a problematic change can be avoided before it causes damage
+    - Anticipating future problems and solving them before they occur (e.g., capacity planning)
+    - Establishing good practices and tools for deployment, configuration management, and more
+    - Performing complex maintenance tasks, such as moving an application from one platform to another
+    - Maintaining the security of the system as configuration changes are made
+    - Defining processes that make operations predictable and help keep the production environment stable
+    - Preserving the organization’s knowledge about the system, even as individual people come and go
+
+
+#### Simplicity: Managing Complexity
+
+- Small software projects can have delightfully simple and expressive code, 
+- but as projects get larger, they often become very complex and difficult to understand. 
+- This complexity slows down everyone who needs to work on the system, further increasing the cost of maintenance. 
+
+- A software project mired in complexity is sometimes described as a _big ball of mud_
+
+There are various possible symptoms of complexity: 
+- explosion of the state space
+- tight coupling of modules
+- tangled dependencies
+- inconsistent naming and terminology
+- hacks aimed at solving performance problems
+- special-casing to work around issues elsewhere
+- and many more.
+
+One of the best tools we have for removing accidental complexity is _abstraction_. 
+- A good abstraction can hide a great deal of implementation detail behind a clean, simple-to-understand façade. 
+- A good abstraction can also be used for a wide range of different applications.
+- However, finding good abstractions is very hard. 
+- In the field of distributed systems, although there are many good algorithms, it is much less clear how we should be packaging them into abstractions that help us keep the complexity of the system at a manageable level.
+
+
+#### Evolvability: Making Change Easy
+
+It’s extremely unlikely that your system’s requirements will remain unchanged forever.
+
+In terms of organizational processes, _Agile_ working patterns provide a framework for adapting to change.
