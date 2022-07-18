@@ -605,6 +605,20 @@ setTimeout(function run() {
 }, 100);
 
 ```
+![6bebea3436fb3023881e94faf79c4df3.png](6bebea3436fb3023881e94faf79c4df3.png)
+**The real delay between `func` calls for `setInterval` is less than in the code!**
+
+That’s normal, because the time taken by `func`'s execution “consumes” a part of the interval.
+
+It is possible that `func`'s execution turns out to be longer than we expected and takes more than 100ms.
+
+In this case the engine waits for `func` to complete, then checks the scheduler and if the time is up, runs it again _immediately_.
+
+In the edge case, if the function always executes longer than `delay` ms, then the calls will happen without a pause at all.
+
+![6fe15c46f958e601119169bbcc588afd.png](6fe15c46f958e601119169bbcc588afd.png)
+
+
 
 The recursive setTimeout guarantees the fixed delay (here 100ms).
 

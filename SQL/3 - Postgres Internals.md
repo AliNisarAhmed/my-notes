@@ -177,3 +177,9 @@ Answer: 5 x 1 + 100 x 0.01 = 6
 2. What is the cost for a query node that has to open 4 pages of an index (probably at random), process 75 tuples from the index, then open 20 different pages from a heap file (also at random) and process 214 tuples?
 
 Answer: 4 x 4 + 75 x 0.005 + 20 x 4 + 214 x 0.01 = 98.515
+
+---
+
+### Expression based Index
+
+https://www.postgresql.org/docs/current/indexes-expressional.html

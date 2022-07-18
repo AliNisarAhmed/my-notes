@@ -6,7 +6,8 @@ if $x$ and $y$ are real numbers, then $|x| + |y| ≥ |x + y|$
 
 ## Logarithms
 
-$log_b n = log_2 n / log_2 b$ 
+$log_b n = log_k n / log_k b$ 
+$b^{log_d a} = a^{log_d b}$ 
 
 ## Polynomials
 

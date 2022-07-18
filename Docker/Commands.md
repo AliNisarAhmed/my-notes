@@ -1,3 +1,5 @@
+## Docker CLI
+
 - Create a container 
     `docker create <image-name>`
     
@@ -54,3 +56,25 @@
 - Execute additional commands inside a container
     
     `docker exec -it <container-id> <command>` - without the -it flag , the new command will not be attached to the STDIN
+    
+    
+    
+### Clear Everything: 
+
+- remove images
+    `docker rmi $(docker images -q)`
+- remove containers
+    `docker stop $(docker ps -aq)`
+      `docker rm $(docker ps -aq)`
+- remove volumes
+    `docker volume rm $(docker volume ls -q)`
+    
+## Docker Compose
+
+`docker-compose up` provided a `docker-compose.yml` file is in the directory
+
+`docker-compose up --build` to re-build and then run the containers
+
+`docker-compose down` for stopping 
+
+`docker-compose ps` (in the directory of the `docker-compose.yml` file) to  

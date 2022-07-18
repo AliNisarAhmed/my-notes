@@ -71,6 +71,16 @@ In a well-designed program each class is responsible only for one thing. When a 
 - Builder focuses on constructing complex objects step by step. Abstract Factory specializes in creating families of related objects. Abstract Factory returns the product immediately, whereas Builder lets you run some additional construction steps before fetching the product.
 - Abstract Factory classes are often based on a set of Factory Methods, but you can also use Prototype to compose the methods on these classes.
 
+## Constructor/Builder 
+
+This pattern is often used to simplify the construction of complex (or _composite_) objects with a step-by-step approach. 
+
+One very basic way to think of it is likely making a pizza, where you have to start with the base, then add sauce, cheese, and then a range of toppings. 
+
+At each stage, there are variables to consider: the thickness of the dough, the amount of sauce, the type of cheese, the different combinations of toppings. 
+
+The constructor pattern organizes each of these simple steps to deliver the final product, with the ability to build different representations of the object (i.e. different types of pizza).
+
 ## Singleton
 
 Singleton is a creational design pattern that lets you ensure that a class has only one instance, while providing a global access point to this instance.
@@ -108,6 +118,13 @@ Also known as: Wrapper
 
 Adapter is a structural design pattern that allows objects with incompatible interfaces to collaborate.
 
+This allows incomatible classes to work together by converting the interface of one class into another.
+
+This of it as a sort of translator, when two heads of states who don't speak a common language meet, usually an interpreter sits b/w the two and translates the conversation, thus enabling communication. 
+
+If you have 2 apps, with one output XML with the other requiring JSON, then we'll need an adapter b/w the two to make them work seamlessly.
+
+
 ## Bridge 
 
 Bridge is a structural design pattern that lets you split a large class or a set of closely related classes into two separate
@@ -117,6 +134,8 @@ hierarchies—abstraction (interface layer) and implementation (platform layer) 
 
 Facade is a structural design pattern that provides a simplified interface to a library, a framework, or any other complex set of classes.
 
+As the name suggests, this pattern hides the complexities of a system from the client, providing instead a simple/attractive interface. The main advantage for developers comes through making complex software libraries or frameworks easier to understand and access. It can also isolate ‘outside’ code from the complex internal systems.
+
 ## Command 
 
 Command is a behavioral design pattern that turns a request into a stand-alone object that contains all information about
@@ -125,5 +144,4 @@ execution, and support undoable operations.
 
 ## Iterator 
 
-Iterator is a behavioral design pattern that lets you traverse elements of a collection without exposing its underlying
-representation (list, stack, tree, etc.).
+Iterator is a behavioral design pattern that lets you traverse elements of a collection without exposing its underlying representation (list, stack, tree, etc.).

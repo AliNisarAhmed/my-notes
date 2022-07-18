@@ -16,7 +16,7 @@ while **Data Structure** is a specific and concrete implementation of the ADT, e
 
 **insertion** - O(1)
 
-_Note_: Insertion and Indexing are considered a separate operation, hence when we talk about insertion is O(1) for linked-lists, we already assume that we are in the middle of iterating though the list. For linked list, indexing is O(n), but oonce we have the index, insertion itself is O(1) since we do not have to move the remaining elements. For arrays, indexing is O(1), but, insertion itself is O(n), since all the elements after the index must be re-indexed.
+_Note_: Insertion and Indexing are considered a separate operation, hence when we talk about insertion is O(1) for linked-lists, we already assume that we are in the middle of iterating though the list. For linked list, indexing is O(n), but once we have the index, insertion itself is O(1) since we do not have to move the remaining elements. For arrays, indexing is O(1), but, insertion itself is O(n), since all the elements after the index must be re-indexed.
 
 **Removal** - O(1) assuming that the index is known and node has already been identified
 **Searching** - O(n)
@@ -159,6 +159,13 @@ A binary heap is defined as a binary tree with two additional constraints:
 - (Where parent >= children)(>=) are called max-heaps, (where parent <= children) (<=) are called min-heaps.
 
 ![18b7522357a88bd709353efa111db926.png](18b7522357a88bd709353efa111db926.png) a min heap
+
+
+### Another definition
+
+ The heap is a binary tree that maintains the following conditions:
+• The value of each node must be greater (or lesser for min-heaps) than each of its descendant nodes. This rule is known as the _heap condition_.
+• The tree must be complete.
 
 #### Binary Heap Insert 
 

@@ -26,3 +26,26 @@ An Image is a copy/paste of the FileSystem required to run the containers of tha
 Docker runs on Linux, on Windows/MacOS it runs a Linux VM to do so: 
 
 ![8176433684c4a7164734d6f3261aa19a.png](8176433684c4a7164734d6f3261aa19a.png)
+
+
+---
+
+### Sample Docker file and how docker executes it 
+# Use an existing docker image as a base 
+
+FROM alpine
+
+
+# Download and install a dependency
+
+```
+FROM alpine
+
+RUN apk add --update redis
+
+# Tell the image what to do when it starts as a container
+
+CMD ["redis-server"]
+
+```
+![66cced45157e0a741eaa75720e50c9e6.png](66cced45157e0a741eaa75720e50c9e6.png)

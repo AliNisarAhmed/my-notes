@@ -6,7 +6,7 @@ Your questions should cover 4 C's
 3. Challenges - what are the current challenges the company is facing
 4. Close - leave on a high note and be clear on what the next steps are
 
-I think there should be another section of question before 3 and 4, Technical questions.
+Note: I think there should be another section of questions before section 3 and 4 above: Technical questions.
 
 - Connect examples: 
     - how did you come to work here? 
@@ -49,3 +49,11 @@ I think there should be another section of question before 3 and 4, Technical qu
 - (Better version of above) Based on my resume and this interview, do you have any questions or concerns about my qualifications?  
 - What are the next steps in the process?
 
+--- 
+
+## Other questions: 
+
+- Why is this position open?
+- Where do you see this company in 5 years?
+- What's your favorite part of working here? 
+    - (coupled with): what's the least favorite part of working here?
