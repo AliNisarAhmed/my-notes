@@ -8,7 +8,7 @@ Let's say we have two bash functions
 The underlying storage format is simple: 
     - a text file where each line contains a key-value pair, separated by a comma
     - Every call to `db_set` appends to the end of the file
-    - So, if we update the key-value several times, the old versions of the value are not overwritter
+    - So, if we update the key-value several times, the old versions of the value are not overwritten
         - the latest value will be at the later end of the file
 
 The `db_set` function has pretty good performance for something so simple - appending to a file is pretty quick
@@ -22,7 +22,8 @@ In order to find the value of a particular key, we need a different structure ca
 - An index is additional structure that is derived from the primary data.
 - Many databases allow you to add and remove custom indexes
 - Adding indexes does not affect the content of the database, it only affects the performance of queries
-- Well-chosen indexes speeds up queries, but every index slows down _writes_
+- Well-chosen indexes speeds up queries, 
+- but every index slows down _writes_
 
 ### Hash Index
 
@@ -31,7 +32,7 @@ Keep an in-memory hash map where every key is mapped to a byte offset in the dat
 ![a18204bbe2330ed55a251f44b7fa23e1.png](a18204bbe2330ed55a251f44b7fa23e1.png)
 
 
-The hashmap is kept in memory
+The hashmap is kept in memory/RAM
 
 This type of index is used in BitCask (storage engine in Riak)
 
