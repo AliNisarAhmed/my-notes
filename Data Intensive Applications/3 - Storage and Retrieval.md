@@ -102,6 +102,7 @@ Some issues and how they are solved:
 
 In SSTables, the sequence of key-value pairs in log-structured storage is sorted by key
 - This is called Sorted String Table
+- as opposed to the previous section where key-value pairs are just appended to the log without sorting.
 
 With this format, we cannot append new KV pairs to the segment immediately, since writes can occur in any order.
 
@@ -110,14 +111,14 @@ With this format, we cannot append new KV pairs to the segment immediately, sinc
 1. Merging segments is simple and efficient, even if the files are bigger than the available memory
     - you start reading the input files side by side, look at the first key in each file, copy the lowest key (according to the sort order) to the output file, and repeat. This produces a new merged segment file, also sorted by key.
     - When multiple segments contain the same key, we can keep the value from the most recent segment and discard the values in older segments.
-2. We no longer need to keep an  index to find a particular key
+2. We no longer need to keep an index for ALL keys to find a particular key
     - e.g. looking for key `handiwork` in the diagram below, we know it must exist between the known offsets for `handbag` and `handsome`
   
   
 ![f92619e4a9a5aab44052813f766338cd.png](f92619e4a9a5aab44052813f766338cd.png)
 
 
-3. Since read requests need to scan over several key-value pairs in the requested range anyway, it is possible to group those records into a block and compress it before writing it to disk (indicated by the shaded area in the above figure)
+3. Since read requests need to scan over several key-value pairs in the requested range anyway, it is possible to group those records into a block and compress it before writing it to disk (indicated by the shaded area in the above figure). Each entry of the sparse in-memory index then points at the start of a compressed block. Besides saving disk space, compression also reduces the I/O bandwidth use.
 
 
 ### Constructing and maintaining SSTables
@@ -165,6 +166,8 @@ Even though there are many subtleties, the basic idea of LSM-trees—keeping a c
 
 ## B Trees
 
+B-Trees are another way to index key-value pairs as opposed  to the log-structured indexes discussed previously.
+
 B-trees keep key-value pairs sorted by key, which allows efficient key-value lookups and range queries. But that’s where the similarity ends: B-trees have a very different design philosophy.
 
 The log-structured indexes we saw earlier break the database down into variable-size _segments_, typically several megabytes or more in size, and always write a segment sequentially. 
@@ -184,8 +187,8 @@ One page is designated as the *root* of the B-tree;
 
 The number of references to child pages in one page of the B-tree is called the _branching factor_.
 - 6 in the above diagram
-
-
+-  In practice, the branching factor depends on the amount of space required to store the page references and the range boundaries
+-  but typically it is several hundred.
 
 If you want to update the value for an existing key in a B-tree
 - you search for the leaf page containing that key, change the value in that page, and write the page back to disk (any references to that page remain valid). 
@@ -215,6 +218,7 @@ If you split a page because an insertion caused it to be overfull, you need to w
 
 Careful Concurrency control is required - since multiple threads acting on B-Tree may leave it in inconsistent state (because B-Tree are mutable as opposed to LSM)
 - This is typically done by protecting the Tree's DS with _latches_ (light weight locks)
+- Log-structured approaches are simpler in this regard, because they do all the merging in the background without interfering with incoming queries and atomically swap old segments for new segments from time to time.
 
 
 #### Optimizations
@@ -254,6 +258,8 @@ Log-structured indexes also rewrite data multiple times due to repeated compacti
 - (although this depends on the storage engine configuration and workload)
 - and partly because they sequentially write compact SSTable files rather than having to overwrite several pages in the tree
 
+LSM-trees are typically able to sustain higher write throughput than B-trees, partly because they sometimes have lower write amplification (although this depends on the storage engine configuration and workload), and partly because they sequentially write compact SSTable files rather than having to overwrite several pages in the tree 
+
 LSM-trees can be compressed better, and thus often produce smaller files on disk than B-trees. 
 - B-tree storage engines leave some disk space unused due to fragmentation: 
     - when a page is split or when a row cannot fit into an existing page, some space in a page remains unused. 
@@ -277,6 +283,14 @@ An advantage of B-trees is that each key exists in exactly one place in the inde
 
 ### Clustered Index
 
+The key in an index is the thing that queries search for, but the value can be one of two things: 
+1. it could be the actual row (document, vertex) in question
+2. or it could be a reference to the row stored elsewhere. 
+    - In the latter case, the place where rows are stored is known as a heap file
+    - and it stores data in no particular order (it may be append-only, or it may keep track of deleted rows in order to overwrite them with new data later). 
+    - The heap file approach is common because it avoids duplicating data when multiple secondary indexes are present: 
+    - each index just references a location in the heap file, and the actual data is kept in one place.
+
 In some situations, the extra hop from the index to the heap file is too much of a performance penalty for reads, so it can be desirable to store the indexed row directly within an index. This is known as a _clustered index_.
  - For example, in MySQL’s InnoDB storage engine, the primary key of a table is always a clustered index, and secondary indexes refer to the primary key (rather than a heap file location)
  - In SQL Server, you can specify one clustered index per table
@@ -284,6 +298,8 @@ In some situations, the extra hop from the index to the heap file is too much of
 A compromise between a clustered index (storing all row data within the index) and a nonclustered index (storing only references to the data within the index) is known as a _covering index_ or _index with included columns_, which stores _some_ of a table’s columns within the index
 
 ### Multi-column indexes
+
+The indexes discussed so far only map a single key to a value. That is not sufficient if we need to query multiple columns of a table (or multiple fields in a document) simultaneously.
 
 The most common type of multi-column index is called a _concatenated index_, which simply combines several fields into one key by appending one column to another (the index definition specifies in which order the fields are concatenated). 
 - This is like an old-fashioned paper phone book, which provides an index from (_lastname_, _firstname_) to phone number.
@@ -452,3 +468,14 @@ Fortunately, we have already seen a solution, LSM Trees
 Queries need to examine both the column data on disk and the recent writes in memory, and combine the two. 
 - However, the query optimizer hides this distinction from the user. 
 - From an analyst’s point of view, data that has been modified with inserts, updates, or deletes is immediately reflected in subsequent queries.
+
+### Materialized Views
+
+Data warehouse queries often involve an aggregate function, such as COUNT, SUM, AVG, MIN, or MAX in SQL. 
+- If the same aggregates are used by many different queries, it can be wasteful to crunch through the raw data every time. 
+- Why not cache some of the counts or sums that queries use most often?
+
+One way of creating such a cache is a materialized view. In a relational data model, it is often defined like a standard (virtual) view: a table-like object whose contents are the results of some query. 
+- The difference is that a materialized view is an actual copy of the query results, written to disk
+- whereas a virtual view is just a shortcut for writing queries. 
+- When you read from a virtual view, the SQL engine expands it into the view’s underlying query on the fly and then processes the expanded query.
