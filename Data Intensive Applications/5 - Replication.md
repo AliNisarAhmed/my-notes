@@ -143,3 +143,71 @@ Things that can go wrong during failover:
 - Deciding the timeout before the leader is declared dead
     - If too short, could lead to many failovers
     - A longer timeout means a longer time needed to recover data
+
+There are no easy solutions to these problems. For this reason, some operations teams prefer to perform failovers manually, even if the software supports automatic failover.
+
+### Implementation of Replication Logs 
+
+1. Statement-based Replication
+2. Write-ahead log (WAL) Shipping
+3. Logical (row-based) log replication
+4. Trigger-based replication
+
+#### 1. Statement-Based Replication 
+
+Statement-based replication was used in MySQL before version 5.1.
+
+The leader logs every write request (_statement_) that it executes and sends that statement log to its followers. 
+- For a relational database, this means that every `INSERT`, `UPDATE`, or `DELETE` statement is forwarded to followers, and each follower parses and executes that SQL statement as if it had been received from a client.
+
+Sounds reasonable, but faces many problems, but there are so many edge cases that other replication methods are preferred.
+- Any statement that calls a nondeterministic function, such as `NOW()` to get the current date and time or `RAND()` to get a random number, is likely to generate a different value on each replica
+- If statements use an autoincrementing column, or if they depend on the existing data in the database (e.g., `UPDATE … WHERE _<some condition>_`), they must be executed in exactly the same order on each replica, or else they may have a different effect. 
+    - This can be limiting when there are multiple concurrently executing transactions.
+- Statements that have side effects (e.g., triggers, stored procedures, user-defined functions) may result in different side effects occurring on each replica, unless the side effects are absolutely deterministic.
+
+#### 2. WAL Shipping
+
+Besides keeping its own log and writing the log to disk, the leader also sends the same log across the network to its followers. When the follower processes this log, it builds a copy of the exact same data structures as found on the leader.
+
+This method of replication is used in PostgreSQL and Oracle.
+
+The main disadvantage is that the log describes the data on a very low level: 
+- a WAL contains details of which bytes were changed in which disk blocks. 
+- This makes replication closely coupled to the storage engine. If the database changes its storage format from one version to another, it is typically not possible to run different versions of the database software on the leader and the followers.
+
+That may seem like a minor implementation detail, but it can have a big operational impact.
+
+#### 3. Logical (row-based) log replication
+
+An alternative is to use different log formats for replication and for the storage engine, which allows the replication log to be decoupled from the storage engine internals. 
+
+This kind of replication log is called a _logical log_, to distinguish it from the storage engine’s (_physical_) data representation.
+
+A logical log for a relational database is usually a sequence of records describing writes to database tables at the granularity of a row:
+
+* For an inserted row, the log contains the new values of all columns.
+* For a deleted row, the log contains enough information to uniquely identify the row that was deleted. Typically this would be the primary key, but if there is no primary key on the table, the old values of all columns need to be logged.
+* For an updated row, the log contains enough information to uniquely identify the updated row, and the new values of all columns (or at least the new values of all columns that changed).
+
+A transaction that modifies several rows generates several such log records, followed by a record indicating that the transaction was committed.
+
+Since a logical log is decoupled from the storage engine internals, it can more easily be kept backward compatible, allowing the leader and the follower to run different versions of the database software, or even different storage engines.
+
+A logical log format is also easier for external applications to parse. This aspect is useful if you want to send the contents of a database to an external system, such as a data warehouse for offline analysis, or for building custom indexes and caches. This technique is called _Change Data Capture_
+
+#### 4. Trigger-based replication
+
+The replication approaches described so far are implemented by the database system, without involving any application code. In many cases, that’s what you want—but there are some circumstances where more flexibility is needed. For example, if you want to only replicate a subset of the data, or want to replicate from one kind of database to another, or if you need conflict resolution logic then you may need to move replication up to the application layer.
+
+One alternative is to use features that are available in many relational databases: _triggers_ and _stored procedures_.
+
+A _trigger_ lets you register custom application code that is automatically executed when a data change (write transaction) occurs in a database system. 
+- The trigger has the opportunity to log this change into a separate table, from which it can be read by an external process. That external process can then apply any necessary application logic and replicate the data change to another system.
+
+Trigger-based replication typically has greater overheads than other replication methods, and is more prone to bugs and limitations than the database’s built-in replication. However, it can nevertheless be useful due to its flexibility.
+
+—
+
+## Problems with Replication Lag
+
