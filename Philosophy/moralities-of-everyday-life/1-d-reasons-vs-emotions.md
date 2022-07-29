@@ -1,12 +1,12 @@
 # Reasons vs Emotions
 
-Many experimental psychologists and developmental psychologists and social psychologists have been very excited at the idea of framing the psychological question in terms of they philosophical question.
+Many experimental psychologists and developmental psychologists and social psychologists have been very excited at the idea of framing the psychological question in terms of the philosophical question.
 
 So, one way to think about people is that we're, sort of, common sense moral philosophers.
 
 We, think about morality. We, have a sense of morality.
 
-We have an unconscience theory of what's right and wrong.
+We have an unconscious theory of what's right and wrong.
 
 And then the question is, what kind of moral philosophers are we?
 
