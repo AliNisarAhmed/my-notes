@@ -209,5 +209,80 @@ Trigger-based replication typically has greater overheads than other replication
 
 —
 
-## Problems with Replication Lag
+### Problems with Replication Lag
 
+For workloads that consist of mostly reads and only a small percentage of writes (a common pattern on the web), Leader-based replication is an attractive option: create many followers, and distribute the read requests across those followers. This removes load from the leader and allows read requests to be served by nearby replicas.
+- Thus, leader-based replication is read-scaling architecture
+
+If an application reads from an _asynchronous_ follower, it may see outdated information if the follower has fallen behind. 
+- This leads to apparent inconsistencies in the database: if you run the same query on the leader and a follower at the same time, you may get different results, because not all writes have been reflected in the follower. 
+- This inconsistency is just a temporary state, and the replication lag corrects itself once the follower catches up
+- This is called _eventual consistency_
+
+Three problems that occur due to replication lag: 
+
+1. Reading your own writes
+2. Monotonic Reads
+3. Consistent Prefix Reads
+
+#### 1. Reading your own writes
+
+With Async Replication, if the user views the data shortly after making a write, the new data may not yet have reached the replica. To the user, it looks as though the data they submitted was lost, so they will be understandably unhappy.
+
+![e5c511d75622873f1fab13ac9a223760.png](e5c511d75622873f1fab13ac9a223760.png)
+
+In this situation, we need read-after-write consistency, also known as read-your-writes consistency. 
+- This is a guarantee that if the user reloads the page, they will always see any updates they submitted themselves. 
+- It makes no promises about other users: other users’ updates may not be visible until some later time. 
+
+Possible techniques to implement read-after-write consistency: 
+1. When reading something that the user may have modified, read it from the leader; otherwise, read it from a follower. 
+    - This requires that you have some way of knowing whether something might have been modified, without actually querying it.
+    - For example, a User's profile, which can only be edited by the User, can be configured to always be read from the leader, and any other user's profile from a follower.
+2. If most things are editable (1) won't be effective
+    - in that case we could use other criteria, like time passed till edit, to determine where to read data from.
+    - For example, you could track the time of the last update and, for one minute after the last update, make all reads from the leader. 
+    - You could also monitor the replication lag on followers and prevent queries on any follower that is more than one minute behind the leader.
+ 3. The client can remember the timestamp of its most recent write—then the system can ensure that the replica serving any reads for that user reflects updates at least until that timestamp. 
+     - If a replica is not sufficiently up to date, either the read can be handled by another replica or the query can wait until the replica has caught up.  
+     - The timestamp could be a _logical timestamp_ (something that indicates ordering of writes, such as the log sequence number) or the actual system clock.
+ 4. If your replicas are distributed across multiple datacenters (for geographical proximity to users or for availability), there is additional complexity. Any request that needs to be served by the leader must be routed to the datacenter that contains the leader.
+
+Some issues to consider with cross-device read-after-write consistency: 
+1. Approaches that require remembering the timestamp of the user’s last update become more difficult, because the code running on one device doesn’t know what updates have happened on the other device. This metadata will need to be centralized.
+2. If your replicas are distributed across different datacenters, there is no guarantee that connections from different devices will be routed to the same datacenter. (For example, if the user’s desktop computer uses the home broadband connection and their mobile device uses the cellular data network, the devices’ network routes may be completely different.) If your approach requires reading from the leader, you may first need to route requests from all of a user’s devices to the same datacenter.
+
+#### Monotonic Reads
+
+This can occur when reading from asynchronous followers, it’s possible for a user to see things _moving backward in time_.
+
+This can happen if a user makes several reads from different replicas.
+
+![de1f0763fb69e14b8e1e9ba933c12caf.png](de1f0763fb69e14b8e1e9ba933c12caf.png)
+
+The scenario in the above diagram is quite likely if the user refreshes a web page, and each request is routed to a random server.
+
+This wouldn’t be so bad if the first query hadn’t returned anything, because user 2345 probably wouldn’t know that user 1234 had recently added a comment. However, it’s very confusing for user 2345 if they first see user 1234’s comment appear, and then see it disappear again.
+
+_Monotonic reads_ is a guarantee that this kind of anomaly does not happen. 
+- It’s a lesser guarantee than strong consistency, but a stronger guarantee than eventual consistency.
+
+One way of achieving monotonic reads is to make sure that each user always makes their reads from the same replica (different users can read from different replicas). 
+- For example, the replica can be chosen based on a hash of the user ID, rather than randomly. 
+- However, if that replica fails, the user’s queries will need to be rerouted to another replica.
+
+#### Consistent Prefix Reads
+
+![dd573eaf9cef1ea802f846622fac9ba0.png](dd573eaf9cef1ea802f846622fac9ba0.png)
+
+To the observer it looks as though Mrs. Cake is answering the question before Mr. Poons has even asked it.
+
+Preventing this kind of anomaly requires another type of guarantee: _consistent prefix reads_.
+
+This is a particular problem in partitioned (sharded) databases
+- If the database always applies writes in the same order, reads always see a consistent prefix, so this anomaly cannot happen. 
+- However, in many distributed databases, different partitions operate independently, so there is no global ordering of writes: when a user reads from the database, they may see some parts of the database in an older state and some in a newer state.
+
+---
+
+## Multi Leader Replication
