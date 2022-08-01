@@ -48,7 +48,7 @@ There are 3 popular algos
 3. leaderless
 
 
-### Leaders & Followers
+# Leaders and Followers
 
 Every write to the database needs to be processed by every replica; otherwise, the replicas would no longer contain the same data. 
 
@@ -62,7 +62,7 @@ The most common solution for this is called _leader-based replication_ (also kno
 
 ![68006a2cef69da0dbba4e1935b17eac4.png](68006a2cef69da0dbba4e1935b17eac4.png)
 
-### Synchoronous vs Async Replication
+## Synchronous Versus Asynchronous Replication
 
 ![746ba10949962ac7ca27846357e49385.png](746ba10949962ac7ca27846357e49385.png)
 
@@ -91,7 +91,7 @@ Often, leader-based replication is configured to be completely asynchronous.
 
 However, a fully asynchronous configuration has the advantage that the leader can continue processing writes, even if all of its followers have fallen behind.
 
-### Setting up new Followers
+## Setting Up New Followers
 
 The practical steps of setting up a follower vary significantly by database.
     - automated vs multi-step workflow manually performed by admins
@@ -107,11 +107,11 @@ Conceptually, the process looks like this:
 3.  The follower connects to the leader and requests all the data changes that have happened since the snapshot was taken. This requires that the snapshot is associated with an exact position in the leader’s replication log. That position has various names: for example, PostgreSQL calls it the _log sequence number_, and MySQL calls it the _binlog coordinates_.
 4.  When the follower has processed the backlog of data changes since the snapshot, we say it has _caught up_. It can now continue to process data changes from the leader as they happen.
 
-### Handling node outages
+## Handling node outages
 
 Any node (leader or follower) can go down, Our goal is to keep the system as a whole running despite individual node failures. 
 
-#### Follower Failure - Catchup Recovery
+### Follower failure: Catch-up recovery
 
 On its local disk, each follower keeps a log of the data changes it has received from the leader. 
 
@@ -121,7 +121,7 @@ It knows the last transaction that was processed before the fault occurred. Thus
 
 When it has applied these changes, it has caught up to the leader and can continue receiving a stream of data changes as before.
 
-#### Leader failure 
+### Leader failure: Failover
 
 Handling the failure of leader in single-leader replication is tricky.
 
@@ -146,14 +146,14 @@ Things that can go wrong during failover:
 
 There are no easy solutions to these problems. For this reason, some operations teams prefer to perform failovers manually, even if the software supports automatic failover.
 
-### Implementation of Replication Logs 
+## Implementation of Replication Logs 
 
 1. Statement-based Replication
 2. Write-ahead log (WAL) Shipping
 3. Logical (row-based) log replication
 4. Trigger-based replication
 
-#### 1. Statement-Based Replication 
+### 1. Statement-Based Replication  
 
 Statement-based replication was used in MySQL before version 5.1.
 
@@ -166,7 +166,7 @@ Sounds reasonable, but faces many problems, but there are so many edge cases tha
     - This can be limiting when there are multiple concurrently executing transactions.
 - Statements that have side effects (e.g., triggers, stored procedures, user-defined functions) may result in different side effects occurring on each replica, unless the side effects are absolutely deterministic.
 
-#### 2. WAL Shipping
+### 2. WAL Shipping
 
 Besides keeping its own log and writing the log to disk, the leader also sends the same log across the network to its followers. When the follower processes this log, it builds a copy of the exact same data structures as found on the leader.
 
@@ -178,7 +178,7 @@ The main disadvantage is that the log describes the data on a very low level:
 
 That may seem like a minor implementation detail, but it can have a big operational impact.
 
-#### 3. Logical (row-based) log replication
+### 3. Logical (row-based) log replication
 
 An alternative is to use different log formats for replication and for the storage engine, which allows the replication log to be decoupled from the storage engine internals. 
 
@@ -196,7 +196,7 @@ Since a logical log is decoupled from the storage engine internals, it can more 
 
 A logical log format is also easier for external applications to parse. This aspect is useful if you want to send the contents of a database to an external system, such as a data warehouse for offline analysis, or for building custom indexes and caches. This technique is called _Change Data Capture_
 
-#### 4. Trigger-based replication
+### 4. Trigger-based replication
 
 The replication approaches described so far are implemented by the database system, without involving any application code. In many cases, that’s what you want—but there are some circumstances where more flexibility is needed. For example, if you want to only replicate a subset of the data, or want to replicate from one kind of database to another, or if you need conflict resolution logic then you may need to move replication up to the application layer.
 
@@ -209,7 +209,7 @@ Trigger-based replication typically has greater overheads than other replication
 
 —
 
-### Problems with Replication Lag
+# Problems with Replication Lag
 
 For workloads that consist of mostly reads and only a small percentage of writes (a common pattern on the web), Leader-based replication is an attractive option: create many followers, and distribute the read requests across those followers. This removes load from the leader and allows read requests to be served by nearby replicas.
 - Thus, leader-based replication is read-scaling architecture
@@ -225,7 +225,7 @@ Three problems that occur due to replication lag:
 2. Monotonic Reads
 3. Consistent Prefix Reads
 
-#### 1. Reading your own writes
+## 1. Reading your own writes 
 
 With Async Replication, if the user views the data shortly after making a write, the new data may not yet have reached the replica. To the user, it looks as though the data they submitted was lost, so they will be understandably unhappy.
 
@@ -252,7 +252,7 @@ Some issues to consider with cross-device read-after-write consistency:
 1. Approaches that require remembering the timestamp of the user’s last update become more difficult, because the code running on one device doesn’t know what updates have happened on the other device. This metadata will need to be centralized.
 2. If your replicas are distributed across different datacenters, there is no guarantee that connections from different devices will be routed to the same datacenter. (For example, if the user’s desktop computer uses the home broadband connection and their mobile device uses the cellular data network, the devices’ network routes may be completely different.) If your approach requires reading from the leader, you may first need to route requests from all of a user’s devices to the same datacenter.
 
-#### Monotonic Reads
+## Monotonic Reads
 
 This can occur when reading from asynchronous followers, it’s possible for a user to see things _moving backward in time_.
 
@@ -271,7 +271,7 @@ One way of achieving monotonic reads is to make sure that each user always makes
 - For example, the replica can be chosen based on a hash of the user ID, rather than randomly. 
 - However, if that replica fails, the user’s queries will need to be rerouted to another replica.
 
-#### Consistent Prefix Reads
+## Consistent Prefix Reads
 
 ![dd573eaf9cef1ea802f846622fac9ba0.png](dd573eaf9cef1ea802f846622fac9ba0.png)
 
@@ -285,4 +285,8 @@ This is a particular problem in partitioned (sharded) databases
 
 ---
 
-## Multi Leader Replication
+
+---
+
+# Leaderless Replication
+
