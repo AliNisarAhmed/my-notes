@@ -157,7 +157,7 @@ Percentiles are often used in _service level objectives_ (SLOs) and _service lev
 - It takes just one slow call to make the entire end-user request slow (see diagram below)
 - Even if only a small percentage of backend calls are slow, the chance of getting a slow call increases if an end-user request requires multiple backend calls, and so a higher proportion of end-user requests end up being slow (an effect known as _tail latency amplification_).
 
-![51f9988e3a2fbe9ac0a5fd99aa882206.png](51f9988e3a2fbe9ac0a5fd99aa882206.png)
+![51f9988e3a2fbe9ac0a5fd99aa882206.png](images/51f9988e3a2fbe9ac0a5fd99aa882206.png)
 
 
 #### Coping with Load 

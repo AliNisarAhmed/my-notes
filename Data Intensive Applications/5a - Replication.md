@@ -60,11 +60,11 @@ The most common solution for this is called _leader-based replication_ (also kno
 
 3.  When a client wants to read from the database, it can query either the leader or any of the followers. However, writes are only accepted on the leader
 
-![68006a2cef69da0dbba4e1935b17eac4.png](68006a2cef69da0dbba4e1935b17eac4.png)
+![68006a2cef69da0dbba4e1935b17eac4.png](images/68006a2cef69da0dbba4e1935b17eac4.png)
 
 ## Synchronous Versus Asynchronous Replication
 
-![746ba10949962ac7ca27846357e49385.png](746ba10949962ac7ca27846357e49385.png)
+![746ba10949962ac7ca27846357e49385.png](images/746ba10949962ac7ca27846357e49385.png)
 
 In the above diagram: 
 - the replication to follower 1 is _synchronous_: 
@@ -229,7 +229,7 @@ Three problems that occur due to replication lag:
 
 With Async Replication, if the user views the data shortly after making a write, the new data may not yet have reached the replica. To the user, it looks as though the data they submitted was lost, so they will be understandably unhappy.
 
-![e5c511d75622873f1fab13ac9a223760.png](e5c511d75622873f1fab13ac9a223760.png)
+![e5c511d75622873f1fab13ac9a223760.png](images/e5c511d75622873f1fab13ac9a223760.png)
 
 In this situation, we need read-after-write consistency, also known as read-your-writes consistency. 
 - This is a guarantee that if the user reloads the page, they will always see any updates they submitted themselves. 
@@ -258,7 +258,7 @@ This can occur when reading from asynchronous followers, it’s possible for a u
 
 This can happen if a user makes several reads from different replicas.
 
-![de1f0763fb69e14b8e1e9ba933c12caf.png](de1f0763fb69e14b8e1e9ba933c12caf.png)
+![de1f0763fb69e14b8e1e9ba933c12caf.png](images/de1f0763fb69e14b8e1e9ba933c12caf.png)
 
 The scenario in the above diagram is quite likely if the user refreshes a web page, and each request is routed to a random server.
 
@@ -273,7 +273,7 @@ One way of achieving monotonic reads is to make sure that each user always makes
 
 ## Consistent Prefix Reads
 
-![dd573eaf9cef1ea802f846622fac9ba0.png](dd573eaf9cef1ea802f846622fac9ba0.png)
+![dd573eaf9cef1ea802f846622fac9ba0.png](images/dd573eaf9cef1ea802f846622fac9ba0.png)
 
 To the observer it looks as though Mrs. Cake is answering the question before Mr. Poons has even asked it.
 
@@ -284,9 +284,4 @@ This is a particular problem in partitioned (sharded) databases
 - However, in many distributed databases, different partitions operate independently, so there is no global ordering of writes: when a user reads from the database, they may see some parts of the database in an older state and some in a newer state.
 
 ---
-
-
----
-
-# Leaderless Replication
 

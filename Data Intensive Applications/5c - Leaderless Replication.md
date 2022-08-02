@@ -15,7 +15,7 @@ Imagine you have a database with three replicas, and one of the replicas is curr
 
 On the other hand, in a leaderless configuration, failover does not exist.
 
-![f71f9376a9581f8d9c9bfd0008428bc2.png](f71f9376a9581f8d9c9bfd0008428bc2.png)
+![f71f9376a9581f8d9c9bfd0008428bc2.png](images/f71f9376a9581f8d9c9bfd0008428bc2.png)
 
 In the above diagram, The client simply ignores the fact that one of the replicas missed the write.
 
@@ -66,7 +66,7 @@ The quorum condition, $w + r > n$ , allows the system to tolerate unavailable no
 - Normally, reads and writes are always sent to all $n$ replicas in parallel. The parameters $w$ and $r$ determine how many nodes we wait for—i.e., how many of the $n$ nodes need to report success before we consider the read or write to be successful.
 - If fewer than the required w or r nodes are available, writes or reads return an error. 
 
-![80ff9f53df380d23098080d02f5db981.png](80ff9f53df380d23098080d02f5db981.png)
+![80ff9f53df380d23098080d02f5db981.png](images/80ff9f53df380d23098080d02f5db981.png)
 
 ## Sloppy Quorums and Hinted Handoff
 
@@ -106,7 +106,7 @@ Conflicts will occur even if strict quorums are used.
 
 The problem is that events may arrive in a different order at different nodes, due to variable network delays and partial failures. For example, Figure below shows two clients, A and B, simultaneously writing to a key _X_ in a three-node datastore:
 
-![0f49128d0603ce72733e07b096d7272b.png](0f49128d0603ce72733e07b096d7272b.png)
+![0f49128d0603ce72733e07b096d7272b.png](images/0f49128d0603ce72733e07b096d7272b.png)
 
 If each node simply overwrote the value for a key whenever it received a write request from a client, the nodes would become permanently inconsistent, as shown by the final _get_ request in above Figure
 
@@ -143,7 +143,7 @@ In computer systems, two operations might be concurrent even though the speed of
 
 Let’s look at an algorithm that determines whether two operations are concurrent, or whether one happened before another. To keep things simple, let’s start with a database that has only one replica. Once we have worked out how to do this on a single replica, we can generalize the approach to a leaderless database with multiple replicas.
 
-![2bb2185cc24a4f14489bab21d0772972.png](2bb2185cc24a4f14489bab21d0772972.png)
+![2bb2185cc24a4f14489bab21d0772972.png](images/2bb2185cc24a4f14489bab21d0772972.png)
 
 Figure above shows two clients concurrently adding items to the same shopping cart. (If that example strikes you as too inane, imagine instead two air traffic controllers concurrently adding aircraft to the sector they are tracking.) Initially, the cart is empty. Between them, the clients make five writes to the database:
 
@@ -165,7 +165,7 @@ The dataflow between the operations in Figure above is illustrated graphically i
 
 The arrows indicate which operation _happened before_ which other operation, in the sense that the later operation _knew about_ or _depended on_ the earlier one. In this example, the clients are never fully up to date with the data on the server, since there is always another operation going on concurrently. But old versions of the value do get overwritten eventually, and no writes are lost.
 
-![d1a0e7fc3158fbbce986f5a357f52a71.png](d1a0e7fc3158fbbce986f5a357f52a71.png)
+![d1a0e7fc3158fbbce986f5a357f52a71.png](images/d1a0e7fc3158fbbce986f5a357f52a71.png)
 
 Note that the server can determine whether two operations are concurrent by looking at the version numbers—it does not need to interpret the value itself (so the value could be any data structure). The algorithm works as follows:
 

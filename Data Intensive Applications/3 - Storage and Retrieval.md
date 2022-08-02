@@ -29,7 +29,7 @@ In order to find the value of a particular key, we need a different structure ca
 
 Keep an in-memory hash map where every key is mapped to a byte offset in the data file - the location at which the value can be found
 
-![a18204bbe2330ed55a251f44b7fa23e1.png](a18204bbe2330ed55a251f44b7fa23e1.png)
+![a18204bbe2330ed55a251f44b7fa23e1.png](images/a18204bbe2330ed55a251f44b7fa23e1.png)
 
 
 The hashmap is kept in memory/RAM
@@ -52,7 +52,7 @@ Question: If we always append to a file, how do we avoid eventually running out 
 - Compaction means throwing away duplicate keys in the log, and keeping only the most recent update for each key
 
 
-![04c7d52341059a5cb2901389101cd126.png](04c7d52341059a5cb2901389101cd126.png)
+![04c7d52341059a5cb2901389101cd126.png](images/04c7d52341059a5cb2901389101cd126.png)
 
 
 Since compaction often makes segments much smaller (assuming that a key is over-written within one segment), we can also merge several segments together at the same time as performing the compaction
@@ -65,7 +65,7 @@ Since compaction often makes segments much smaller (assuming that a key is over-
 - and then delete the old segment files
 
 
-![79aaf3133670bffaba2246700de130dc.png](79aaf3133670bffaba2246700de130dc.png)
+![79aaf3133670bffaba2246700de130dc.png](images/79aaf3133670bffaba2246700de130dc.png)
 
 
 Each segment has its own in-memory hash table, mapping keys to the file offsets.
@@ -115,7 +115,7 @@ With this format, we cannot append new KV pairs to the segment immediately, sinc
     - e.g. looking for key `handiwork` in the diagram below, we know it must exist between the known offsets for `handbag` and `handsome`
   
   
-![f92619e4a9a5aab44052813f766338cd.png](f92619e4a9a5aab44052813f766338cd.png)
+![f92619e4a9a5aab44052813f766338cd.png](images/f92619e4a9a5aab44052813f766338cd.png)
 
 
 3. Since read requests need to scan over several key-value pairs in the requested range anyway, it is possible to group those records into a block and compress it before writing it to disk (indicated by the shaded area in the above figure). Each entry of the sparse in-memory index then points at the start of a compressed block. Besides saving disk space, compression also reduces the I/O bandwidth use.
@@ -152,7 +152,7 @@ Storage engines that are based on the principle of merging and compacting sorted
 
 #### LSM Tree vs SST
 
-![eac9b9dc50c63088e689752f8b55a3a6.png](eac9b9dc50c63088e689752f8b55a3a6.png)
+![eac9b9dc50c63088e689752f8b55a3a6.png](images/eac9b9dc50c63088e689752f8b55a3a6.png)
 
 https://en.wikipedia.org/wiki/Log-structured_merge-tree
 
@@ -178,7 +178,7 @@ The log-structured indexes we saw earlier break the database down into variable-
 Each page can be identified using an address or location, which allows one page to refer to another—similar to a pointer, but on disk instead of in memory. 
 - We can use these page references to construct a tree of pages, as illustrated below
 
-![28ad0d4a06f1107f13b166d1342884d9.png](28ad0d4a06f1107f13b166d1342884d9.png)
+![28ad0d4a06f1107f13b166d1342884d9.png](images/28ad0d4a06f1107f13b166d1342884d9.png)
 
 One page is designated as the *root* of the B-tree; 
 - whenever you want to look up a key in the index, you start here. 
@@ -197,7 +197,7 @@ If you want to add a new key, you need to find the page whose range encompasses 
 - If there isn’t enough free space in the page to accommodate the new key, it is split into two half-full pages, and the parent page is updated to account for the new subdivision of key ranges
 
 
-![208137e56220e5c174e15dbbe187c6c3.png](208137e56220e5c174e15dbbe187c6c3.png)
+![208137e56220e5c174e15dbbe187c6c3.png](images/208137e56220e5c174e15dbbe187c6c3.png)
 
 
 This algorithm ensures that the tree remains _balanced_: 
@@ -344,7 +344,7 @@ For example, if your data is a table of sales transactions, then analytic querie
 
 In order to differentiate this pattern of using databases from transaction processing, it has been called _online analytic processing_ (OLAP)
 
-![e49940ec0721f0a34704ecd8835799ea.png](e49940ec0721f0a34704ecd8835799ea.png)
+![e49940ec0721f0a34704ecd8835799ea.png](images/e49940ec0721f0a34704ecd8835799ea.png)
 
 
 A _data warehouse_ is a separate database that analysts can query to their hearts’ content, without affecting OLTP operations
@@ -356,7 +356,7 @@ The data warehouse contains a read-only copy of the data in all the various OLTP
     - and then loaded into the data warehouse. 
 - This process of getting data into the warehouse is known as _Extract–Transform–Load_ (ETL)
 
-![a3c3f00da16260249253569207e5dd3a.png](a3c3f00da16260249253569207e5dd3a.png)
+![a3c3f00da16260249253569207e5dd3a.png](images/a3c3f00da16260249253569207e5dd3a.png)
 
 
 ### Star Schema for Analytics
@@ -380,7 +380,7 @@ In a typical data warehouse, tables are often very wide:
 - fact tables often have over 100 columns, sometimes several hundred 
 - Dimension tables can also be very wide, as they include all the metadata that may be relevant for analysis
 
-![702baa7ddeb5820fb5f57c3d88cbb018.png](702baa7ddeb5820fb5f57c3d88cbb018.png)
+![702baa7ddeb5820fb5f57c3d88cbb018.png](images/702baa7ddeb5820fb5f57c3d88cbb018.png)
 
 
 
@@ -399,7 +399,7 @@ The idea behind column-oriented storage is simple: don't store all the values fr
 
 The query below accesses a large number of rows (every occurrence of someone buying fruit or candy during the 2013 calendar year), but it only needs to access three columns of the `fact_sales` table: `date_key`, `product_sk`, and `quantity`. The query ignores all other columns.
 
-![c502a59e794a524f8840aff574b33e87.png](c502a59e794a524f8840aff574b33e87.png)
+![c502a59e794a524f8840aff574b33e87.png](images/c502a59e794a524f8840aff574b33e87.png)
 
 In most OLTP databases, storage is laid out in a _row-oriented_ fashion: 
 - all the values from one row of a table are stored next to each other. 
@@ -410,7 +410,7 @@ In order to process the query above:
 - But then, a row-oriented storage engine still needs to load all of those rows (each consisting of over 100 attributes) from disk into memory, parse them, and filter out those that don’t meet the required conditions. 
 - That can take a long time.
 
-![64fa259e9b4976685019bbe42427e7a1.png](64fa259e9b4976685019bbe42427e7a1.png)
+![64fa259e9b4976685019bbe42427e7a1.png](images/64fa259e9b4976685019bbe42427e7a1.png)
 
 The column-oriented storage layout relies on each column file containing the rows in the same order. Thus, if you need to reassemble an entire row, you can take the 23rd entry from each of the individual column files and put them together to form the 23rd row of the table.
 
@@ -423,7 +423,7 @@ Depending on the data in the column, different compression techniques can be use
     - Looking at the data above, it looks quite repetitive, which lends itself to compression using these techniques
 
 
-![b8a8ad6d16fd411a973348175b2cfbb4.png](b8a8ad6d16fd411a973348175b2cfbb4.png)
+![b8a8ad6d16fd411a973348175b2cfbb4.png](images/b8a8ad6d16fd411a973348175b2cfbb4.png)
 
 Often, the number of distinct values in a column is small compared to the number of rows 
 - (for example, a retailer may have billions of sales transactions, but only 100,000 distinct products). 
@@ -436,7 +436,7 @@ If _n_ is very small (for example, a _country_ column may have approximately 200
 - In that case, the bitmaps can additionally be run-length encoded, as shown in the above figure. 
 - This can make the encoding of a column remarkably compact.
 
-![4e6bd9b96002a543492e24ccb689823b.png](4e6bd9b96002a543492e24ccb689823b.png)
+![4e6bd9b96002a543492e24ccb689823b.png](images/4e6bd9b96002a543492e24ccb689823b.png)
 
 Operators, such as the bitwise _AND_ and _OR_ described previously, can be designed to operate on such chunks of compressed column data directly. This technique is known as _vectorized processing_
 

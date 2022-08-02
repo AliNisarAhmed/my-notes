@@ -56,7 +56,7 @@ Object-relational mapping (ORM) frameworks like ActiveRecord and Hibernate reduc
 
 How a resume is represented in SQL 
 
-![77aadf75c381e27f4f8d3325681613f8.png](77aadf75c381e27f4f8d3325681613f8.png)
+![77aadf75c381e27f4f8d3325681613f8.png](images/77aadf75c381e27f4f8d3325681613f8.png)
 
 Options on how to represent one-to-many relationship (positions and education table above)
 - the most normalized representation is to put `positions`, `education` etc in separate tables, with foreign key reference to the `users`  table
@@ -69,7 +69,7 @@ Options on how to represent one-to-many relationship (positions and education ta
 
 Here's the same resume represented as a **document**
 
-![1c4c9d65f212b6c4007ace99ed32db71.png](1c4c9d65f212b6c4007ace99ed32db71.png)
+![1c4c9d65f212b6c4007ace99ed32db71.png](images/1c4c9d65f212b6c4007ace99ed32db71.png)
 
 The JSON representation has better **locality** that the multi-table schema
     - if you want to fetch a profile in relational, you need to either 
@@ -79,7 +79,7 @@ The JSON representation has better **locality** that the multi-table schema
 
 The one-to-many relationship form a tree structure, and JSON representation makes this tree structure explicit
 
-![4ba34d7585f3fb3daedb1bd436540d55.png](4ba34d7585f3fb3daedb1bd436540d55.png)
+![4ba34d7585f3fb3daedb1bd436540d55.png](images/4ba34d7585f3fb3daedb1bd436540d55.png)
 
 
 #### Many-to-One and Many-to-Many Relationships
@@ -103,7 +103,7 @@ Sometimes, even if the initial version of an app fits well in a join-free docume
     - Both these features require many-to-many relationships, and are hard to implement without joins
     - In the diagram below, the data within dotted rectangle can be grouped into one doc, but the references to organizations, schools, and other users need to be represented as references, and require joins when queried
 
-![b8bec736a60872ec44ed09fa4cffbc70.png](b8bec736a60872ec44ed09fa4cffbc70.png)
+![b8bec736a60872ec44ed09fa4cffbc70.png](images/b8bec736a60872ec44ed09fa4cffbc70.png)
 
 
 #### History of data models
@@ -233,7 +233,7 @@ Vertices can represent homogeneous data
     - people, web, pages, road junctions
     - an equally powerful use of graphs is to provide a consistent way of storing completely different types of objects in a single datastore (see diagram below)
 
-![69bf36d584dc29c799575a26c1e6fa58.png](69bf36d584dc29c799575a26c1e6fa58.png)
+![69bf36d584dc29c799575a26c1e6fa58.png](images/69bf36d584dc29c799575a26c1e6fa58.png)
 
 
 #### Property Graphs
@@ -272,4 +272,4 @@ The figure above shows Property graphs
            - In that case, the predicate is an edge in the graph, the subject is the tail vertex, and the object is the head vertex. 
            - For example, in (_lucy_, _marriedTo_, _alain_) the subject and object _lucy_ and _alain_ are both vertices, and the predicate _marriedTo_ is the label of the edge that connects them.
 
-![8a77e40d576b35c0614a65ded075d786.png](8a77e40d576b35c0614a65ded075d786.png)
+![8a77e40d576b35c0614a65ded075d786.png](images/8a77e40d576b35c0614a65ded075d786.png)

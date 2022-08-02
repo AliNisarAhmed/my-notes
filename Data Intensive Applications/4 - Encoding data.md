@@ -63,7 +63,7 @@ Besides the superficial syntactic issues, they also have some subtle problems:
 - CSV does not have any schema, so it is up to the application to define the meaning of each row and column
     - CSV is also a quite vague format (what happens if a value contains a comma or a newline character?).
 
-![fd0520b098cacf019643f4825bf04e03.png](fd0520b098cacf019643f4825bf04e03.png)
+![fd0520b098cacf019643f4825bf04e03.png](images/fd0520b098cacf019643f4825bf04e03.png)
 
 
 ###### Binary Encodings
@@ -72,7 +72,7 @@ JSON is less verbose than XML, but both still use a lot of space compared to bin
 
 (Figure 4.1)
 
-![5780b7f09ec68e371345c48f499ae050.png](5780b7f09ec68e371345c48f499ae050.png)
+![5780b7f09ec68e371345c48f499ae050.png](images/5780b7f09ec68e371345c48f499ae050.png)
 
 The first few bytes, when encoding with MessagePack, are as follows:
 
@@ -92,9 +92,9 @@ The binary encoding is 66 bytes long, which is only a little less than the 81 by
 
 Apache Thrift and Protocol Buffers (protobuf) are binary encoding libraries that are based on the same principle. Protocol Buffers was originally developed at Google, Thrift was originally developed at Facebook, and both were made open source in 2007–08.
 
-![76fa0fb04891fbe03455b362024c6795.png](76fa0fb04891fbe03455b362024c6795.png)
+![76fa0fb04891fbe03455b362024c6795.png](images/76fa0fb04891fbe03455b362024c6795.png)
 
-![343f147ff75684526fcb660629059686.png](343f147ff75684526fcb660629059686.png)
+![343f147ff75684526fcb660629059686.png](images/343f147ff75684526fcb660629059686.png)
 
 The big difference compared to [Figure 4-1](https://learning.oreilly.com/library/view/designing-data-intensive-applications/9781491903063/ch04.html#fig_encoding_messagepack) is that there are no field names (`userName`, `favoriteNumber`, `interests`). Instead, the encoded data contains _field tags_, which are numbers (`1`, `2`, and `3`). Those are the numbers that appear in the schema definition. Field tags are like aliases for fields—they are a compact way of saying what field we’re talking about, without having to spell out the field name.
 
@@ -102,12 +102,12 @@ The Thrift CompactProtocol encoding is semantically equivalent to BinaryProtocol
 - It does this by packing the field type and tag number into a single byte, and by using variable-length integers. 
 - Rather than using a full eight bytes for the number 1337, it is encoded in two bytes, with the top bit of each byte used to indicate whether there are still more bytes to come. 
 - This means numbers between –64 and 63 are encoded in one byte, numbers between –8192 and 8191 are encoded in two bytes, etc. Bigger numbers use more bytes.
- ![9316825e225b7491902f6ed8a9090f1b.png](9316825e225b7491902f6ed8a9090f1b.png)
+ ![9316825e225b7491902f6ed8a9090f1b.png](images/9316825e225b7491902f6ed8a9090f1b.png)
  
  
  Protocol Buffers fits the same record in 33 bytes. (gRPC uses protobuf)
  
-![4622ae42a2298b6f23719736fbf17594.png](4622ae42a2298b6f23719736fbf17594.png)
+![4622ae42a2298b6f23719736fbf17594.png](images/4622ae42a2298b6f23719736fbf17594.png)
  
  One detail to note: in the schemas shown earlier, each field was marked either `required` or `optional`, but this makes no difference to how the field is encoded (nothing in the binary data indicates whether a field was required). The difference is simply that `required` enables a runtime check that fails if the field is not set, which can be useful for catching bugs.
  
@@ -137,13 +137,13 @@ Removing a field is just like adding a field, with backward and forward compatib
 
 #### Apache Avro
 
-![7604166e441aa3bf0ee948068bc51059.png](7604166e441aa3bf0ee948068bc51059.png)
+![7604166e441aa3bf0ee948068bc51059.png](images/7604166e441aa3bf0ee948068bc51059.png)
 
 Note that there are no tag numbers in the schema
 
 If you examine the byte sequence, you can see that there is nothing to identify fields or their datatypes. The encoding simply consists of values concatenated together. A string is just a length prefix followed by UTF-8 bytes, but there’s nothing in the encoded data that tells you that it is a string. It could just as well be an integer, or something else entirely. An integer is encoded using a variable-length encoding (the same as Thrift’s CompactProtocol).
 
-![faf9079eb83e4d323171454d99283ed6.png](faf9079eb83e4d323171454d99283ed6.png)
+![faf9079eb83e4d323171454d99283ed6.png](images/faf9079eb83e4d323171454d99283ed6.png)
 
 To parse the binary data, you go through the fields in the order that they appear in the schema and use the schema to tell you the datatype of each field. 
 - This means that the binary data can only be decoded correctly if the code reading the data is using the _exact same schema_ as the code that wrote the data. 
@@ -160,7 +160,7 @@ When an application wants to decode some data (read it from a file or database, 
 The key idea with Avro is that the writer’s schema and the reader’s schema _don’t have to be the same_—they only need to be compatible. 
 - When data is decoded (read), the Avro library resolves the differences by looking at the writer’s schema and the reader’s schema side by side and translating the data from the writer’s schema into the reader’s schema.
 
-![883bdb664c3099d194c0457b0c7d9355.png](883bdb664c3099d194c0457b0c7d9355.png)
+![883bdb664c3099d194c0457b0c7d9355.png](images/883bdb664c3099d194c0457b0c7d9355.png)
 
 
 QUESTION: How does the reader know the writer’s schema with which a particular piece of data was encoded?
@@ -217,7 +217,7 @@ Either way, in an environment where the application is changing, it is likely th
 
 This means that a value in the database may be written by a _newer_ version of the code, and subsequently read by an _older_ version of the code that is still running. Thus, forward compatibility is also often required for databases.
 
-![9c736a11066c6f79f38c5be7f925505d.png](9c736a11066c6f79f38c5be7f925505d.png)
+![9c736a11066c6f79f38c5be7f925505d.png](images/9c736a11066c6f79f38c5be7f925505d.png)
 
 
 ### Data flow though services: REST and RPC

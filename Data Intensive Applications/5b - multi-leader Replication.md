@@ -23,7 +23,7 @@ In a multi-leader configuration, you can have a leader in _each_ datacenter.
 
 Within each datacenter, regular leader–follower replication is used; between datacenters, each datacenter’s leader replicates its changes to the leaders in other datacenters.
 
-![6ac4be0eb5069f473dbc25bf6abe65ce.png](6ac4be0eb5069f473dbc25bf6abe65ce.png)
+![6ac4be0eb5069f473dbc25bf6abe65ce.png](images/6ac4be0eb5069f473dbc25bf6abe65ce.png)
 
 Comparison of Single vs Multi leader configuration in multi-datacenter: 
 
@@ -60,7 +60,7 @@ The biggest problem with multi-leader replication is that write conflicts can oc
 
 For example, consider a wiki page that is simultaneously being edited by two users, as shown in Figure below. This problem does not occur in a single-leader database.
 
-![b49c4e35fd040f8ac599f8100ba66436.png](b49c4e35fd040f8ac599f8100ba66436.png)
+![b49c4e35fd040f8ac599f8100ba66436.png](images/b49c4e35fd040f8ac599f8100ba66436.png)
 
 ### Synchronous versus asynchronous conflict detection
 
@@ -127,7 +127,7 @@ A _replication topology_ describes the communication paths along which writes ar
 
 With more than two leaders, various different topologies are possible.
 
-![4da71bbdf644fd9bf61119f47479fb9b.png](4da71bbdf644fd9bf61119f47479fb9b.png)
+![4da71bbdf644fd9bf61119f47479fb9b.png](images/4da71bbdf644fd9bf61119f47479fb9b.png)
 
 The most general topology is all-to-all.
 
@@ -140,7 +140,7 @@ A problem with circular and star topologies is that if just one node fails, it c
 The fault tolerance of a more densely connected topology (such as all-to-all) is better because it allows messages to travel along different paths, avoiding a single point of failure.
 - On the other hand, all-to-all topologies can have issues too. In particular, some network links may be faster than others (e.g., due to network congestion), with the result that some replication messages may “overtake” others
 
-![bc28d1cae7b96a36454466d4f8f1d6d0.png](bc28d1cae7b96a36454466d4f8f1d6d0.png)
+![bc28d1cae7b96a36454466d4f8f1d6d0.png](images/bc28d1cae7b96a36454466d4f8f1d6d0.png)
 
 This is a problem of causality, similar to the one we saw in Consistent Prefix Reads.
 

@@ -18,7 +18,7 @@ A node may store more than one partition. If a leader–follower replication mod
 - Each partition’s leader is assigned to one node, and its followers are assigned to other nodes. Each node may be the leader for some partitions and a follower for other partitions.
 - The choice of partitioning scheme is mostly independent of the choice of replication scheme
 
-![64559939db220ac673d44fafccba2e7c.png](64559939db220ac673d44fafccba2e7c.png)
+![64559939db220ac673d44fafccba2e7c.png](images/64559939db220ac673d44fafccba2e7c.png)
 
 # Partitioning of Key-Value Data
 If the partitioning is unfair, so that some partitions have more data or queries than others, we call it _skewed_. The presence of skew makes partitioning much less effective.
@@ -33,7 +33,7 @@ One way of partitioning is to assign a continuous range of keys (from some minim
 
 If you know the boundaries between the ranges, you can easily determine which partition contains a given key. If you also know which partition is assigned to which node, then you can make your request directly to the appropriate node (or, in the case of the encyclopedia, pick the correct book off the shelf).
 
-![7e0e76117c95b6db7d39303da241c216.png](7e0e76117c95b6db7d39303da241c216.png)
+![7e0e76117c95b6db7d39303da241c216.png](images/7e0e76117c95b6db7d39303da241c216.png)
 
 The ranges of keys are not necessarily evenly spaced, because your data may not be evenly distributed.
 - e.g. more data for A & B, compared to T-Z
@@ -60,7 +60,7 @@ A good hash function takes skewed data and makes it uniformly distributed.
 
 Once you have a suitable hash function for keys, you can assign each partition a range of hashes (rather than a range of keys), and every key whose hash falls within a partition’s range will be stored in that partition.
 
-![0fcdee945ff6ecea72fe9cde951bf1a8.png](0fcdee945ff6ecea72fe9cde951bf1a8.png)
+![0fcdee945ff6ecea72fe9cde951bf1a8.png](images/0fcdee945ff6ecea72fe9cde951bf1a8.png)
 
 Unfortunately however, by using the hash of the key for partitioning we lose a nice property of key-range partitioning: the ability to do efficient range queries.
 - Keys that were once adjacent are now scattered across all the partitions, so their sort order is lost.
@@ -115,7 +115,7 @@ However, reading from a document-partitioned index requires care: unless you hav
 Therefore, if you want to search for red cars, you need to send the query to _all_ partitions, and combine all the results you get back.
 - This approach to querying a partitioned database is sometimes known as _scatter/gather_, and it can make read queries on secondary indexes quite expensive.
 
-![709605e4feaf1490fb802bc3ba8df392.png](709605e4feaf1490fb802bc3ba8df392.png)
+![709605e4feaf1490fb802bc3ba8df392.png](images/709605e4feaf1490fb802bc3ba8df392.png)
 
 
 ## Partitioning Secondary Indexes by Term
@@ -128,7 +128,7 @@ We call this kind of index _term-partitioned_, because the term we’re looking 
 
 We can partition the global index by the term (useful for range scans), or by the hash of the term (more even distribution of load)
 
-![374f2fb26323948e11346e7c02e5db89.png](374f2fb26323948e11346e7c02e5db89.png)
+![374f2fb26323948e11346e7c02e5db89.png](images/374f2fb26323948e11346e7c02e5db89.png)
 
 The advantage of a global (term-partitioned) index over a document-partitioned index is that it can make reads more efficient: rather than doing scatter/gather over all partitions, a client only needs to make a request to the partition containing the term that it wants. 
 
@@ -171,7 +171,7 @@ Only entire partitions are moved between nodes. The number of partitions does no
 
 In this configuration, the number of partitions is usually fixed when the database is first set up and not changed afterward.
 
-![c763dcfb7b615843aa427e9e0ed2702f.png](c763dcfb7b615843aa427e9e0ed2702f.png)
+![c763dcfb7b615843aa427e9e0ed2702f.png](images/c763dcfb7b615843aa427e9e0ed2702f.png)
 
 ### Dynamic partitioning
 
@@ -217,10 +217,10 @@ Few approaches:
 2. Send all requests from clients to a routing tier first, which determines the node that should handle each request and forwards it accordingly. This routing tier does not itself handle any requests; it only acts as a partition-aware load balancer.
 3. Require that clients be aware of the partitioning and the assignment of partitions to nodes. In this case, a client can connect directly to the appropriate node, without any intermediary.
 
-![6341352a9b36aaaf39e5f9cbb2737778.png](6341352a9b36aaaf39e5f9cbb2737778.png)
+![6341352a9b36aaaf39e5f9cbb2737778.png](images/6341352a9b36aaaf39e5f9cbb2737778.png)
 
 In all cases, the key problem is: how does the component making the routing decision (which may be one of the nodes, or the routing tier, or the client) learn about changes in the assignment of partitions to nodes?
 
 Many distributed data systems rely on a separate coordination service such as ZooKeeper to keep track of this cluster metadata.
 
-![e91f01f2434b725718af9f2dcf3d1830.png](e91f01f2434b725718af9f2dcf3d1830.png)
+![e91f01f2434b725718af9f2dcf3d1830.png](images/e91f01f2434b725718af9f2dcf3d1830.png)
