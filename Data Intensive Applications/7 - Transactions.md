@@ -62,3 +62,51 @@ In a replicated database, durability may mean that the data has been successfull
 In order to provide a durability guarantee, a database must wait until these writes or replications are complete before reporting a transaction as successfully committed.
 
 Perfect durability does not exist: if all your hard disks and all your backups are destroyed at the same time, there’s obviously nothing your database can do to save you.
+
+## Single-Object and Multi-Object Operations
+
+_multi-object transactions_ are often needed if several pieces of data need to be kept in sync.
+
+example: 
+
+```sql
+SELECT COUNT(*) FROM emails WHERE recipient_id = 2 AND unread_flag = true
+```
+
+The above query could be slow, so let's say we add a field to act as a counter.
+- Every time an email comes/mark as read, we increment/decrement the counter
+
+In the figure below, user-2 experiences an anomaly. 
+-  Isolation would have prevented this issue by ensuring that user 2 sees either both the inserted email and the updated counter, or neither, but not an inconsistent halfway point.
+
+![7ec12434edd10e0e4704adc2dae83906.png](images/7ec12434edd10e0e4704adc2dae83906.png)
+
+Figure below illustrates the need for atomicity: if an error occurs somewhere over the course of the transaction, the contents of the mailbox and the unread counter might become out of sync. 
+- In an atomic transaction, if the update to the counter fails, the transaction is aborted and the inserted email is rolled back.
+
+![ebb510a2b02e4a54cd0dc28c654cf65a.png](images/ebb510a2b02e4a54cd0dc28c654cf65a.png)
+
+
+**Multi-object transactions require some way of determining which read and write operations belong to the same transaction. **
+- In relational databases, that is typically done based on the client’s TCP connection to the database server: on any particular connection, everything between a `BEGIN TRANSACTION` and a `COMMIT` statement is considered to be part of the same transaction.
+
+On the other hand, many nonrelational databases don’t have such a way of grouping operations together. 
+- Even if there is a multi-object API (for example, a key-value store may have a _multi-put_ operation that updates several keys in one operation), that doesn’t necessarily mean it has transaction semantics: the command may succeed for some keys and fail for others, leaving the database in a partially updated state.
+
+### Single-object writes
+
+Atomicity and isolation also apply when a single object is being changed. For example, imagine you are writing a 20 KB JSON document to a database, and something bad/concurrent happens (network conn interrupted, power failure, another client reads that document)
+
+Those issues would be incredibly confusing, so storage engines almost universally aim to provide atomicity and isolation on the level of a single object (such as a key-value pair) on one node.
+
+Atomicity can be implemented using a log for crash recovery (See chapter 3, making B-Trees reliable), and isolation can be implemented using a lock on each object (allowing only one thread to access an object at any one time).
+
+Single-object operations are not transactions in the usual sense of the word.
+
+### The need for multi-object transactions
+
+But do we need multi-object transactions at all? Would it be possible to implement any application with only a key-value data model and single-object operations?
+
+- In a relational data model, a row in one table often has a foreign key reference to a row in another table. (Similarly, in a graph-like data model, a vertex has edges to other vertices.) Multi-object transactions allow you to ensure that these references remain valid
+- When denormalized information needs to be updated in a document data model, you need to update several documents in one go. Transactions are very useful in this situation to prevent denormalized data from going out of sync.
+- In databases with secondary indexes (almost everything except pure key-value stores), the indexes also need to be updated every time you change a value.
