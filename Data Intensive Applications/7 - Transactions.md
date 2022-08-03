@@ -110,3 +110,75 @@ But do we need multi-object transactions at all? Would it be possible to impleme
 - In a relational data model, a row in one table often has a foreign key reference to a row in another table. (Similarly, in a graph-like data model, a vertex has edges to other vertices.) Multi-object transactions allow you to ensure that these references remain valid
 - When denormalized information needs to be updated in a document data model, you need to update several documents in one go. Transactions are very useful in this situation to prevent denormalized data from going out of sync.
 - In databases with secondary indexes (almost everything except pure key-value stores), the indexes also need to be updated every time you change a value.
+
+### Handling errors and aborts
+
+A key feature of a transaction is that it can be aborted and safely retried if an error occurred. ACID databases are based on this philosophy: if the database is in danger of violating its guarantee of atomicity, isolation, or durability, it would rather abandon the transaction entirely than allow it to remain half-finished.
+
+
+# Weak Isolation Levels
+
+If two transactions don’t touch the same data, they can safely be run in parallel, because neither depends on the other. Concurrency issues (race conditions) only come into play when one transaction reads data that is concurrently modified by another transaction, or when two transactions try to simultaneously modify the same data.
+
+Concurrency bugs are hard to find by testing, because such bugs are only triggered when you get unlucky with the timing. Such timing issues might occur very rarely, and are usually difficult to reproduce.
+
+Databases have long tried to hide concurrency issues from application developers by providing _transaction isolation_. 
+
+In theory, isolation should make your life easier by letting you pretend that no concurrency is happening: _serializable_ isolation means that the database guarantees that transactions have the same effect as if they ran _serially_ (i.e., one at a time, without any concurrency).
+
+In practice, isolation is unfortunately not that simple. Serializable isolation has a performance cost, and many databases don’t want to pay that price. 
+- It’s therefore common for systems to use weaker levels of isolation, which protect against _some_ concurrency issues, but not all. 
+- Those levels of isolation are much harder to understand, and they can lead to subtle bugs, but they are nevertheless used in practice
+
+Even many popular relational database systems (which are usually considered “ACID”) use weak isolation, so they wouldn’t necessarily have prevented these bugs (substantial loss of money, investigation by financial auditors, customer data corruption) from occurring.
+
+Various isolation levels: 
+
+## Read Committed
+
+The most basic level of transaction isolation is _read committed_.  
+
+It makes two guarantees:
+1.  When reading from the database, you will only see data that has been committed (no _dirty reads_).   
+2.  When writing to the database, you will only overwrite data that has been committed (no _dirty writes_).
+
+### No dirty reads
+
+Happens if another transaction can see the uncommitted changes of a transaction.
+
+Useful to prevent dirtry reads: 
+- coz a transaction may see partial updates by another transaction
+- coz a transaction may read data that is aborted/rolled back by another transaction
+
+![b7ca2d2105cf758f83028faca97d447b.png](images/b7ca2d2105cf758f83028faca97d447b.png)
+
+### No dirty writes
+
+Happends when a transaction modifies the uncommitted part of a previous transaction.
+
+Avoids some kind of concurrency problems: 
+- prevents bad outcome when a transaction updates multiple objects
+- however, read committed does not prevent race conditions b/w two counter increments (as shown in figure below)
+
+![49ed386f7ebd64808e53c2b80cfc805d.png](images/49ed386f7ebd64808e53c2b80cfc805d.png)
+
+### Implementing read committed
+
+Dirty writes are prevented using Locks, and the same locks can be used to prevent Dirtry reads. 
+
+However, waiting for lock to be released for reads and writes can slow down a DB. 
+
+Therefore, most DBs prevent dirty reads by remembering both old committed value & the new value (figure 7-4 above)
+
+## Snapshot Isolation and Repeatable Read
+
+Even after read committed isolation, we may still have concurrency bugs. 
+-e.g. non-repeatable reads (read skew is an example of non-repeatable reads)
+
+e.g. figure below: 
+
+![33ad3764cd842a39fe91c3c430781f86.png](images/33ad3764cd842a39fe91c3c430781f86.png)
+
+_Snapshot isolation_ is the most common solution to this problem. 
+- The idea is that each transaction reads from a _consistent snapshot_ of the database—that is, the transaction sees all the data that was committed in the database at the start of the transaction. 
+- Even if the data is subsequently changed by another transaction, each transaction sees only the old data from that particular point in time.
