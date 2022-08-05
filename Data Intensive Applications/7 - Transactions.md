@@ -63,6 +63,8 @@ In order to provide a durability guarantee, a database must wait until these wri
 
 Perfect durability does not exist: if all your hard disks and all your backups are destroyed at the same time, there’s obviously nothing your database can do to save you.
 
+---
+
 ## Single-Object and Multi-Object Operations
 
 _multi-object transactions_ are often needed if several pieces of data need to be kept in sync.
@@ -115,6 +117,7 @@ But do we need multi-object transactions at all? Would it be possible to impleme
 
 A key feature of a transaction is that it can be aborted and safely retried if an error occurred. ACID databases are based on this philosophy: if the database is in danger of violating its guarantee of atomicity, isolation, or durability, it would rather abandon the transaction entirely than allow it to remain half-finished.
 
+---
 
 # Weak Isolation Levels
 
@@ -179,6 +182,140 @@ e.g. figure below:
 
 ![33ad3764cd842a39fe91c3c430781f86.png](images/33ad3764cd842a39fe91c3c430781f86.png)
 
-_Snapshot isolation_ is the most common solution to this problem. 
+While Alice will see her correct balance eventually, other situations where read-skew is a problem: 
+- Backups
+    - while a DB is being backed-up, writes continue to happen, thus the backup may become inconsistent.
+- Long running Analytic queries may return non-sensical data if the underlying data changes
+
+_Snapshot isolation_ is the most common solution to read-skew:
 - The idea is that each transaction reads from a _consistent snapshot_ of the database—that is, the transaction sees all the data that was committed in the database at the start of the transaction. 
 - Even if the data is subsequently changed by another transaction, each transaction sees only the old data from that particular point in time.
+
+### Implementing snapshot isolation
+
+A key principle of snapshot isolation is _readers never block writers, and writers never block readers_
+
+Dirty writes are still prevented with Locks. 
+
+However, reads do not require any locks
+- The DB keeps different committed version of objects
+- this technique is called **multi-version concurrency control (MVCC)**
+
+![b524f25a89efe2a6d7848e84c602052e.png](images/b524f25a89efe2a6d7848e84c602052e.png)
+
+Each row in a table has a `created_by` field, containing the ID of the transaction that inserted this row into the table. Moreover, each row has a `deleted_by` field, which is initially empty. If a transaction deletes a row, the row isn’t actually deleted from the database, but it is marked for deletion by setting the `deleted_by` field to the ID of the transaction that requested the deletion. At some later time, when it is certain that no transaction can any longer access the deleted data, a garbage collection process in the database removes any rows marked for deletion and frees their space.
+
+An update is internally translated into a delete and a create. For example, in [Figure 7-7] transaction 13 deducts $100 from account 2, changing the balance from $500 to $400. The `accounts` table now actually contains two rows for account 2: a row with a balance of $500 which was marked as deleted by transaction 13, and a row with a balance of $400 which was created by transaction 13.
+
+An object is visible if both of the following conditions are true:
+* At the time when the reader’s transaction started, the transaction that created the object had already committed.
+* The object is not marked for deletion, or if it is, the transaction that requested deletion had not yet committed at the time when the reader’s transaction started.
+  
+A long-running transaction may continue using a snapshot for a long time, continuing to read values that (from other transactions’ point of view) have long been overwritten or deleted. By never updating values in place but instead creating a new version every time a value is changed, the database can provide a consistent snapshot while incurring only a small overhead.
+
+Many databases that implement snapshot isolation call it by different names. In Oracle it is called _serializable_, and in PostgreSQL and MySQL it is called _repeatable read_.
+- The reason for this naming confusion is that the SQL standard doesn’t have the concept of snapshot isolation, because the standard is based on System R’s 1975 definition of isolation levels, and snapshot isolation hadn’t yet been invented then.
+
+## Preventing Lost Updates
+
+In addition to dirty writes, another problem that can occur b/w concurrently writing transactions is **lost updates**
+
+The lost update problem can occur if an application reads some value from the database, modifies it, and writes back the modified value (a _read-modify-write cycle_). 
+- If two transactions do this concurrently, one of the modifications can be lost
+
+This pattern occurs in various scenarios, e.g.: 
+- Incrementing a counter or updating an account balance (requires reading the current value, calculating the new value, and writing back the updated value)
+- Making a local change to a complex value, e.g., adding an element to a list within a JSON document
+- Two users editing a wiki page at the same time
+
+Solutions: 
+
+1. Atomic write operations
+2. explicit locking
+3. auto detecting lost updates
+4. compare-and-set
+
+### Atomic write operations
+
+Many databases provide atomic update operations, which remove the need to implement read-modify-write cycles in application code. They are usually the best solution if your code can be expressed in terms of those operations.
+
+For example, the following instruction is concurrency-safe in most relational databases:
+```sql
+UPDATE counters SET value = value + 1 WHERE key = 'foo';
+```
+
+Atomic operations are usually implemented by taking an exclusive lock on the object when it is read so that no other transaction can read it until the update has been applied. This technique is sometimes known as _cursor stability_ . Another option is to simply force all atomic operations to be executed on a single thread.
+
+### Explicit locking
+
+Instead of the DB, the application can do the locking.
+
+![57a86494b90e9739eb4ddeb621b514ae.png](images/57a86494b90e9739eb4ddeb621b514ae.png)
+
+### Automatically detecting lost updates
+
+Some DBs can automatically detect lost update scenarios.
+
+An advantage of this approach is that databases can perform this check efficiently in conjunction with snapshot isolation.
+
+### Compare-and-set
+
+The purpose of this operation is to avoid lost updates by allowing an update to happen only if the value has not changed since you last read it.
+
+![45b5cca48ffa6c55d7605279ccbe49dd.png](images/45b5cca48ffa6c55d7605279ccbe49dd.png)
+
+### Conflict resolution and replication
+
+A common approach in multi-leader or leaderless replicated databases is to allow concurrent writes to create several conflicting versions of a value (also known as _siblings_), and to use application code or special data structures to resolve and merge these versions after the fact.
+
+---
+
+## Write Skew and Phantoms
+
+A transaction reads something, makes a decision based on the value it saw, and writes the decision to the database. However, by the time the write is made, the premise of the decision is no longer true.
+
+Scenario below: at least one doctor has to be on-call, on-call cannot be empty. Yet, after Alice and Bob's transactions, on-call count is zero
+
+![f0db350c2f444cda20d01c49758d72ab.png](images/f0db350c2f444cda20d01c49758d72ab.png)
+
+You can think of write skew as a generalization of the lost update problem. Write skew can occur if two transactions read the same objects, and then update some of those objects (different transactions may update different objects). In the special case where different transactions update the same object, you get a dirty write or lost update anomaly (depending on the timing).
+
+Other examples of write-skew: 
+
+- Meeting room booking system
+![25e490fde628a83a97ba5411f8b33800.png](images/25e490fde628a83a97ba5411f8b33800.png)
+
+- Multiplayer game
+    - two players attempt to move two different figures to the same position on the board
+- Claiming a username
+    - not safe under snapshot isolation, but a unique constraint is a simple satisfactory solution
+- Preventing double-spending
+    - A service that allows users to spend money or points needs to check that a user doesn’t spend more than they have.
+
+All of these examples follow a similar pattern:
+
+1.  A `SELECT` query checks whether some requirement is satisfied by searching for rows that match some search condition (there are at least two doctors on call, there are no existing bookings for that room at that time, the position on the board doesn’t already have another figure on it, the username isn’t already taken, there is still money in the account).
+2.  Depending on the result of the first query, the application code decides how to continue (perhaps to go ahead with the operation, or perhaps to report an error to the user and abort).
+3.  If the application decides to go ahead, it makes a write (`INSERT`, `UPDATE`, or `DELETE`) to the database and commits the transaction.
+    
+    The effect of this write changes the precondition of the decision of step 2. In other words, if you were to repeat the `SELECT` query from step 1 after committing the write, you would get a different result, because the write changed the set of rows matching the search condition (there is now one fewer doctor on call, the meeting room is now booked for that time, the position on the board is now taken by the figure that was moved, the username is now taken, there is now less money in the account).
+    
+This effect, where a write in one transaction changes the result of a search query in another transaction, is called a _phantom_
+
+Snapshot isolation avoids phantoms in read-only queries, but in read-write transactions like the examples we discussed, phantoms can lead to particularly tricky cases of write skew.
+
+Solutions:
+1. Materializing conflicts
+2. Serializability
+
+### Materializing conflicts
+
+If the problem of phantoms is that there is no object to which we can attach the locks, perhaps we can artificially introduce a lock object into the database?
+
+Materializing Conflicts is **an approach that turns a Phantom into a lock conflict on a concrete set of rows in the database**. It avoids transactions taking incorrect decisions based on non-existent data by materializing objects or rows that the transactions need to fight over.
+
+Does not fully resolve phantoms.
+
+---
+
+# Serializability
