@@ -318,4 +318,81 @@ Does not fully resolve phantoms.
 
 ---
 
-# Serializability
+# Serializability or Serialized Isolation
+
+Serializable isolation is usually regarded as the strongest isolation level. It guarantees that even though transactions may execute in parallel, the end result is the same as if they had executed one at a time, _serially_, without any concurrency.
+
+Three ways to achieve Serializability: 
+1. Actual Serial Execution
+2. Two-Phase Locking (2PL)
+3. Serializable Snapshot Isolation (SSI)
+
+## Actual Serial Execution
+
+The simplest way of avoiding concurrency problems is to remove the concurrency entirely: to execute only one transaction at a time, in serial order, on a single thread. By doing so, we completely sidestep the problem of detecting and preventing conflicts between transactions: the resulting isolation is by definition serializable.
+
+systems with single-threaded serial transaction processing don’t allow interactive multi-statement transactions. Instead, the application must submit the entire transaction code to the database ahead of time, as a _stored procedure_. The differences between these approaches is illustrated below: 
+
+![3fcdf87a48b38b543be5a51a6253dea6.png](images/3fcdf87a48b38b543be5a51a6253dea6.png)
+
+Serial execution of transactions has become a viable way of achieving serializable isolation within certain constraints:
+
+* Every transaction must be small and fast, because it takes only one slow transaction to stall all transaction processing.    
+* It is limited to use cases where the active dataset can fit in memory. Rarely accessed data could potentially be moved to disk, but if it needed to be accessed in a single-threaded transaction, the system would get very slow.    
+* Write throughput must be low enough to be handled on a single CPU core, or else transactions need to be partitioned without requiring cross-partition coordination.
+* Cross-partition transactions are possible, but there is a hard limit to the extent to which they can be used.
+
+## Two-Phase Locking (2PL)
+
+For around 30 years, there was only one widely used algorithm for serializability in databases: _two-phase locking_ (2PL)
+
+Two-phase locking is similar to Locks, but makes the lock requirements much stronger. Several transactions are allowed to concurrently read the same object as long as nobody is writing to it. But as soon as anyone wants to write (modify or delete) an object, exclusive access is required:
+
+* If transaction A has read an object and transaction B wants to write to that object, B must wait until A commits or aborts before it can continue. (This ensures that B can’t change the object unexpectedly behind A’s back.)
+    
+* If transaction A has written an object and transaction B wants to read that object, B must wait until A commits or aborts before it can continue. (Reading an old version of the object, like in Figure 7-4, is not acceptable under 2PL.)
+
+In 2PL, writers don’t just block other writers; they also block readers and vice versa.
+    - This is the key difference with snapshot isolation
+    
+On the other hand, because 2PL provides serializability, it protects against all the race conditions discussed earlier, including lost updates and write skew.
+
+The blocking of readers and writers is implemented by having a lock on each object in the database. The lock can either be in _shared mode_ or in _exclusive mode_. The lock is used as follows:
+
+1. If a transaction wants to read an object, it must first acquire the lock in shared mode.
+    - More than one shared-mode lock is allowed
+    - shared-locks must wait for exclusive locks
+2. If a transaction wants to write to an object, it must first acquire the lock in exclusive mode.
+3. If a transaction first reads and then writes an object, it may upgrade its shared lock to an exclusive lock. The upgrade works the same as getting an exclusive lock directly.
+4. After a transaction has acquired the lock, it must continue to hold the lock until the end of the transaction (commit or abort).
+    - Two phase meaning: "acquire the locks" -> do work -> "release the locks"
+
+The big downside of 2PL is performance.
+- This is partly due to the overhead of acquiring and releasing all those locks, but more importantly due to reduced concurrency. 
+    - By design, if two concurrent transactions try to do anything that may in any way result in a race condition, one has to wait for the other to complete.
+
+## Serializable Snapshot Isolation (SSI)
+
+A fairly new algorithm that avoids most of the downsides of the previous approaches. It uses an optimistic approach, allowing transactions to proceed without blocking. When a transaction wants to commit, it is checked, and it is aborted if the execution was not serializable.
+
+_serializable snapshot isolation_ (SSI) provides full serializability, but has only a small performance penalty compared to snapshot isolation.
+
+### Pessimistic versus optimistic concurrency control
+
+Two-phase locking is a so-called _pessimistic_ concurrency control mechanism: it is based on the principle that if anything might possibly go wrong (as indicated by a lock held by another transaction), it’s better to wait until the situation is safe again before doing anything. It is like _mutual exclusion_, which is used to protect data structures in multi-threaded programming.
+
+By contrast, serializable snapshot isolation is an _optimistic_ concurrency control technique. Optimistic in this context means that instead of blocking if something potentially dangerous happens, transactions continue anyway, in the hope that everything will turn out all right. When a transaction wants to commit, the database checks whether anything bad happened (i.e., whether isolation was violated); if so, the transaction is aborted and has to be retried. Only transactions that executed serializably are allowed to commit.
+
+### Decisions based on an outdated premise
+
+In write-skew, the transaction is taking an action based on a _premise_ (a fact that was true at the beginning of the transaction, e.g., “There are currently two doctors on call”). Later, when the transaction wants to commit, the original data may have changed—the premise may no longer be true.
+
+How does the database know if a query result might have changed? There are two cases to consider:
+
+* Detecting reads of a stale MVCC object version (uncommitted write occurred before the read)   
+* Detecting writes that affect prior reads (the write occurs after the read)
+
+![8a534ecf9332741a14c808a00f78085c.png](images/8a534ecf9332741a14c808a00f78085c.png)
+![9cfdb6222fb130229496f45faaeea460.png](images/9cfdb6222fb130229496f45faaeea460.png)
+
+Compared to two-phase locking, the big advantage of serializable snapshot isolation is that one transaction doesn’t need to block waiting for locks held by another transaction. Like under snapshot isolation, writers don’t block readers, and vice versa.
