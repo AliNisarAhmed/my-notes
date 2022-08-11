@@ -37,9 +37,13 @@ Processes can be controlled using `kill`, `pkill`, `pgrep`, and `killall`. To in
 
 `kill -l`
 
+`pgrep <process_name>` - find the pid of the process with this name
+
 ![244c992f19f337e0955ef6381386cf87.png](../../images/244c992f19f337e0955ef6381386cf87.png)
 
 `kill 9 <pid>` - kill a process
+
+`pkill -9 <name of process>` - kill a process using grep without knowing the pid of the process
 
 ## Background a Process
 
@@ -48,6 +52,8 @@ Sometimes it will be necessary to put the scan or process we just started in the
 Use `jobs` to list all background processes.
 
 The `[Ctrl] + Z` shortcut suspends the processes, and they will not be executed further. To keep it running in the background, we have to enter the command `bg` to put the process in the background.
+
+(The process running in the "background" cannot be stopped by CTRL+C command, to stop it first bring it to foreground with `fg` command)
 
 Another option is to automatically set the process with an AND sign (`&`) at the end of the command.
 `ping -c 10 www.hackthebox.eu &`
