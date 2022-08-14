@@ -69,6 +69,25 @@
 - remove volumes
     `docker volume rm $(docker volume ls -q)`
     
+   
+### Network
+
+`docker container inspect --format '{{ .NetworkSettings.IPAddress }}' <container_name>`
+    - inspect the IP of the container
+    
+    
+`docker container post <container>`
+    - check port of the container
+    
+    
+`docker network inspect <n/w name`
+
+`docker network ls`
+
+`docker network create`
+- spawn a new virtual n/w to connect our containers to
+
+
 ## Docker Compose
 
 `docker-compose up` provided a `docker-compose.yml` file is in the directory
