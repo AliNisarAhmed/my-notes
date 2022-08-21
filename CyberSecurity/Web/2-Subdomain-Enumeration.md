@@ -40,6 +40,8 @@ To speed up the process of OSINT subdomain discovery, we can automate the above 
 
 ## Virtual Hosts
 
+**Virtual hosting** is a method for hosting multiple [domain names](https://en.wikipedia.org/wiki/Domain_name "Domain name") (with separate handling of each name) on a single [server](https://en.wikipedia.org/wiki/Server_%28computing%29 "Server (computing)") (or pool of servers). This allows one server to share its resources, such as memory and processor cycles, without requiring all services provided to use the same host name. The term virtual hosting is usually used in reference to web servers but the principles do carry over to other Internet services.
+
 Some subdomains aren't always hosted in publically accessible DNS results, such as development versions of a web application or administration portals. Instead, the DNS record could be kept on a private DNS server or recorded on the developer's machines in their /etc/hosts file (or c:\\windows\\system32\\drivers\\etc\\hosts file for Windows users) which maps domain names to IP addresses. 
 
 Because web servers can host multiple websites from one server when a website is requested from a client, the server knows which website the client wants from the **Host** header. We can utilise this host header by making changes to it and monitoring the response to see if we've discovered a new website.
