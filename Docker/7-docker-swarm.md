@@ -356,3 +356,17 @@ secrets:
   psql_password:
     file: ./psql_password.txt
 ```
+
+# Quiz
+
+In order to spin up multiple services in a Swarm, we can just use 'docker-compose up' and Docker will be able to tell this is a Swarm and will deploy services across all nodes.
+    - False
+    - `docker-compose` cannot talk to swarm, we have a special command to use YAML files in swarm services
+    - `docker stack deploy -c yaml_file <service_name>`
+
+
+In order to update a service that was initially deployed in a stack command, we would need to do a "docker stack rm", make our changes, then re-deploy.
+    - False
+    - We can just deploy it again using `docker stack deploy...`
+
+
