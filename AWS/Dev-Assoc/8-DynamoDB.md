@@ -44,13 +44,16 @@ a GSI table can have a different partition key and sort key
 
 A GSI has its own provision WCU and RCU, they consume units from the index, and not from the base table.
 
-Writes, however, can. only happen to base table and are later asynchronously replicated to GSIs with eventual consistency
+Writes, however, can only happen to base table and are later asynchronously replicated to GSIs with eventual consistency
+
+**Note**: queries on GSI support **eventual consistency** only
+
 
 ## Local Secondary Index
 
 In an LSI, searches are limited to a single partition.
 
-LSI allows us to create an index where we can use an AT KEY attribute as a sort key. Partition key is the same as the base key.
+LSI allows us to create an index where we can use an NON KEY attribute as a sort key. Partition key is the same as the base key.
 
 LSI can only be created at the time of creation of the table.
 
@@ -247,8 +250,17 @@ Across regions, change is propagated asynchronously
 
 DynamoDB uses a LWW (Last Write Wins) reconciliation strategy to resolve conflicts between concurrent updates
 
-**Note**: Failover to other tables is not done automatically. You need to implement this in your application.
+**Note**: Failover to other regions is not done automatically. You need to implement this in your application.
 
 Use Cases:
 - Protection from regional failures
 - Provides low-latency to applications with globally dispersed users
+
+
+## Quiz
+
+Q: You are designing the DynamoDB table that will be used by your Node.js application. It will have to handle 10 writes per second and then 20 eventually consistent reads per second where all the items have a size of 2 KB for both operations.
+
+Which of the following are the most optimal WCU and RCU that you should provision to the table?
+
+Answer: 10 RCU and 20 WCU
