@@ -9,7 +9,7 @@
 - built-in fault tolerance
 - Can also be queried with SQL using `PartiQL` language
 
-![d06a24993dec2007845cd85d580594dd.png](../../../../dev/my-notes-work/images/d06a24993dec2007845cd85d580594dd.png)
+![d06a24993dec2007845cd85d580594dd.png](../../images/d06a24993dec2007845cd85d580594dd.png)
 
 
 ## Secondary Index
@@ -18,7 +18,7 @@ A data structure that contains a subset of attributes from a table, along with a
 
 Using secondary index is faster than full table scans
 
-![86d591232b24831dba00f9f79c6554b0.png](../../../../dev/my-notes-work/images/86d591232b24831dba00f9f79c6554b0.png)
+![86d591232b24831dba00f9f79c6554b0.png](../../images/86d591232b24831dba00f9f79c6554b0.png)
 
 
 Attribute Projection options
@@ -39,7 +39,7 @@ A table can have up to 20 GSIs (default limit)
 
 a GSI table can have a different partition key and sort key
 
-![57d6a20fce79b25b481eeb50775f1f85.png](../../../../dev/my-notes-work/images/57d6a20fce79b25b481eeb50775f1f85.png)
+![57d6a20fce79b25b481eeb50775f1f85.png](../../images/57d6a20fce79b25b481eeb50775f1f85.png)
 
 
 A GSI has its own provision WCU and RCU, they consume units from the index, and not from the base table.
@@ -216,3 +216,39 @@ Note:
     - expired TTL items can still appear in queries
 - The exact duration within which an item gets deleted after expiration depends on the table size
 - DynamoDB deleted expired items **within 48 hours**
+
+
+## DynamoDB Transactions
+
+DynamoDB Transactions lets you perform **ACID** operations across one or more tables in an AWS region
+- ACID (Atomicity, Consistency, Isolation, Durability)
+
+DynamoDB allows Transaction operations
+1. TransactWriteItems
+    - group up to 25 write actions in a single all-or-nothing operation
+    - you can add `PutItem`, `UpdateItem`, `DeleteItem` and `ConditionCheck`
+2. TransactGetItems
+    - group up to 25 `GetItem`s and `ConditionCheck` (should not exceed 4MB)
+
+Transactions are 2x more expensive than Standard reads and writes
+
+DynamoDB performs two underlying reads or writes of every item in the transaction
+
+
+## DynamoDB Global Tables
+
+Allows you to automatically replicate DynamoDB tables across AWS Regions.
+
+DynamoDB fully manages the synchronization of tables via DynamoDB Streams.
+
+To create a global table, enable DynamoDB Streams with `NEW_AND_OLD_IMAGES` StreamViewType
+
+Across regions, change is propagated asynchronously
+
+DynamoDB uses a LWW (Last Write Wins) reconciliation strategy to resolve conflicts between concurrent updates
+
+**Note**: Failover to other tables is not done automatically. You need to implement this in your application.
+
+Use Cases:
+- Protection from regional failures
+- Provides low-latency to applications with globally dispersed users
