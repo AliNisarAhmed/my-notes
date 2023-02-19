@@ -137,3 +137,14 @@ Note: Only All-at-once, Canary and Linear can be applied to AWS Lambda and ECS d
 The hooks section contains a set of logical groupings called lifecyle event hooks that allow us to execute scripts during various phases of the deployment process
 
 ![5af7b53b2d56ef89683703bc54060e86.png](../../images/5af7b53b2d56ef89683703bc54060e86.png)
+
+
+# Code Pipeline
+
+A fully managed CD service that can help you easily build your own CI/CD pipeline:
+
+Sample pipeline:
+- Source Stage (AWS CodeCommit)
+- Deploy Stage - staging (AWS CodeDeploy)
+- Manual approval stage - (wait for manual approval before proceeding)
+- Deploy stage - prod (AWS CodeDeploy)
