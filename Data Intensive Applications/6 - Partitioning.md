@@ -21,6 +21,9 @@ A node may store more than one partition. If a leader–follower replication mod
 ![64559939db220ac673d44fafccba2e7c.png](images/64559939db220ac673d44fafccba2e7c.png)
 
 # Partitioning of Key-Value Data
+
+Our goal with partitioning is to spread the data and the query load evenly across nodes.
+
 If the partitioning is unfair, so that some partitions have more data or queries than others, we call it _skewed_. The presence of skew makes partitioning much less effective.
 
 A partition with disproportionately high load is called a _hot spot_.
@@ -62,13 +65,13 @@ Once you have a suitable hash function for keys, you can assign each partition a
 
 ![0fcdee945ff6ecea72fe9cde951bf1a8.png](images/0fcdee945ff6ecea72fe9cde951bf1a8.png)
 
-Unfortunately however, by using the hash of the key for partitioning we lose a nice property of key-range partitioning: the ability to do efficient range queries.
+Unfortunately however, by using the hash of the key for partitioning _we lose a nice property of key-range partitioning_: the ability to do efficient range queries.
 - Keys that were once adjacent are now scattered across all the partitions, so their sort order is lost.
 - In MongoDB, if you have enabled hash-based sharding mode, any range query has to be sent to all partitions
 
 Cassandra achieves a compromise between the two partitioning strategies.
 - A table in Cassandra can be declared with a _compound primary key_ consisting of several columns. 
-- Only the first part of that key is hashed to determine the partition, but the other columns are used as a concatenated index for sorting the data in Cassandra’s SSTables. 
+- Only the first part of that key is hashed to determine the partition, but the other columns are used as a _concatenated index_ for sorting the data in Cassandra’s SSTables. 
 - A query therefore cannot search for a range of values within the first column of a compound key, but if it specifies a fixed value for the first column, it can perform an efficient range scan over the other columns of the key.
 
 The concatenated index approach enables an elegant data model for one-to-many relationships. 
@@ -95,15 +98,15 @@ Secondary indexes are the bread and butter of relational databases, and they are
 The problem with secondary indexes is that they don’t map neatly to partitions. 
 
 There are two main approaches to partitioning a database with secondary indexes: 
-1. document-based partitioning 
-2. term-based partitioning.
+1. document-based partitioning (Local Index)
+2. term-based partitioning (Global Index)
 
 Running Example: imagine you are operating a website for selling used cars. 
 - Each listing has a unique ID—call it the _document ID_—and you partition the database by the document ID (for example, IDs 0 to 499 in partition 0, IDs 500 to 999 in partition 1, etc.).
 
 You want to let users search for cars, allowing them to filter by color and by make, so you need a secondary index on `color` and `make`
 
-## Partitioning Secondary Indexes by Document
+## Partitioning Secondary Indexes by Document aka Local Index
 
 In this indexing approach, each partition is completely separate: each partition maintains its own secondary indexes, covering only the documents in that partition. 
 - It doesn’t care what data is stored in other partitions. 
@@ -134,7 +137,7 @@ The advantage of a global (term-partitioned) index over a document-partitioned i
 
 However, the downside of a global index is that writes are slower and more complicated, because a write to a single document may now affect multiple partitions of the index (every term in the document might be on a different partition, on a different node).
 
-In practice, updates to global secondary indexes are often asynchronous.
+In practice, updates to global secondary indexes are often asynchronous. that is, if you read the index shortly after a write, the change you just made may not yet be reflected in the index). For example, **Amazon DynamoDB** states that its global secondary indexes are updated within a fraction of a second in normal circumstances, but may experience longer propagation delays in cases of faults in the infrastructure
 
 ---
 
@@ -224,3 +227,5 @@ In all cases, the key problem is: how does the component making the routing deci
 Many distributed data systems rely on a separate coordination service such as ZooKeeper to keep track of this cluster metadata.
 
 ![e91f01f2434b725718af9f2dcf3d1830.png](images/e91f01f2434b725718af9f2dcf3d1830.png)
+
+When using a routing tier or when sending requests to a random node, clients still need to find the IP addresses to connect to. These are not as fast-changing as the assignment of partitions to nodes, so it is often sufficient to use DNS for this purpose.

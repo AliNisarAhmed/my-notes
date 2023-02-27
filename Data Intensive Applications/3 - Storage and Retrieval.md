@@ -13,6 +13,7 @@ The underlying storage format is simple:
 
 The `db_set` function has pretty good performance for something so simple - appending to a file is pretty quick
     - This append only data-file is called a _log_
+    - and this data structure based on log semantics is called log-structured db
 
 OTOH, `db_get` has terrible performance
     - basically loop through the whole database and find the last occurrence
@@ -34,7 +35,7 @@ Keep an in-memory hash map where every key is mapped to a byte offset in the dat
 
 The hashmap is kept in memory/RAM
 
-This type of index is used in BitCask (storage engine in Riak)
+This type of index is used in [BitCask](https://github.com/basho/bitcask) (storage engine in Riak)
 
 A storage engine like BitCask is well suited to the situations where the value for each key is updated frequently
 - e.g. The key might be the URL of a cat video, and the value might be the number of times it has been played (incremented every time someone hits the play button)
@@ -138,7 +139,7 @@ The Storage engine works as follows:
 
 This scheme works very well. It only suffers from one problem: 
 - if the database crashes, the most recent writes (which are in the memtable but not yet written out to disk) are lost. 
-- In order to avoid that problem, we can keep a separate log on disk to which every write is immediately appended, just like in the previous section. 
+- In order to avoid that problem, **we can keep a separate log on disk** to which every write is immediately appended, just like in the previous section. 
 - That log is not in sorted order, but that doesn’t matter, because its only purpose is to restore the memtable after a crash. 
 - Every time the memtable is written out to an SSTable, the corresponding log can be discarded.
 
@@ -151,6 +152,9 @@ Storage engines that are based on the principle of merging and compacting sorted
 
 
 #### LSM Tree vs SST
+
+**An SSTable is a key-sorted append-only key-value storage. An LSM-tree is a layered data structure, based on a balanced tree, that allows SSTables to exist without the controversy of being both sorted and append-only at the same time.**
+
 
 ![eac9b9dc50c63088e689752f8b55a3a6.png](images/eac9b9dc50c63088e689752f8b55a3a6.png)
 
@@ -242,7 +246,7 @@ LSM-trees are typically faster for writes, whereas B-trees are thought to be fas
 - Reads are typically slower on LSM-trees because they have to check several different data structures and SSTables at different stages of compaction.
 
 **Write Amplification**
-- happens when on write to the DB results in multiple writes to the disk over the course of the database's lifetime
+- happens when one write to the DB results in multiple writes to the disk over the course of the database's lifetime
     - It is of particular concern on SSD, which can only overwrite blocks a limited number of times before wearing out
 - In write-heavy applications, the performance bottleneck might be the rate at which the database can write to disk. 
     - In this case, write amplification has a direct performance cost: the more that a storage engine writes to disk, the fewer writes per second it can handle within the available disk bandwidth.
@@ -448,6 +452,7 @@ We can choose to impose an order as we store the rows, and use that as an indexi
 Note that it wouldn’t make sense to sort each column independently, because then we would no longer know which items in the columns belong to the same row. 
 - We can only reconstruct a row because we know that the _k_th item in one column belongs to the same row as the _k_th item in another column.
 - Rather, the data needs to be sorted an entire row at a time, even though it is stored by column. 
+- The administrator of the database can choose the columns by which the table should be sorted, using their knowledge of common queries. For example, if queries often target date ranges, such as the last month, it might make sense to make date_key the first sort key. Then the query optimizer can scan only the rows from the last month, which will be much faster than scanning all rows.
 - A second column can determine the sort order of any rows that have the same value in the first column.
 
 Another advantage of sorted order is that it can help with compression of columns. If the primary sort column does not have many distinct values, then after sorting, it will have long sequences where the same value is repeated many times in a row.

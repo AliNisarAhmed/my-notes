@@ -63,6 +63,9 @@ Unlike GSI, LSI supports eventual and strongly consistent reads.
 
 An attribute not projected in an LSI can still be fetched from the base table, although this defeats the purpose of the LSI. Avoid fetching non-projected attributes.
 
+![70665857de00edbe77d2c1e18e608e92.png](../../images/70665857de00edbe77d2c1e18e608e92.png)
+
+
 ## Capacity Modes
 
 Two types: 

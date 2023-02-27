@@ -8,6 +8,8 @@ There are various reasons why you might want to distribute a database across mul
     - If your data volume, read load, or write load grows bigger than a single machine can handle, you can potentially spread the load across multiple machines.
 - Fault tolerance/high availability
     - If your application needs to continue working even if one machine (or several machines, or the network, or an entire datacenter) goes down, you can use multiple machines to give you redundancy. When one fails, another one can take over.
+- Disconnected Operation
+    - Allowing an app to continue working when there is a network interruption
 - Latency
     - If you have users around the world, you might want to have servers at various locations worldwide so that each user can be served from a datacenter that is geographically close to them. That avoids the users having to wait for network packets to travel halfway around the world.
 
@@ -212,18 +214,18 @@ Trigger-based replication typically has greater overheads than other replication
 # Problems with Replication Lag
 
 For workloads that consist of mostly reads and only a small percentage of writes (a common pattern on the web), Leader-based replication is an attractive option: create many followers, and distribute the read requests across those followers. This removes load from the leader and allows read requests to be served by nearby replicas.
-- Thus, leader-based replication is read-scaling architecture
+- **Thus, leader-based replication is read-scaling architecture**
 
 If an application reads from an _asynchronous_ follower, it may see outdated information if the follower has fallen behind. 
 - This leads to apparent inconsistencies in the database: if you run the same query on the leader and a follower at the same time, you may get different results, because not all writes have been reflected in the follower. 
 - This inconsistency is just a temporary state, and the replication lag corrects itself once the follower catches up
 - This is called _eventual consistency_
 
-Three problems that occur due to replication lag: 
+Three problems that occur due to replication lag, and guarantees that eliminate them: 
 
-1. Reading your own writes
-2. Monotonic Reads
-3. Consistent Prefix Reads
+1. Losing just submitted data - Reading your own writes
+2. Moving back in time - Monotonic Reads
+3. Causality problems - Consistent Prefix Reads
 
 ## 1. Reading your own writes 
 

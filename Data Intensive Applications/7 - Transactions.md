@@ -24,7 +24,7 @@ The word means similar but subtly different things in different branches of comp
 By contrast, in the context of ACID, atomicity is _not_ about concurrency. 
 - It does not describe what happens if several processes try to access the same data at the same time, because that is covered under the letter _I_, for _isolation_
 
-Rather, ACID atomicity describes what happens if a client wants to make several writes, but a fault occurs after some of the writes have been processed, for example, a process crashes, a network connection is interrupted, a disk becomes full, or some integrity constraint is violated.  
+**Rather, ACID atomicity describes what happens if a client wants to make several writes, but a fault occurs after some of the writes have been processed**, for example, a process crashes, a network connection is interrupted, a disk becomes full, or some integrity constraint is violated.  
 - If the writes are grouped together into an atomic transaction, and the transaction cannot be completed (_committed_) due to a fault, then the transaction is _aborted_ and the database must discard or undo any writes it has made so far in that transaction.
 - if a transaction was aborted, the application can be sure that it didn’t change anything, so it can safely be retried.
 
@@ -161,7 +161,7 @@ Happends when a transaction modifies the uncommitted part of a previous transact
 
 Avoids some kind of concurrency problems: 
 - prevents bad outcome when a transaction updates multiple objects
-- however, read committed does not prevent race conditions b/w two counter increments (as shown in figure below)
+- however, read committed does not prevent race conditions b/w two counter increments (as shown in figure under Isolation section)
 
 ![49ed386f7ebd64808e53c2b80cfc805d.png](images/49ed386f7ebd64808e53c2b80cfc805d.png)
 
@@ -172,6 +172,9 @@ Dirty writes are prevented using Locks, and the same locks can be used to preven
 However, waiting for lock to be released for reads and writes can slow down a DB. 
 
 Therefore, most DBs prevent dirty reads by remembering both old committed value & the new value (figure 7-4 above)
+   - For every object that is written, the database remembers both the old committed value and the new value set by the transaction that currently holds the write lock. 
+   - While the transaction is ongoing, any other transactions that read the object are simply given the old value. 
+   - Only when the new value is committed do transactions switch over to reading the new value.
 
 ## Snapshot Isolation and Repeatable Read
 
@@ -188,12 +191,17 @@ While Alice will see her correct balance eventually, other situations where read
 - Long running Analytic queries may return non-sensical data if the underlying data changes
 
 _Snapshot isolation_ is the most common solution to read-skew:
-- The idea is that each transaction reads from a _consistent snapshot_ of the database—that is, the transaction sees all the data that was committed in the database at the start of the transaction. 
+- The idea is that each transaction reads from a _consistent snapshot_ of the database — that is, the transaction sees all the data that was committed in the database at the start of the transaction. 
 - Even if the data is subsequently changed by another transaction, each transaction sees only the old data from that particular point in time.
+
+Snapshot isolation is a boon for long-running, read-only queries such as backups and analytics. 
+- It is very hard to reason about the meaning of a query if the data on which it operates is changing at the same time as the query is executing. 
+- When a transaction can see a consistent snapshot of the database, frozen at a particular point in time, it is much easier to understand.
 
 ### Implementing snapshot isolation
 
 A key principle of snapshot isolation is _readers never block writers, and writers never block readers_
+- This allows a database to handle long-running read queries on a consistent snapshot at the same time as processing writes normally, without any lock contention between the two.
 
 Dirty writes are still prevented with Locks. 
 
@@ -206,6 +214,18 @@ However, reads do not require any locks
 Each row in a table has a `created_by` field, containing the ID of the transaction that inserted this row into the table. Moreover, each row has a `deleted_by` field, which is initially empty. If a transaction deletes a row, the row isn’t actually deleted from the database, but it is marked for deletion by setting the `deleted_by` field to the ID of the transaction that requested the deletion. At some later time, when it is certain that no transaction can any longer access the deleted data, a garbage collection process in the database removes any rows marked for deletion and frees their space.
 
 An update is internally translated into a delete and a create. For example, in [Figure 7-7] transaction 13 deducts $100 from account 2, changing the balance from $500 to $400. The `accounts` table now actually contains two rows for account 2: a row with a balance of $500 which was marked as deleted by transaction 13, and a row with a balance of $400 which was created by transaction 13.
+
+### Visibility rules for consistent snapshot
+
+When a transaction reads from the database, transaction IDs are used to decide
+which objects it can see and which are invisible, using the following rules:
+
+1. At the start of each transaction, the database makes a list of all the other transactions that are in progress (not yet committed or aborted) at that time. Any writes that those transactions have made are ignored, even if the transactions subsequently commit.
+2. Any writes made by aborted transactions are ignored.
+3. Any writes made by transactions with a later transaction ID (i.e., which started after the current transaction started) are ignored, regardless of whether those transactions have committed.
+4. All other writes are visible to the application’s queries.
+
+In Figure 7-7, when transaction 12 reads from account 2, it sees a balance of $500 because the deletion of the $500 balance was made by transaction 13 (according to rule 3, transaction 12 cannot see a deletion made by transaction 13), and the creation of the $400 balance is not yet visible (by the same rule).
 
 An object is visible if both of the following conditions are true:
 * At the time when the reader’s transaction started, the transaction that created the object had already committed.
@@ -258,9 +278,11 @@ Some DBs can automatically detect lost update scenarios.
 
 An advantage of this approach is that databases can perform this check efficiently in conjunction with snapshot isolation.
 
+Lost update detection is a great feature, because it doesn’t require application code to use any special database features—you may forget to use a lock or an atomic operation and thus introduce a bug, but lost update detection happens automatically and is thus less error-prone
+
 ### Compare-and-set
 
-The purpose of this operation is to avoid lost updates by allowing an update to happen only if the value has not changed since you last read it.
+DBs provide a compare-and-set operation. The purpose of this operation is to avoid lost updates by allowing an update to happen only if the value has not changed since you last read it.
 
 ![45b5cca48ffa6c55d7605279ccbe49dd.png](images/45b5cca48ffa6c55d7605279ccbe49dd.png)
 
@@ -277,6 +299,8 @@ A transaction reads something, makes a decision based on the value it saw, and w
 Scenario below: at least one doctor has to be on-call, on-call cannot be empty. Yet, after Alice and Bob's transactions, on-call count is zero
 
 ![f0db350c2f444cda20d01c49758d72ab.png](images/f0db350c2f444cda20d01c49758d72ab.png)
+
+Write skew is neither a dirty write nor a lost update, because the two transactions are updating two different objects (Alice’s and Bob’s on-call records, respectively).
 
 You can think of write skew as a generalization of the lost update problem. Write skew can occur if two transactions read the same objects, and then update some of those objects (different transactions may update different objects). In the special case where different transactions update the same object, you get a dirty write or lost update anomaly (depending on the timing).
 
@@ -315,8 +339,34 @@ If the problem of phantoms is that there is no object to which we can attach the
 Materializing Conflicts is **an approach that turns a Phantom into a lock conflict on a concrete set of rows in the database**. It avoids transactions taking incorrect decisions based on non-existent data by materializing objects or rows that the transactions need to fight over.
 
 Does not fully resolve phantoms.
+- Unfortunately, it can be hard and error-prone to figure out how to materialize conflicts
+- it’s ugly to let a concurrency control mechanism leak into the application data model.
+
+For those reasons, materializing conflicts should be considered a last resort if no alternative is possible. A serializable isolation level is much preferable in most cases.
 
 ---
+
+## Summary
+
+Transaction isolation weak levels
+1. Read Committed:
+    - No dirty reads - reading values not committed by other transactions
+    - No dirty writes - updating non-committed values of another transaction
+2. Snapshot Isolation
+    - _read skew_ (non-repeatable reads): a client sees different parts of the DB at different points in time. Prevented with snapshot isolation
+    - Each transaction reads from a consistent snapshot of the database - that is, tX sees all the data that was committed in the database at the start of the tX
+    - Even if the data is subsequently changed by another transaction, each transaction sees only the old data from that particular point in time.
+    - Usually implemented with MVCC (multi-version concurrency control)
+3. Preventing Lost updates
+    - _Atomic write operations_ using locks
+    - _Explicit locking_ - application can lock the data instead of the DB
+    - _Auto detecting lost updates_ - allow read-modify-write cycles to happen in paralle, but if the TX manages detects a lost update, abort the tX and force it to retry its read-modify-write cycle.
+    - _Compare and set_ - avoid lost updates by allowing an update to happen only if the value has not changes since you last read it. If the current value does not match what you previously read, the update has no effect and RMW cycle must be retried
+4. Write Skew and Phantoms
+    - _write skew_ : A tx reads something, makes a decision based on the value it saw, and writes the decision to the DB. However, by the time the write is made, the premise of the decision is no longer true (some other tx modified it)
+    - _phantom reads_: A tx reads objects that match some search condition. Another client makes a write that affects the results of that search. 
+    - Snapshot isolation prevents straight-forward phantom reads, but phantoms in the context of write skew require special treatment, such as index-range locks
+
 
 # Serializability or Serialized Isolation
 
@@ -331,7 +381,11 @@ Three ways to achieve Serializability:
 
 The simplest way of avoiding concurrency problems is to remove the concurrency entirely: to execute only one transaction at a time, in serial order, on a single thread. By doing so, we completely sidestep the problem of detecting and preventing conflicts between transactions: the resulting isolation is by definition serializable.
 
-systems with single-threaded serial transaction processing don’t allow interactive multi-statement transactions. Instead, the application must submit the entire transaction code to the database ahead of time, as a _stored procedure_. The differences between these approaches is illustrated below: 
+Why switch to single-threaded execution?:
+1. RAM became cheap and now its possible to keep all the data that a tx reads in memory allowing tX to execute faster than if they have to wait for data to be loaded from disk
+2. OLTP transactions are usually short and only make small number of reads and writes. While long-running OLAP queries are typically read-only, so can be run on consistent snapshot outside of the serial loop
+
+Systems with single-threaded serial transaction processing don’t allow interactive multi-statement transactions. Instead, the application must submit the entire transaction code to the database ahead of time, as a _stored procedure_. The differences between these approaches is illustrated below: 
 
 ![3fcdf87a48b38b543be5a51a6253dea6.png](images/3fcdf87a48b38b543be5a51a6253dea6.png)
 
@@ -353,9 +407,11 @@ Two-phase locking is similar to Locks, but makes the lock requirements much stro
 * If transaction A has written an object and transaction B wants to read that object, B must wait until A commits or aborts before it can continue. (Reading an old version of the object, like in Figure 7-4, is not acceptable under 2PL.)
 
 In 2PL, writers don’t just block other writers; they also block readers and vice versa.
-    - This is the key difference with snapshot isolation
+    - This is the key difference with snapshot isolation (readers never block writers, and writers never block readers)
     
 On the other hand, because 2PL provides serializability, it protects against all the race conditions discussed earlier, including lost updates and write skew.
+
+### Implementation of 2PL
 
 The blocking of readers and writers is implemented by having a lock on each object in the database. The lock can either be in _shared mode_ or in _exclusive mode_. The lock is used as follows:
 
@@ -367,9 +423,21 @@ The blocking of readers and writers is implemented by having a lock on each obje
 4. After a transaction has acquired the lock, it must continue to hold the lock until the end of the transaction (commit or abort).
     - Two phase meaning: "acquire the locks" -> do work -> "release the locks"
 
+_Deadlocks_ may occur (when tX A is stuck waiting for tX B to release its lock, and vice versa)
+- DBs usually auto detect deadlocks b/w tXs and aborts one of them
+
 The big downside of 2PL is performance.
 - This is partly due to the overhead of acquiring and releasing all those locks, but more importantly due to reduced concurrency. 
     - By design, if two concurrent transactions try to do anything that may in any way result in a race condition, one has to wait for the other to complete.
+
+
+2PL uses either 
+- predicate locks 
+    - works similar to shared/exclusive locks, but rather than belonging to a particular object (e.g. 1 row in a table), it belongs to all objets that match some search condition
+    - Performance is not that good, if there are many locks by active tXs, checking for matching locks becomes time consuming
+- Index-range locks
+    - an approximation of search condition is attached to one of the indexes in the db.
+    - if another tX wants to insert, update or delete, it will have to update the same part of the index, and while doing it, will encounter shared lock, and thus will be forced to wait
 
 ## Serializable Snapshot Isolation (SSI)
 
@@ -396,3 +464,5 @@ How does the database know if a query result might have changed? There are two c
 ![9cfdb6222fb130229496f45faaeea460.png](images/9cfdb6222fb130229496f45faaeea460.png)
 
 Compared to two-phase locking, the big advantage of serializable snapshot isolation is that one transaction doesn’t need to block waiting for locks held by another transaction. Like under snapshot isolation, writers don’t block readers, and vice versa.
+
+Compared to serial execution, serializable snapshot isolation is not limited to the throughput of a single CPU core

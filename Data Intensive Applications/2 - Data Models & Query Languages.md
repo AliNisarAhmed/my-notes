@@ -27,11 +27,11 @@ The roots of relations dbs lie in business data processing, which was performed 
         - payroll
         - reporting
 
-Therre have been many competing approaches to reoational 
+Therre have been many competing approaches to relational 
     - network model 
     - hierarchical model
 
-Remarkably, relational DBs turned out to generalize well, byond their original scope of business data processing.
+Remarkably, relational DBs turned out to generalize well, beyond their original scope of business data processing.
 
 
 #### Birth of NoSQL
@@ -204,7 +204,7 @@ Most relational DBs support XML and JSON
 
 OTOH, RethinkDB supports relational like joins
 
-MongoDB Drivers automaticall resolve document references
+MongoDB Drivers automatically resolve document references
 
 It seems that relational and document databases are becoming more similar over time, and that is a good thing: the data models complement each other.
 
