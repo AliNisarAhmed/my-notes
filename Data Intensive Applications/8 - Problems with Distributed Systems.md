@@ -29,7 +29,7 @@ Unfortunately, the uncertainty about the network makes it difficult to tell whet
 - If we are able to reach the node, but no process is listening on the destination port, the OS will close or refuse TCP connection by sending `RST` or `FIN` packet in reply
 - if the node process crashed but the OS is still running, a script can be used to notify other nodes about the crash
 - can query mgmt interface of the n/w switches in a datcenter to detect link failures. Ruled out if we are connecting via the internet
-- If the router detects that the IP address is unreachable, it may send bac ICMP Destination Unreachable packet.
+- If the router detects that the IP address is unreachable, it may send back ICMP Destination Unreachable packet.
 
 We can add retries at the application level, wait for a timeout to elapse, and eventually declare a node dead if we don't hear back within the timeout
 
@@ -38,18 +38,27 @@ We can add retries at the application level, wait for a timeout to elapse, and e
 If a timeout is the only sure way of detecting a fault, then how long should the timeout be? There is unfortunately no simple answer.
 
 A long timeout means a long wait until a node is declared dead (and during this time, users may have to wait or see error messages). A short timeout detects faults faster, but carries a higher risk of incorrectly declaring a node dead when in fact it has only suffered a temporary slowdown (e.g., due to a load spike on the node or the network).
+- declaring a node dead prematurely may lead to strain on other nodes or even cascading failures across all nodes
 
-Imagine a fictitious system with a network that guaranteed a maximum delay for packets—every packet is either delivered within some time _d_, or it is lost, but delivery never takes longer than _d_. Furthermore, assume that you can guarantee that a non-failed node always handles a request within some time _r_. In this case, you could guarantee that every successful request receives a response within time 2_d_ + _r_—and if you don’t receive a response within that time, you know that either the network or the remote node is not working. If this was true, 2_d_ + _r_ would be a reasonable timeout to use.
+Imagine a fictitious system with a network that guaranteed a maximum delay for packetsevery packet is either delivered within some time _d_, or it is lost, but delivery never takes longer than _d_. 
+- Furthermore, assume that you can guarantee that a non-failed node always handles a request within some time _r_. 
+- In this case, you could guarantee that every successful request receives a response within time `2d + r` 
+- and if you don’t receive a response within that time, you know that either the network or the remote node is not working. 
+- _If this was true_, `2d + r` would be a reasonable timeout to use.
 
 Unfortunately, most systems we work with have neither of those guarantees: asynchronous networks have _unbounded delays_ (that is, they try to deliver packets as quickly as possible, but there is no upper limit on the time it may take for a packet to arrive), and most server implementations cannot guarantee that they can handle requests within some maximum time
 
+
 ### Network congestion and queueing
+
 
 ![2aa81ed0234f01a006994bdd05d539e5.png](images/2aa81ed0234f01a006994bdd05d539e5.png)
 
 Queuing can happen at the destination, but can also happen on the sender (called congestion avoidance or backpressure).
 
-TCP considers a packet to be lost if it is not acknowledged within some timeout (which is calculated from observed round-trip times), and lost packets are automatically retransmitted.
+TCP considers a packet to be lost if it is not acknowledged within some timeout (which is calculated from observed round-trip times), and lost packets are automatically retransmitted. 
+- an application does not see the packet loss, but it does see the resulting delay
+- UDP does not retransmit data, that is why it is good for use cases where the lost packet is worthless, e.g. videos, audio calls etc
 
 All of these factors contribute to the variability of network delays.
 
@@ -58,6 +67,8 @@ All of these factors contribute to the variability of network delays.
 Variable delays in networks are not a law of nature, but simply the result of a cost/benefit trade-off, between _packet switching_ vs _circuit switching_ as seen in telephone lines.
 
 A circuit is a fixed amount of reserved bandwidth which nobody else can use while the circuit is established, whereas the packets of a TCP connection opportunistically use whatever network bandwidth is available.
+- when we make a phone call, it establishes a circuit
+- the circuit remains in place until the call ends
 
 A network using circuits is called Synchronous
 - in sync n/ws the max end-2-end latency of the n/w is fixed
@@ -68,13 +79,15 @@ Packet switching is optimized for _bursty traffic_.
 
 A wire b/w telephone lines is divided in a static way
 - e.g. if a wire can carry 10k simultaneous calls, and we are the only caller, our bandwidth is fixed and still the same
-- Provides latency Guaranteesm but is costly
+- Provides latency Guarantees but is costly
 
 In contrast, the internet shares n/w bandwidth dynamically
 - Senders push and jostle with each other to get their packets over the wire as quickly as possible, and the network switches decide which packet to send
 - Provides better utilization, so it is cheaper, but then has variable delays
 
+
 # Unreliable Clocks
+
 
 Each machine on the network has its own clock, which is an actual hardware device: usually a quartz crystal oscillator. 
 
@@ -85,11 +98,13 @@ It is possible to synchronize clocks to some degree: the most commonly used mech
 
 ## Monotonic vs Time-of-Day Clocks
 
-Time-of-day: return the current date and time according to some calendar
-- e.g. `clock_gettime(CLOCL_REALTIME)` on linux
+Time-of-day: return the current date and time according to some calendar (aka _wall-clock time_)
+- e.g. `clock_gettime(CLOCK_REALTIME)` on linux
 - `System.currentTimeMillis()` in Java
+- return the number of ms since the _epoch_ - midnight UTC on Jan 1, 1970, not counting leap seconds
 
 Time-of-day clocks are usually synchronized with NTP, which means that a timestamp from one machine (ideally) means the same as a timestamp on another machine.
+- however, time-of-day clocks are susceptible to jumps, and they ignore leap seconds, hence are not suitable for measuring elapsed time
 
 A monotonic clock is suitable for measuring a duration (time interval), such as a timeout or a service’s response time: `clock_gettime(CLOCK_MONOTONIC)` on Linux and `System.nanoTime()` in Java are monotonic clocks.
 
@@ -99,7 +114,15 @@ In a distributed system, using a monotonic clock for measuring elapsed time (e.g
 
 ## Clock Synchronization and Accuracy
 
-Monotonic clocks don’t need synchronization, but time-of-day clocks need to be set according to an NTP server or other external time source in order to be useful. Unfortunately, our methods for getting a clock to tell the correct time aren’t nearly as reliable or accurate as you might hope—hardware clocks and NTP can be fickle beasts.
+Monotonic clocks don’t need synchronization, but time-of-day clocks need to be set according to an NTP server or other external time source in order to be useful. Unfortunately, our methods for getting a clock to tell the correct time aren’t nearly as reliable or accurate as you might hope—hardware clocks and NTP can be fickle beasts, examples:
+- The quartz clock in a computer is not very accurate, it _drifts_
+- if a computer's clock differs too much from NTP server, if may refuse to sync, or the local clock will be forcibly reset
+- if a node is accidentally firewalled from NTP servers, the misconfig may go unnoticed for a while
+- NTP sync can only be as good as the n/w delay, so there is a limit to its accurace when you are on congested n/w with variable packet delay
+- some NTP servers may be wrong or misconfigured
+- Leap seconds result in a minute being 59 or 61 seconds, which messes up timing assumptions in systems not designed with leap seconds in mind
+- In VMs, the h/w clock is virtualized, which raises additional challenges
+- If you run s/w on devices that you do not fully control (mobile or embedded device), you probably cannot trust its h/w clock at all.
 
 It is possible to achieve very good clock accuracy if you care about it sufficiently to invest significant resources. For example, the MiFID II draft European regulation for financial institutions requires all high-frequency trading funds to synchronize their clocks to within 100 microseconds of UTC, in order to help debug market anomalies such as “flash crashes” and to help detect market manipulation.
 
