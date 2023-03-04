@@ -102,6 +102,10 @@ Classic Ports to know
     - 3 year period reservation
     - Useful for software that have complicated licensing model.
 - Dedicated Instances: no other customers will share your hardware
+- Capacity Reservations - reserve capacity in a specific AZ for any duration
+
+![29c043a798f368045e1c87ac57bbf2e8.png](../images/29c043a798f368045e1c87ac57bbf2e8.png)
+
 
 ### Elastic IPs 
 

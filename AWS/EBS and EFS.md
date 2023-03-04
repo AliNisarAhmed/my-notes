@@ -2,7 +2,7 @@
 
 Elastic Block store Volume is a network drive we can attach to EC2 instances
 
-They can only be mounted to one instance at a time
+They can only be mounted to one instance at a time (multi attach is available)
 
 They are bound to a specific Availability Zone 
 
