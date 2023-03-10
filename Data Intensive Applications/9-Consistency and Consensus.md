@@ -79,3 +79,90 @@ Notes from diagram above:
 
 It is possible (though computationally expensive) to test whether a system’s
 behavior is linearizable by recording the timings of all requests and responses, and checking whether they can be arranged into a valid sequential order.
+
+### Linearizability vs Serializability
+
+Both words seem to mean "something that can be arranged in a sequential order"
+
+However:
+
+Serializability 
+- is an isolation property of _transactions_, where every transaction may read and write multiple objects (rows, documents, records)
+- It guarantees that transactions behave the same as if they had executed in some serial order (each
+transaction running to completion before the next transaction starts). 
+- It is okay for that serial order to be different from the order in which transactions were actually run
+
+Linearizability
+- Linearizability is a recency guarantee on reads and writes of a register (an _individual object_).
+- It doesn’t group operations together into transactions, so it does
+not prevent problems such as write skew, unless you take additional measures such as materializing conflicts
+
+A database may provide both serializability and linearizability, and this combination is known as _strict serializability_ or _strong one-copy serializability_
+
+However, serializable snapshot isolation is not linearizable: 
+- by design, it makes reads from a consistent snapshot, to avoid lock contention between readers and writers. 
+- The whole point of a consistent snapshot is that it does not include writes that are more recent than the snapshot, and thus reads from the snapshot are not linearizable.
+
+
+### Linearizability applications
+
+1. Locking and leader election
+
+One way of electing a leader, in a single leader replication system, is to use a lock: every node that starts up tries to acquire the lock, and the one that succeeds becomes the leader. 
+
+No matter how this lock is implemented, it must be linearizable: all nodes
+must agree which node owns the lock; otherwise it is useless.
+
+2. Constraints and uniqueness gaurantees
+
+If we want to enforce Uniqueness constraints in DBs as the data is written (such that if two people try to concurrently create a user or a file with the same name, one of them will be returned an error), we need linearizability.
+
+Similar issues arise if you want to ensure that a bank account balance never goes negative, or that you don’t sell more items than you have in stock in the warehouse, or that two people don’t concurrently book the same seat on a flight or in a theater.
+
+Other kind of constraints, such as foreign key or attribute constraints, can be impemented without requiring linearizability
+
+3. Cross channel timing dependencies
+
+In the example of Alice and Bob withh soccer score, the linearizability violation was only noticed because there was an additional communication channel in the system (Alice's and Bobs mobile phones)
+
+Similar situations can arise in computer systems. For example, say you have a website where users can upload a photo, and a background process resizes the photos to lower resolution for faster download (thumbnails).
+
+If the system is not linearizable, there is a risk of race condition, the msg Q might be faster than the internal replication, resulting in msg Q seeing old image, or no image at all.
+
+This problem arises because there are two different communication channels
+between the web server and the resizer: the file storage and the message queue.
+
+![4ff56e281d192b7dd0cdd89345854af3.png](../images/4ff56e281d192b7dd0cdd89345854af3.png)
+
+
+
+### Implementing Linearizable Systems
+
+1. Use a Single copy of the data
+    - Linearizable (since single copy)
+    - not tolerant to faults (all eggs in one basket)
+
+2. Single-leader replication
+    - Potentially Linearizable
+        - In case when reads are made from the reader OR replication is synchronoush.
+    - however, not every single leader DB is actually linearizable
+        - either by design (uses snapshot isolation)
+        - OR dure to concurrency bugs
+ 
+3. Consensus Algos
+    - Consensus algos (discussed later below) contain measures to prevent split brain and stale replicas
+    - thus are linearizable
+
+4. Multi-leader replication
+    - Systems with multi-leader replication are generally not linearizable, because they concurrently process writes on multiple nodes and asynchronously replicate them to other nodes.
+
+5. Leaderless replication
+    - LWW is almost certainly non-linearizable
+    - Even doing Quorum reads and writes (w + r > n) does not gaurantee linearizability (see diagram below)
+    - Sloppy quorums are also non-linearizable
+
+![19aa89ded0f951efb2e58e8d6b4a7828.png](../images/19aa89ded0f951efb2e58e8d6b4a7828.png)
+
+In the above diagram, the initial value of x is 0, and a writer client is updating x to 1 by sending the write to all three replicas (n = 3, w = 3). Concurrently, client A reads from a quorum of two nodes (r = 2) and sees the new value 1 on one of the nodes. Also concurrently with the write, client B reads from a different quorum of two nodes, and gets back the old value 0 from both.
+
+The quorum condition is met (w + r > n), but this execution is nevertheless not linearizable: B’s request begins after A’s request completes, but B returns the old value while A returns the new value.
