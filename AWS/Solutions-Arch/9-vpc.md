@@ -129,6 +129,13 @@ We must create multiple NATGWs in multiple AZs for fault-tolerance
 
 ![dadc0ccb7bdeafdcc6a231fb0615b6a9.png](../../images/dadc0ccb7bdeafdcc6a231fb0615b6a9.png)
 
+in addition to above:
+
+port forwarding | not supported | Manually customize the config to support pf
+
+
+https://docs.aws.amazon.com/vpc/latest/userguide/vpc-nat-comparison.html
+
 
 ## NACL (N/w Access Control List)
 
