@@ -1,47 +1,15 @@
-1. Cross account S3 requests - Lambda to cross account S3 request
-    - AWS Lambda can assume an IAM Role in another AWS account to access resources (e.g. S3) and do tasks (starting/stopping instances)
-    - Configure your Lambda function's execution role to allow the function to assume an IAM Role in another AWS account
-    - Modify your cross-account IAM Role's trust policy to allow your Lambda function to assume the role
+
 3. HIPAA Complaince
-    - is **a living culture that health care organizations must implement within their business in order to protect the privacy, security, and integrity of protected health information**.
-5. launch configuration vs launch template
-    - Launch templates (LTs) are newer than LCs and provide more options to work with
-    - AWS recommends you create ASG from LTs for latest features
-    - LC
-        - A _launch configuration_ is an instance configuration template that an Auto Scaling group uses to launch EC2 instances.
-        - Include the ID of the Amazon Machine Image (AMI), the instance type, a key pair, one or more security groups, and a block device mapping.
-        - You can specify your launch configuration with multiple Auto Scaling groups. 
-        - However, you can only specify one launch configuration for an Auto Scaling group at a time, and you can't modify a launch configuration after you've created it. To change the launch configuration for an Auto Scaling group, you must create a launch configuration and then update your Auto Scaling group with it.
-    - LT is similar
-        - allows versioning
-        - Allows to edit and update.
-        - With versioning of launch templates, you can create a subset of the full set of parameters. Then, you can reuse it to create other versions of the same launch template.
-        - Also LTs provide **more EC2 options** for you to configure, for example, dedicated hosting can be set only using a LT. Similarly, ability to use T2 unlimited burst credit option is only available in a LT.
+    - is **a living culture that health care organizations must implement within their business in order to protect the privacy, security, and integrity of protected health information**.e
 7. ECS launch type pricing
     - EC2 type 
         - is free service, we pay for resources (EC2 instances) we use, and the amount of time the tasks are running on them
     - Fargate type 
         - is a pay-as-you-go service, and you only pay for the resources you use. 
         - The cost depends on the number of tasks you are running, the amount of time the tasks are running and the amount of memory and CPU your tasks require
-8. Lambda functions and VPC
-    - Lambda functions always operate from an AWS-owned VPC. By default, your function has the full ability to make network requests to any public internet address — this includes access to any of the public AWS APIs.
-    - Once your function is VPC-enabled, all network traffic from your function is subject to the routing rules of your VPC/Subnet. If your function needs to interact with a public resource, you will need a route through a NAT gateway in a public subnet.
-    - You should only enable your functions for VPC access when you need to interact with a private resource located in a private subnet. An RDS instance is a good example.
-9. Copying S3 data into different regions
-    - 2 options
-        1. Set up S3 batch replication to copy objects across S3 buckets in different region using S3 Console
-            - as opposed to S3 Live replication - which requires a support ticket to AWS
-        3. Copy data from the source S3 bucket to destination bucket using the AWS S3 sync command
-          
-11. Kinesis Data Stream performance
-    - Amazon Kinesis Data Streams (KDS) is a massively scalable and durable real-time data streaming service. KDS can continuously capture gigabytes of data per second from hundreds of thousands of sources such as website clickstreams, database event streams, financial transactions, social media feeds, IT logs, and location-tracking events.
-    - By default, the 2MB/second/shard output is shared between all of the applications consuming data from the stream. You should use enhanced fan-out if you have multiple consumers retrieving data from a stream in parallel. With enhanced fan-out developers can register stream consumers to use enhanced fan-out and receive their own 2MB/second pipe of read throughput per shard, and this throughput automatically scales with the number of shards in a stream.
 13. NLB traffic routing (how?)
     - if you specify targets using an instance ID, traffic is routed to instances using primary private IP address specified in the primary ENI for the instance
     - If you specify target using IP addresses, you can route traffic to an instance using any private IP address from one or more network interfaces. This enables multiple applications on an instance to use the same port.
-14. S3 Consistency model
-    - S3 delivers strong read-after-write consistency automatically, without changes to performance or availability, w/o sacrificing regional isolation for applications, and at no additional cost
-    - all S3 GET, PUT, and LIST operations, as well as operations that change object tags, ACLs, or metadata, are strongly consistent. What you write is what you will read, and the results of a LIST will be an accurate reflection of what’s in the bucket.
 16. Gaurd Duty data sources
     - Threat detection service
     - Multiple sources, notably CloudTrail events, VPC Flow Logs and DNS Logs
@@ -61,18 +29,6 @@
     - Amazon Redshift Spectrum resides on dedicated Amazon Redshift servers that are independent of your cluster. Redshift Spectrum pushes many compute-intensive tasks, such as predicate filtering and aggregation, down to the Redshift Spectrum layer. Thus, Redshift Spectrum queries use much less of your cluster's processing capacity than other queries.
     - Loading historical data into Redshift via COPY command or Glue ETL job would cost heavy for a one-time ad-hoc process. The same result can be achieved more cost-efficiently by using Redshift Spectrum. Therefore both these options to load historical data into Redshift are also incorrect for the given use-case.
 26. RDS Custom for Oracle Multi-AZ option?
-27. EC2 placement groups - Spread vs Cluster
-    - A spread placement group can span multiple AZs in the same Region
-    - You can have a max of 7 running instances per AZ per placement group
-29. DNS vs Global Accelerator for Blue/Green Deployments
-    - With AWS Global Accelerator, you can shift traffic gradually or all at once between the blue and the green environment and vice-versa without being subject to DNS caching on client devices and internet resolvers, traffic dials and endpoint weights changes are effective within seconds.
-    -  AWS Global Accelerator is a network layer service that directs traffic to optimal endpoints over the AWS global network, this improves the availability and performance of your internet applications. It provides two static anycast IP addresses that act as a fixed entry point to your application endpoints in a single or multiple AWS Regions, such as your Application Load Balancers, Network Load Balancers, Elastic IP addresses or Amazon EC2 instances, in a single or in multiple AWS regions.
-30. CloudFront vs Global Accelerator
-    - CloudFront uses multiple sets of dynamically changing IP addresses while Global Accelerator will provide you a set of static IP addresses as a fixed entry point to your applications.
-    - CloudFront pricing is mainly based on data transfer out and HTTP requests while Global Accelerator charges a fixed hourly fee and an incremental charge over your standard Data Transfer rates, also called a Data Transfer-Premium fee (DT-Premium).
-    - CloudFront uses Edge Locations to cache content while Global Accelerator uses Edge Locations to find an optimal pathway to the nearest regional endpoint.
-    - CloudFront is designed to handle HTTP protocol meanwhile Global Accelerator is best used for both HTTP and non-HTTP protocols such as TCP and UDP.
-    - Global Accelerator is a good fit for non-HTTP use cases, such as gaming (UDP), IoT (MQTT), or Voice over IP, as well as for HTTP use cases that specifically require static IP addresses or deterministic, fast regional failover.
 31. S3 transition minimum period
     - The minimum storage duration is 30 days before you can transition objects from S3 Standard to S3 One Zone-IA or S3 Standard-IA, so both these options are added as distractors.
 32. VPC Sharing vs Peering?
@@ -80,8 +36,7 @@
     - You can share Amazon VPCs to leverage the implicit routing within a VPC for applications that require a high degree of interconnectivity and are within the same trust boundaries. This reduces the number of VPCs that you create and manage while using separate accounts for billing and access control.
 34. public VIF?
     - AWS DataSync is an online data transfer service that simplifies, automates, and accelerates copying large amounts of data between on-premises storage systems and AWS Storage services, as well as between AWS Storage services.
-35. Amazon Aurora vs Aurora Serverless
-    - Aurora Serverless is the auto-scaling on-demand config version of Aurora
+    - DX VIFs: https://repost.aws/knowledge-center/public-private-interface-dx
 37. CloudFormation Stacksets vs Recycle Bin?
     - Recycle Bin
         - a data recovery new feature
@@ -89,25 +44,6 @@
         - If the resources are deleted, they are retained in the Recycle bin for a time period that you specify before being permanently deleted
     - Cloudformation stacksets
         - extends the capability of stacks by enabling you to create, update or delete stacks across multiple accounts and AWS regions with a single operation
-39. Networking modes in Amazon ECS tasks Ec2 launch type
-    - Host Mode
-    - Bridge mode
-    - None mode
-    - AWSVPC mode
-41. WAF Rules
-    - Following are the rate-based rules that can be used
-        1. Blanket rate-based rules
-            - prevents source IP address from making excessive requests to entire app
-        2. URI specific rate-based rule
-            - prevents IP address from making excessive requests to a particular URI
-            - These are useful if specific functions of the app, e.g. computationally expensive resources need to be protected
-        3. IP reputation rate-based rule
-            - Prevents well-known malicious IP addresses from making excessive requests to the application
-    - All the above rules can be combined or can be used separately as per need 
-42. AWS Route 53 health checks and failovers
-    - can be active-active OR active-passive failover configuration
-    - Active-passive can is used when primary resources are available most of the time, and secondary resources are only used if primary resources are not available
-    - Active-Active: Use this failover configuration when you want all of your resources to be available the majority of the time. When a resource becomes unavailable, Route 53 can detect that it's unhealthy and stop including it when responding to queries.
 43. CloudFront Signed Cookies
     - allow you to control access to multiple content files and you dont have to change your URL for each customer access and these dont expire (unlike S3 Presigned URLs)
 44. S3 - setting permission for website access
@@ -117,15 +53,9 @@
     - Amazon recommends disabling Object ACLs by using Object Ownership thus defaulting to normal S3 permissions
 45. Cloudwatch metrics aggregation
     - Instance unified cloudwatch agent and use aggregation_dimensions in agent config file to aggregate metics for all instances
-46. EC2 Hibernate vs Standby mode
-    - Hibernate is not supported for an instance that is part of an ASG (ASG marks it as dead and terminates it)
-    - Standby Mode (as opposed to InService Mode) can be used to perform software upgrade or troubleshooting
 47. S3 vs S3 TA pricing
     - S3 itself has no transfer charges when data is transferred from the internet
     - with S3TA, you only pay for transfers that are successfully accelerated
-49. SQS FIFO Batch Mode
-    - By default, FIFO queues support up to 300 msgs/s
-    - When you batch 10 msgs per operation (max value), FIFO queue can support up to 3000 msgs/sec
 51. S3 Invalid lifecycle transitions
     - Following are the unsupported life cycle transitions for S3
         - Any storage class to S3 Standard
@@ -137,14 +67,33 @@
 54. S3 Retention
     - Different versions of a single object can have different retention modes and periods
 55. S3 Versioning cannot be disabled once enabled, it can only be suspended
-56. AWS Aurora replicas priority tiers
-    - Each read replica is associated with a priority tier (0-15)
-    - highest priority (i.e. lowest number) is promoted in case of failover
-    - if priority is same, higher size is promoted
-    - if size is same, an arbitrary replica is promoted
 58. Is EFS multi-region by default, if not, how to make it so?
     - use VPC peering for inter-region sharing
 59. EFS vs EBS gp2 vs S3 Standard price comparison
     - EFS         = 0.3 per GB per month
     - EBS gp2     = 0.1 per GB per month
     - S3 Standard = 0.023 per GB per month
+60. S3 multi-account upload
+    - By default, an S3 object is owned by the AWS account that uploaded it. This is true even when the bucket is owned by another account
+    - To get access to the data files, an AWS Identity and Access Management (IAM) role with cross-account permissions must run the UNLOAD command again.
+    1.  From the account of the S3 bucket, create an IAM role (Bucket Role) with permissions to the bucket.
+    2.  From the account of the Amazon Redshift cluster, create another IAM role (Cluster Role) with permissions to assume the Bucket Role.
+    3.  Update the Bucket Role to grant bucket access and create a trust relationship with the Cluster Role.
+    4.  From the Amazon Redshift cluster, run the UNLOAD command using the Cluster Role and Bucket Role.
+63. EFS IA
+    - Amazon EFS Infrequent Access (EFS IA) is a storage class that provides price/performance that is cost-optimized for files, not accessed every day, with storage prices up to 92% lower compared to Amazon EFS Standard
+67. Permission boundary on Groups?
+    - AWS supports permissions boundaries for IAM entities (users or roles, NOT groups). A permissions boundary is an advanced feature for using a managed policy to set the maximum permissions that an identity-based policy can grant to an IAM entity. An entity's permissions boundary allows it to perform only the actions that are allowed by both its identity-based policies and its permissions boundaries.
+69. EC2 default termination policy
+    - https://docs.aws.amazon.com/autoscaling/ec2/userguide/ec2-auto-scaling-termination-policies.html
+71. Resource Access Manager (VPC/subnet sharing?)
+72. Shared Services VPC
+    - Consider an organization that has built a hub-and-spoke network with AWS Transit Gateway. VPCs have been provisioned into multiple AWS accounts, perhaps to facilitate network isolation or to enable delegated network administration. When deploying distributed architectures such as this, a popular approach is to build a "shared services VPC, which provides access to services required by workloads in each of the VPCs. This might include directory services or VPC endpoints. Sharing resources from a central location instead of building them in each VPC may reduce administrative overhead and cost.
+73. Dedicated instances vs Dedicated hosts
+    - https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/dedicated-hosts-overview.html#dedicated-hosts-dedicated-instances
+74. Private Hosted Zones - DNS hostnames and DNS Resolutio
+75. Transfer data between EFS in 2 different regions
+76. Kinesis Video Streams
+77. Aurora Parllel Query
+78. CloudFormation Mappings vs Parameters
+79. AQUA for redshift
