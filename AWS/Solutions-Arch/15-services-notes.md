@@ -1,4 +1,42 @@
 # EC2
+- user data
+    - script that runs before launch of an instance
+    - use it to customize the dynamic installation parts at boot time
+- Spot instances
+    - available for less than on-demand price
+    - available as long as your max price > spot price
+    - Spot instance requests
+        - either 1-time or persistent
+            - persistent requests are reopened after spot instance is interrupted
+        - Cancelling a spot request does not terminate instances
+            - first cancel request, then terminate
+    - Spot blocks
+        - spot instances with a defined duration (1-6 hours)
+        - designed not to be interrupted
+        - may be reclaimed in rare situations due to EC2 capacity needs
+    - Spot fleets
+        - spot instances + (optional) on-demand
+        - will try to meet target capacity with price constraints
+        - strategies
+            - lowestPrice
+            - diversified
+            - capacityOptimized
+        - allow us to auto request spot instances with lowest price
+- Reserved Instances
+    - up to 75% discount
+    - Classes/Types
+        - Standard
+            - provides more discount than Convertible
+        - Convertible
+            - can be exchanges for other RIs of a different instance family
+    - Both classes can be modified though
+- Dedicated instances vs Dedicated Hosts
+    - Dedicated Instances
+        - run on dedicated h/w, which is locked down for you while the instance is up
+        - if instance is restarted, may switch to a different dedicated h/w
+    - Dedicated hosts
+        - the same h/w as long as we pay
+        - that is why useful in server license cases
 - Placement Groups
     - Cluster
         - low latency group/cluster within single AZ
@@ -42,6 +80,7 @@
         - rules to prevent accidental deletion
         - specify retention (1 day to 1 year)
     - Fast Snapshot Restore
+    - can use DLM (Data Lifecycle Manager) to auto manage EBS snapshots
 - Volume Types
     - General purpose SSD
     - High performance (io1/io2)
@@ -55,9 +94,8 @@
 - gp2/gp3 io1/io2 can be boot volumes
 
 
-—
 
-# EFS
+## EFS
 - works with EC2 instances in multi-AZ
 - scales Auto
 - Perf mode
@@ -67,10 +105,12 @@
         - Highly parallelized applications and workloads, such as big data analysis, media processing, and genomic analysis, can benefit from this mode.
 - Storage Tiers
     - Standard
-    - EFA-IA
+    - EFS-IA
         - cost to retrieve
         - lower price to store
-        - enabled with lifecycle policy
+            - save up to 92%
+        - enabled with Lifecycle policy
+        - max 90 days wait possible before moving to EFS-IA from EFS
 - Availability
     - Standard
         - Multi-AZ
@@ -78,23 +118,62 @@
         - great for dev
 
 
+## FSx
+- Lustre
+    - for HPC
+    - 100s GB/s, millions IOPs, sub-ms latencies
+    - seamless integration with S3
+        - can read S3 as a filesystem
+        - can write back to S3
+    - can be used with on-prem (VPN or DX)
+    - Deployment options
+        - Scratch FS
+            - Temporary storage
+            - High Burst
+            - usage: short term processing, optimize cost
+        - Persistent FS
+            - long-term
+            - data replication within same AZ
+            - usage: long-term, sensitive data
+- Windows File Server
+    - SMB + NTFS protocols
+    - can be mounted on linux ec2
+    - supports Microsoft Distributed File System Namespaces
+    - 10s of Gbps, millions of IOPs, 100s of PB
+    - can be access from on-prem (VPN or DX)
+    - can be configued to be Multi-AZ
+    - Daily back up to S3
+- NetApp ONTAP
+    - NFS, SMB, iScsi
+    - Point in time instantaneous cloning
+- OpenZFS
+
+
+
+
 —
 
-# ELB
+# HA
+
+## ELB
 - Highly available across AZs
 - Types
     - ALB
-        - HTTP
-        - HTTPS
-        - HTTP/2
-        - WebSocket
+        - Supported Protocols
+            - HTTP
+            - HTTPS
+            - HTTP/2
+            - WebSocket
+            - gRPC
         - port mapping feature for ECS
         - Target Groups
             - Private IPs
             - EC2
             - Lambda
             - ECS Tasks
-        - Supports SNI for multiple certs
+        - Supports SNI for multiple certs for multiple endpoints
+        - cannot assign Elastic IP to an ALB
+            - provides a fixed DNS but no fixed IP, even EIP
     - NLB
         - TCP
         - TLS
@@ -102,13 +181,16 @@
         - HTTP/HTTPS health checks when pointed to ALB only
         - 1 static IP per AZ
         - supports Elastic IP
-        - Supports SNI for multiple certs
+        - Supports SNI for multiple certs for multiple endpoints
+        - vs ALB
+            - ALB expose a fixed DNS
+            - while NLB expose a fixed IP
     - GLB
         - Layer 3 (IP)
         - for managing fleet of 3rd party n/w appliances
 
 
-# ASG
+## ASG
 - Free
 - ELB health checks must be specifically enabled
 - Have a scaling cooldown of default 300 seconds
@@ -120,12 +202,27 @@
         - You can specify your launch configuration with multiple Auto Scaling groups. 
         - However, you can only specify one launch configuration for an Auto Scaling group at a time, and you can't modify a launch configuration after you've created it. 
         - To change the launch configuration for an Auto Scaling group, you must create a launch configuration and then update your Auto Scaling group with it.
+        - instance placement tenancy
+            - default value is null and is taken from VPC tenancy attribute
+            - unless set on LC
     - LT is similar
         - allows versioning
         - Allows to edit and update.
         - With versioning of launch templates, you can create a subset of the full set of parameters. Then, you can reuse it to create other versions of the same launch template.
         - Also LTs provide **more EC2 options** for you to configure, for example, dedicated hosting can be set only using a LT. Similarly, ability to use T2 unlimited burst credit option is only available in a LT.
         - allows choosing different instance types
+- Scaling Policies
+    - Target Tracking
+        - track a target and scale accordingly
+        - e.g I want average ASG CPU to stay around 40%
+    - Simple Scaling
+        - require CW alarms
+        - there is a cooldown period
+    - Step scaling
+        - require CW alarms
+        - very similar to Simple, except no cooldown
+    - Scheduled Actions
+    - Predictive Scaling
 - Termination Policies
     - Default
     - AllocationStrategy
@@ -147,7 +244,9 @@
 
 —
 
-# RDS
+# DB & Cache
+
+## RDS
 - Continuous backups (PITR)
     - 1 to 35 days of retention
     - for more do manual backup
@@ -164,6 +263,8 @@
     - must set Max Scaling Threshold
 - RDS vs RDS Custom
     - full admin access to underlying OS and DB
+- Fail-over
+    - during failover, RDS flips CNAME to point at the standby (NOT IP addr)
 - RDS Proxy
     - improve DB efficiency by pooling connections
     - must be accessed from VPC
@@ -172,12 +273,15 @@
     - Near real-time (up to 5 minutes)
     - Send notification to SNS or subscribe on EventBridge
 - supports TDE (Transparent Data Encryption) with Oracle and SQLServer
-
-
+- Enhanced Monitoring
+    - monitor OS of your DB instance in real-time
+    - gathers its metrics from an agent on the instance
+    - while CW gathers from hypervisor
+        - that's why Enhanced Monitoring metrics are more accurate 
 
 —
 
-# Aurora
+## Aurora
 - 5x performance MYSQL, 3x performance PostgreSQL
 - Read Replicas
     - 15 possible
@@ -220,10 +324,8 @@
     - can speed up 2x, while maintaing high throughput for OLTP workloads
 
 
-—
 
-
-# ElastiCache
+## ElastiCache
 - Redis
     - Multi-AZ
     - Read-replicas
@@ -235,6 +337,14 @@
     - no backup
     - multi-threaded
     - sharding
+- Can be used to improve performance of
+    - read-heavy apps
+        - social n/w
+        - gaming
+        - media sharing
+        - q&a portals
+    - compute-intensive workloads
+        - e.g. recommendation engine
 
 
 
@@ -253,10 +363,13 @@
     - Weighted
     - Failover
     - Latency Based
+        - does not guarantee users from same geographic region
     - geolocation
         - Use cases: website localization, restrict content distribution, load balancing
     - multi-value answer
     - geo-proximity
+        - based on how close users are
+        - allows to vary traffic using bias value to expand or shrink size of geographic region
 - Health Checks
     - for public resources
     - Calculated Health checks for multiple health checks
@@ -265,7 +378,13 @@
     - can be active-active OR active-passive failover configuration
         - Active-passive can is used when primary resources are available most of the time, and secondary resources are only used if primary resources are not available
         - Active-Active: Use this failover configuration when you want all of your resources to be available the majority of the time. When a resource becomes unavailable, Route 53 can detect that it's unhealthy and stop including it when responding to queries.
-
+- VPC <-> on-prem DNS queries
+    - for DNS queries in VPC from on-prem
+        - create inbound endpoint on Route53 Resolver
+        - DNS resolvers on on-prem can forward DNS queries to Route53 resolver via this endpoint
+    - for DNS queries in on-prem from VPC
+        - create outbound endpoint on Route53 Resolver
+        - Route53 resolver then can conditionally forward queries to resolver on on-prem via this endpoint
 
 — 
 
@@ -282,6 +401,8 @@
 # S3
 - Max object size = 5TB
 - must use multi-part upload for > 5GB
+- Static Web Hosting
+    - S3 bucket name must be the same as custom registered Domain name
 - Versioning
     - can be enabled at bucket level
 - Replication
@@ -311,6 +432,8 @@
 - Storage classes
     - Standard
     - Standard-IA
+        - IA, but rapid access once needed
+        - for slower access, use Glacier
     - Standard 1z-IA
     - Glacier Instant retrieval
     - Glacier Flexible Retrieval
@@ -408,18 +531,24 @@
 —
 
 
-# CloudFront
+# Global Infra
+
+
+## CloudFront
 - 216 PoPs
 - DDoS protection with AWS Shield
 - Origins
     - S3 Bucket
-        - enhanced security with  Origin Access Control
+        - enhanced security with Origin Access Control
         -  can also be used as ingress
     - Custom origins
         - ALB
-        - EC2
+        - EC2 (even with ASG in front)
         - S3 static website
         - any http backend
+- Origin failover
+    - for HA
+    - can set up primary and secondary origins
 - vs S3 CRR
     - CF is good for static content
     - S3 CRR is good for dynamic content
@@ -431,6 +560,11 @@
     - 200 - exclude expensive regions
     - 100 - only least expensive (US Europe)
 - Cache Invalidation
+- Security
+    - Field level Encryption
+        - allows users to securely upload sensitive info to your web servers
+        - sensitive info is encrypted at the edge
+        - uses Asymmetric Keys
 -  vs Global Accelerator
     -  uses multiple sets of dynamically changing IP addresses while Global Accelerator will provide you a set of static IP addresses as a fixed entry point to your applications.
     -  pricing is mainly based on data transfer out and HTTP requests while Global Accelerator charges a fixed hourly fee and an incremental charge over your standard Data Transfer rates, also called a Data Transfer-Premium fee (DT-Premium).
@@ -456,10 +590,14 @@
             - File system access
             - network access
             - adjustable CPU/mem
+- Access control with
+    - Signed Cookies
+        - allow access to content without changing URLs
+    - Signed URLs
 
-—
 
-# Global Accelerator
+
+## Global Accelerator
 - network layer service
 - Single or Multi AWS regions
 - 2 AnyCast static IPs
@@ -476,9 +614,14 @@
     - DNS has TTL, so not suitable for B/G deployments
 
 
+
+
 — 
 
-# Snow Family
+# Data Transfer
+
+
+## Snow Family
 - If >1 week transfer over n/w, use snow
 - Data Migration
     - Snowcone
@@ -496,19 +639,122 @@
         - 2 CPUs, 4GB memory
     - Snowball Edge
         - 40 vCPUs, 80 GB RAM
+- Snowball Edge offers storage clustering feature
 - OpsHub
     - manage snow devices
 - Snowball cannot import into Glacier directly
     - use S3 Standard with zero-day lifecycle policy
 
 
+
+## Storage Gateway
+- Bridge b/w on-prem data and cloud data
+    - used for low latency access to data
+        - by caching frequently accessed data on-prem
+        - while storing active data in AWS
+- Use internet or DX
+- Use cases
+    - DR
+    - backup & restore
+    - tiered storage
+    - on-prem cache and low-latency file access
+- Types
+    - S3 File Gateway
+        - store files in S3 using NFS, SMB
+        - transitions to S3 glacier using Lifecycle policy
+        - SMB has integration with AD for auth
+        - Single writer, multiple readers
+    - FSx File Gateway
+        - enables you to store and retrieve files in Amazon FSx for Windows File Server
+        - Windows native (SMB, NTFS, AD)
+    - Volume
+        - backed by EBS snapshots
+            - can help restore on-prem volumes
+        - Cached volumes
+            - low latency access to most recent data
+        - Stored volumes
+            - entire dataset is on-prem with schedules backups to S3
+    - Tape
+        - cloud based VTL (Virtual Tape Library)
+        - can move data directly to S3 Glacier or Glacier Deep Archive
+- HIPAA eligible
+- can be used with DX to increase throughput
+    - traffic routed via VPC Endpoints powered by AWS PrivateLink
+- can also be connected with VPN
+- supported by AWS Premium Support
+
+
+
+## DataSync
+- Move/schedule sync LARGE amounts of data
+    - on-prem to AWS
+        - needs DataSync Agent
+        - can use internet or DX
+    - AWS to AWS
+        - no agent needed
+- does Encrypted online transfer
+- data transfer faster than DX
+- Can sync from/to
+    - S3 (any storage class, including Glacier)
+    - EFS
+    - FSx (all 4)
+    - other public clouds using Agent in a VM
+    - NSF shares
+    - SMB shares
+    - HDFS (Hadoop Distributed File System)
+- Data can be moved directly to Glacier
+- VPC Endpoints are supported
+    - increased security
+    - VPC Endpoints for DataSync powered by AWS PrivateLink
+- assumes IAM role when accessing S3
+- can fully utilize a 10Gbps n/w
+- HIPAA eligible
+- vs Other services
+    - DataSync - for ongoing data distribution, data pipelines, and data lake ingest, as well as for consolidating or splitting data between multiple buckets.
+        - vs S3 Replication - continuous replication of data to a specific destination bucket.
+        - vs S3 Batch Operation 
+            - for large-scale batch operations on S3 objects, such as to copy objects, 
+            - set object tags or access control lists (ACLs), 
+            - initiate object restores from Amazon S3 Glacier Flexible Retrieval (formerly S3 Glacier), 
+            - invoke an AWS Lambda function to perform custom actions using your objects, 
+            - manage S3 Object Lock legal hold, or manage S3 Object Lock retention dates.
+        - vs Snowball edge - ideal for offline data transfers, for customers who are bandwidth constrained, or transferring data from remote, disconnected, or austere environments.
+        - vs Storage Gateway - once transferred with DataSync, we can use Storage File G/w to retain access to the migrated data
+        - vs AWS Transfer Family - if you are currently using SFTP to exchange data with 3rd parties, provides a fully managed SFTP, FTPS, and FTP transfer directly into and out of Amazon S3, while reducing your operational burden. (DataSync provides a faster way to do this as well)
+
+
+
+## AWS Transfer Family
+- fully managed service for file transfer INTO or OUT of S3 or EFS using FTP
+- Supported protocols
+    - FTP
+    - FTPS
+    - SFTP
+- Multi-AZ
+- store and manager user creds within the service
+- integration with existing auth systems
+    - LDAP
+    - Okta
+    - Cognito
+    - Custom
+- use cases
+    - sharing files
+    - public datasets
+    - CRM
+    - ERP
+
+
+
 —
 
-# SQS
+# Decoupling
+
+## SQS
 - unlimited througput
 - unlimited number of messages
 - default retention: 4 days (max 14 days)
     - msg persists until a consumer deletes it
+    - or max retention period is reached
 - 256kb / msg
 - duplicate msg possibe
 - out of order msgs possible
@@ -556,10 +802,13 @@
 
 
 
-—
+## SWF
+- Simple Workflow Service
+- apps that coordinate work across distributed components
 
 
-# SNS
+
+## SNS
 - push based delivery (no pull)
 - 12.5M subscriptions per topic
 - 100k topic limit
@@ -590,121 +839,13 @@
 - HIPAA eligible
 - Stores msgs in multi-AZ disks
 - msgs cannot be recalled once published
+- vs SES
+    - use SNS with CW
+    - use SNS when monitoring related emails are to be send
+    - use SES for transactional emails
 
 
-—
-
-# FSx
-- Lustre
-    - for HPC
-    - 100s GB/s, millions IOPs, sub-ms latencies
-    - seamless integration with S3
-        - can read S3 as a filesystem
-        - can write back to S3
-    - can be used with on-prem (VPN or DX)
-    - Deployment options
-        - Scratch FS
-            - Temporary storage
-            - High Burst
-            - usage: short term processing, optimize cost
-        - Persistent FS
-            - long-term
-            - data replication within same AZ
-            - usage: long-term, sensitive data
-- Windows File Server
-    - SMB + NTFS protocols
-    - can be mounted on linux ec2
-    - supports Microsoft Distributed File System Namespaces
-    - 10s of Gbps, millions of IOPs, 100s of PB
-    - can be access from on-prem (VPN or DX)
-    - can be configued to be Multi-AZ
-    - Daily back up to S3
-- NetApp ONTAP
-    - NFS, SMB, iScsi
-    - Point in time instantaneous cloning
-- OpenZFS
-
-
-—
-
-
-# Storage Gateway
-- Bridge b/w on-prem data and cloud data
-- Use internet or DX
-- Use cases
-    - DR
-    - backup & restore
-    - tiered storage
-    - on-prem cache and low-latency file access
-- Types
-    - S3 File Gateway
-        - store files in S3 using NFS, SMB
-        - transitions to S3 glacier using Lifecycle policy
-        - SMB has integration with AD for auth
-        - Single writer, multiple readers
-    - FSx File Gateway
-        - enables you to store and retrieve files in Amazon FSx for Windows File Server
-        - Windows native (SMB, NTFS, AD)
-    - Volume
-        - backed by EBS snapshots
-            - can help restore on-prem volumes
-        - Cached volumes
-            - low latency access to most recent data
-        - Stored volumes
-            - entire dataset is on-prem with schedules backups to S3
-    - Tape
-        - cloud based VTL (Virtual Tape Library)
-- HIPAA eligible
-- can be used with DX to increase throughput
-    - traffic routed via VPC Endpoints powered by AWS PrivateLink
-- can also be connected with VPN
-- supported by AWS Premium Support
-
-
-—
-
-
-# DataSync
-- Move/schedule sync large amounts of data
-    - on-prem to AWS
-        - needs DataSync Agent
-        - can use internet or DX
-    - AWS to AWS
-        - no agent needed
-- does Encrypted online transfer
-- Can sync from/to
-    - S3 (any storage class, including Glacier)
-    - EFS
-    - FSx (all 4)
-    - other public clouds using Agent in a VM
-    - NSF shares
-    - SMB shares
-    - HDFS (Hadoop Distributed File System)
-- Data can be moved directly to Glacier
-- VPC Endpoints are supported
-    - increased security
-    - VPC Endpoints for DataSync powered by AWS PrivateLink
-- assumes IAM role when accessing S3
-- can fully utilize a 10Gbps n/w
-- HIPAA eligible
-- vs Other services
-    - DataSync - for ongoing data distribution, data pipelines, and data lake ingest, as well as for consolidating or splitting data between multiple buckets.
-        - vs S3 Replication - continuous replication of data to a specific destination bucket.
-        - vs S3 Batch Operation 
-            - for large-scale batch operations on S3 objects, such as to copy objects, 
-            - set object tags or access control lists (ACLs), 
-            - initiate object restores from Amazon S3 Glacier Flexible Retrieval (formerly S3 Glacier), 
-            - invoke an AWS Lambda function to perform custom actions using your objects, 
-            - manage S3 Object Lock legal hold, or manage S3 Object Lock retention dates.
-        - vs Snowball edge - ideal for offline data transfers, for customers who are bandwidth constrained, or transferring data from remote, disconnected, or austere environments.
-        - vs Storage Gateway - once transferred with DataSync, we can use Storage File G/w to retain access to the migrated data
-        - vs AWS Transfer Family - if you are currently using SFTP to exchange data with 3rd parties, provides a fully managed SFTP, FTPS, and FTP transfer directly into and out of Amazon S3, while reducing your operational burden. (DataSync provides a faster way to do this as well)
-
-
-
-—
-
-# Kinesis Data Streams
+## Kinesis Data Streams
 - Streaming service for ingest/process at scale
     - KDS can continuously capture gigabytes of data per second from hundreds of thousands of sources 
     - sources: 
@@ -776,7 +917,7 @@
 
 
 
-# Kinesis Data Firehose
+## Kinesis Data Firehose
 - Load streaming data / Streaming ETL Solution
 - Auto scaling
 - no data storage
@@ -809,7 +950,7 @@
     - up to 1 MB
 
 
-# Active MQ
+## Active MQ
 - managed broker service for RabbitMQ, ActiveMQ
 - does not scale as much as SQS/SNS
 - Highly available
@@ -818,10 +959,13 @@
 
 
 
+
 —
 
 
-# ECS
+# Containers
+
+## ECS
 - Launch Types
     - Ec2
         - must provision and maintain the infra (the ec2 instances)
@@ -847,7 +991,7 @@
 
 
 
-# EKS
+## EKS
 - Types of Node Groups
     - Managed Node group
         - creates and manages nodes for you
@@ -871,7 +1015,9 @@
 —
 
 
-# Lambda
+# Serverless
+
+## Lambda
 - CRON job with CloudWatch Events or EventBridge
 - Limits per region
     - memory 128MB to 10GB (1MB increment)
@@ -889,12 +1035,24 @@
 - Can be invoked from RDS/Aurora
     - process data events
     - DB Instance must have the required permissions (Lambda Resource-based Policy and IAM Policy)
+- Lambda Layers
+    - provide a convenient way to package libraries and other deps
+    - using layers reducees the size of uploaded deployment archives
+        - makes deployment faster
+    - allows code reuse
+    - lambda can be configured to pull in additional code in the form of layers
+    - can use up to 5 layers at a time
+    - Layers support resource-based policies
+- Env Variables
+    - Lambda encrypts Env Vars by default using the default key
+    - however, that data is still visible/accessbile on Lambda Console
+    - for even greater security, create your own KMS key and use it to encrypt Env Vars
 
 —
 
 
 
-# DynamoDB
+## DynamoDB
 - Std and IA Tables
 - item size max = 400KB
 - Read/Write capacity modes
@@ -924,10 +1082,12 @@
     - exports to S3 (must enable PITR)
     - import from S3
         - csv, JSON or ION
+- Partition Keys
+    - use P Keys with high-cardinality values to use provisioned throughput efficiently
 
 
 
-# API Gateway
+## API Gateway
 - can cache API responses
 - Integrations
     - Lambda
@@ -949,12 +1109,17 @@
 - Can use Mapping templates 
     - to map the payload from a method request to integration request
     - written in Velocity Template language
+- throttling & quotas
+    - to help protect APIs from being overwhelmed by spikes
+    - throttling at multiple levels including 
+        - global 
+        - by a service call
+    - any request over the limit receives a 429
+    - uses token bucket algorithm
 
 
 
-—
-
-# Cognito
+## Cognito
 - User Pools
     - Sign in functionality for app users
     - Integrates with
@@ -967,9 +1132,10 @@
 
 
 
-—
 
-# Athena
+# Data Analytics
+
+## Athena
 - Analyze data in S3 using Serverless SQL
 - use standard SQL
 - supports
@@ -991,7 +1157,7 @@
 
 
 
-# Redshift
+## Redshift
 - used for OLAP
 - 10x better performance than other data w/h
 - columnar storage
@@ -1021,7 +1187,7 @@
     - boost query perf by 10x
 
 
-# OpenSearch
+## OpenSearch
 - search any field, including partial matches
 - does NOT support SQL
 - Ingestion from
@@ -1030,7 +1196,7 @@
     - CloudWatch Logs
 
 
-# Glue
+## Glue
 - managed ETL service
 - Serverless
 - useful to prepare and transform data for analytics
@@ -1046,7 +1212,7 @@
     - prevent re-processing old data
 
 
-# Lake Formation
+## Lake Formation
 - Data Lake
 - central place to have all your data for analytics
 - combine structured and unstructured data
@@ -1056,7 +1222,7 @@
 
 
 
-# Kinesis Data Analytics
+## Kinesis Data Analytics
 - For SQL apps
 - Real time on KDS and KDF using SQL
 - Serverless
@@ -1110,10 +1276,23 @@
 —
 
 
-# CloudWatch
+
+# Monitoring
+
+
+
+## CloudWatch
+- Available Metrics
+    - CPUUtilization
+    - network
 - Metrics belong to namespaces
 - metrics have timestamps
-- can create CW Custom Metrics (RAM usage e.g.)
+- can create CW Custom Metrics 
+    - RAM/Mem usage
+    - Disk space utilization
+    - Disk swap utilization
+    - Page file utilization
+    - Log collection
 - CW Metric Streams
     - near-real time delivery
         - KDF
@@ -1172,7 +1351,7 @@
 
 
 
-# EventBridge
+## EventBridge
 - Cron jobs
 - Events
 - Sources
@@ -1202,9 +1381,19 @@
 - use Resource based policy 
     - to allow/deny events from other AWS accounts or regions
     - can aggregate all events from your Organization in single AWS account
+- vs SQS
+    - SQS does not integrate with 3rd party
+- Event Buses
+    - Default Event Bus
+        - connect to AWS services
+    - Partner Event Bus
+        - connect to 3rd party like zendesk and Datadog
+    - Custom Event Bus
+        - connect to custom apps
 
 
-# CloudTrail
+## CloudTrail
+- records API acitivity in AWS account
 - governance, compliance and audit for AWS Account
 - get history of API calls
 - a Trail can be All region (default) or multi-region
@@ -1231,7 +1420,7 @@
     - to check if a log file was modified or deleted or unchanged
 
 
-# Config
+## Config
 - auditing and recording compliance
     - record config changes
     - evaluate resources againt compliance rules
@@ -1251,14 +1440,7 @@
 —
 
 
-# Organizations
-- Global Service
-- Shared reserved instances
-- Savings plan discounts
-- SCP (Service Control Policies)
-    - IAM policies applied to OUs
-    - do not apply to management account
-    - must have an explicit allow
+
 
 
 # IAM
@@ -1278,7 +1460,16 @@
         - useful to restrict one specific user
 
 
-# IAM Identity Center
+## Organizations
+- Global Service
+- Shared reserved instances
+- Savings plan discounts
+- SCP (Service Control Policies)
+    - IAM policies applied to OUs
+    - do not apply to management account
+    - must have an explicit allow
+
+## IAM Identity Center
 - SSO
 - SAML2.0 web apps
 - Manage access across AWS Accounts
@@ -1286,14 +1477,20 @@
     - fine grained permissions based on users attributes stored in IAM-IC Identity store
 
 
-# Directory Services
+
+## Directory Services
 - AWS Managed Microsoft AD
+    - run directory-aware workloads in the cloud
+    - configure trust relationship b/w
+        - AWS Managed AD
+        - existing on-prem Microsoft AD
 - AD Connector
     - proxy
+    - allow on-prem users to log in to AWS apps with their AD creds
 - Simple AD
 
 
-# Control Tower
+## Control Tower
 - set up and govern a secure and compliant multi-account AWS env
 - automate the set up of your envs
 - automate ongoing policy mgmgt using GuardRails
@@ -1309,7 +1506,11 @@
 —
 
 
-# KMS
+# Security
+
+
+
+## KMS
 - Types of Keys
     - AWS Owned (SSE-S3, SSE-SQS, SSE-DDB)
         - free
@@ -1339,7 +1540,7 @@
         - so objects will be decrypted, replicated and then encrypted
 
 
-# SSM Parameter store
+## SSM Parameter store
 - secure storage for configs and secrets
 - Serverless
 - version tracking
@@ -1347,7 +1548,7 @@
 - allows a TTL assignment to force update or delete
 
 
-# Secrets Manager
+## Secrets Manager
 - newer than SSM
 - force rotation of secrets every X days
 - integration with
@@ -1360,7 +1561,7 @@
         - multi-region DB
 
 
-# ACM
+## ACM
 - integration with
     - ELB
     - CloudFront Distributions
@@ -1372,7 +1573,7 @@
     - email contains a link for easy renewal
 
 
-# WAF
+## WAF
 - Layer 7
 - Deploy on
     - ALB
@@ -1394,16 +1595,16 @@
     - All the above rules can be combined or can be used separately as per need 
 
 
-# Shield
+## Shield
 - protect against DDoS
 
 
-# Firewall manager
+## Firewall manager
 - Manage rules in all accounts of Organizations
 
 
-# Guard Duty
-- thread discovery
+## Guard Duty
+- threat discovery
 - input data
     - CT Log events
     - VPC Flow Logs
@@ -1412,12 +1613,12 @@
 - can set up EventBridge rules for notifications
 
 
-# Inspector
+## Inspector
 - security assessments
 - find CVEs
 
 
-# Macie
+## Macie
 - ML and pattern matching to discover sensitive data and PII in AWS
 
 
@@ -1497,8 +1698,11 @@
 
 
 
-# IGW
+## IGW
 - Allows VPC to connect to internet
+- two purposes
+    - to provide a target in your VPC route tables for internet-routable traffic
+    - perform NAT for instances that have public IPv4 addresses
 - scales horizontally
 - no bandwidth constraints
 - HA
@@ -1508,18 +1712,25 @@
     - for IPv6
 
 
-# NAT Gateway
+## NAT Gateway
 - allows private instances to connect to IGW
 - HA
 - limited to specific AZ
 - uses an Elastic IP
-- no 
+- does not support (unlike NAT instances) 
     - SGs
     - Bastion Host
     - Port forwarding
+- connectivity types
+    - Public 
+        - for instances in private subnets to connect to IGW
+        - connect VPCs or on-prem n/ws using Transit gateway OR VPGW
+    - Private
+        - cannot connect to IGW as IGW drops traffic from pvt NATGW
+        - connect other VPCs & on-prem 
 
 
-# Site-to-Site VPN
+## Site-to-Site VPN
 - connect on-prem n/w to VPC
 - IGW not required
 - connection sides
@@ -1533,14 +1744,14 @@
 - Max throughput of 1.25Gbps
     - to scale, use ECMP (Equal cost multi-path) enabled transit gateway over multiple VPNs
 
-# VPN CloudHub
+## VPN CloudHub
 - secure connections between multiple VPNs and different sites
 - low cost hub and spoke model
 - VPN connection, so goes over public internet
 - uses VPGW with multiple CGW
 
 
-# Direct Connect (DX)
+## Direct Connect (DX)
 - dedicated private connection to VPC
     - connection must be set up b/w your DataCenter and AWS DC locations
 - must set up a VPGW on your VPC
@@ -1566,7 +1777,7 @@
 - Can use Site-to-Site VPN connection as a backup in case DX fails
 
 
-# Direct Connect Gateway
+## Direct Connect Gateway
 - for DX to one or more VPC in many different regions
     - Instead of connecting the on-prem data center to multiple VPCs individually over the DX link, you can deploy the Direct Connect Gateway.
 - grouping if VPGWs and private VIFs
@@ -1574,7 +1785,7 @@
     - create in one region, access from any other region
 
 
-# Transit Gateway
+## Transit Gateway
 - transitive peering connections b/w thousands of VPC and on-prem
 - hub and spoke star connection
 - regional resource
@@ -1586,15 +1797,22 @@
 - create multiple Site-to-Site VPN connections to increase your bandwidth
 - allows sharing DX b/w multiple accounts
 
-# PrivateLink
+## PrivateLink
 - tech behind VPC Endpoints
 
 
-# Network Firewall
+## Network Firewall
 - protect entire AWS VPC
+- filter traffic at the perimeter of the VPC
+    - to and from 
+        - IGW
+        - NATGW
+        - VPN
+        - DX
 - from Layer 3 to Layer 7
 - Traffic Filtering
     - allow, drop or alert for traffic that matches the rules
+    - can create allow lists and block lists with FQDNs
 - send logs of rule matches to
     - S3
     - CW Logs
@@ -1605,15 +1823,21 @@
 —
 
 
-# DMS
+
+# MISC
+
+
+
+## DMS
 - supports homogenous and hetro migrations
 - must create Ec2 instance running DMS for migration and replication
 - uses Schema conversion tool for 1 db engine to another
 - Continuous Data Replication
     - on-prem to AWS or vice-versa
+- can encrypt source and target endpoints by using SSL certs
 
 
-# Backup
+## Backup
 - supports cross region
 - supports cross accounts
 - on-demand and scheduled backups
@@ -1627,7 +1851,7 @@
     - even root users cannot delete backups
 
 
-# Application Discovery
+## Application Discovery
 - plan on-prem to AWS migrations
 - modes
     - Agentless
@@ -1640,15 +1864,14 @@
 
 
 
-—
 
-# RAM
+## RAM
 - securely share resources across AWS accounts within Org or OU
 - can also share with IAM roles and users for supported resources
 - eliminates the need to provision and manage resources in every account
 
 
-# CloudFormation
+## CloudFormation
 - each resource within stack is tagged with an id so you can see how much a stack costs
 - can estimate costs using CloudFront Template
 - Custom Resources
@@ -1671,11 +1894,11 @@
     - outputs
         - values that can be imported to other stacks to create cross-stack references
 
-# X-Ray
+## X-Ray
 - helps you analyze and debug modern micro-services apps and serverless archi
 - quantify customer impact
 
-# Outposts
+## Outposts
 - delivers AWS infra to any on-prem or edge location
 - provide fully managed solution
 - its kinda opposite of Storage G/w, 
@@ -1683,7 +1906,7 @@
         - that cannot be transferred to AWS
 
 
-# Systems Manager
+## Systems Manager
 - SSM Session Manager
     - start a secure shell on ec2 and on-prem
     - even when ssh on port 22 is disabled

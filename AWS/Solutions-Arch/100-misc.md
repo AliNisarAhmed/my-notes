@@ -97,3 +97,5 @@
 77. Aurora Parllel Query
 78. CloudFormation Mappings vs Parameters
 79. AQUA for redshift
+80. SQS delay queues
+81. EC2 tenancy attributes in VPC
