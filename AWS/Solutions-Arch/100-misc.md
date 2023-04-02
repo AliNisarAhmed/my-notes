@@ -99,3 +99,4 @@
 79. AQUA for redshift
 80. SQS delay queues
 81. EC2 tenancy attributes in VPC
+82. sheild vs shield advanced

@@ -44,6 +44,7 @@ HPC includes:
         - Intel 82599VF up to 10 Gbps - LEGACY
 
 4. Elastic Fiber Adapter (EFA)
+    - a n/w interface for EC2
     - Improved ENA for HPC, works only for Linux
     - Great for inter-node comms, tightly coupled workloads
     - Leverages Message Passing Interface (MPI) standard

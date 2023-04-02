@@ -30,13 +30,20 @@
         - Convertible
             - can be exchanges for other RIs of a different instance family
     - Both classes can be modified though
+    - after expiry
+        - billed at on-demand price
+        - so terminate asap and sell if not in use
 - Dedicated instances vs Dedicated Hosts
     - Dedicated Instances
         - run on dedicated h/w, which is locked down for you while the instance is up
         - if instance is restarted, may switch to a different dedicated h/w
+        - different h/w for different customers, but instances from same account may share h/w
+        - does not have control and visibility on how instances are placed
     - Dedicated hosts
         - the same h/w as long as we pay
         - that is why useful in server license cases
+        - support BYOL (Bring your own License)
+        - visibility and control
 - Placement Groups
     - Cluster
         - low latency group/cluster within single AZ
@@ -48,6 +55,8 @@
         - spreads instances across many different partitions (on different racks)
         - scales to 100s of EC2 instances per group
         - useful for Big Data computations
+    - Errors during starting instances
+        - try restarting all instances, adding new ones and starting them all again
 - EC2 hibernate
     - States
         - pending (Not billed)
@@ -55,7 +64,7 @@
         - stopping (billed if going to hibernate)
         - stopped (not billed even if hibernate)
         - shutting-down (Not billed)
-        - terminated (not billed)
+        - terminated (not billed, unless RI)
     - Hibernate
         - RAM < 150GB
         - EBS root volume, encrypted
@@ -63,14 +72,46 @@
         - Hibernate is not supported for an instance that is part of an ASG (ASG marks it as dead and terminates it), as well as ECS
     - Standby Mode (as opposed to InService Mode) can be used to perform software upgrade or troubleshooting
         - instance remains part of ASG
+    - Once the instance is launched not possible to enable Hibernate
+        - relaunch the instance with hibernation enabled
+- Instance limits per Region
+    - On-Demand Instances
+        - vCPU-based
+    - RIs
+        - max 20
+    - Spot instances
+        - per your dynamic Spot limit
+    - Newer accounts may start with lower limits
+    - To Increase limit, submit limit increase request form
+- On-Demand Capacity Reservations 
+    - enable you to reserve compute capacity for your Amazon EC2 instances in a specific Availability Zone for any duration. 
+    - This gives you the ability to create and manage Capacity Reservations independently from the billing discounts offered by Savings Plans or Regional Reserved Instances.
+    - can create any time, w/o 1 or 3 yr commitment
+- Savings Plan
+    - use Cost Explorer to get started
+    - Compute
+        - 66%
+    - Instance Savings Plan
+        - 72%
+        - commit to use same instance family
+    - SageMaker
+        - fir consistent amount of usage for 1 or 3 yr term
 
 
 
 ## EBS
-- bound to an AZ
+- Bound to an AZ
+- replicated within its AZ
+    - to prevent data loss due to h/w failure
+- Supports live config changes
+    - even in prod
+    - can modify volume type, volume size, and IOPs
 - provisioned capacity
-- DeletOnTermination - true by default for root volume
+- DeleteOnTermination 
+    - true by default for root volume
     - use case: preserve root volume when instance terminated
+    - cannot set it for running instance from AWS Console
+        - must use CLI
 - Snapshots
     - can copy across regions or AZ
     - Snapshot Archive
@@ -81,17 +122,23 @@
         - specify retention (1 day to 1 year)
     - Fast Snapshot Restore
     - can use DLM (Data Lifecycle Manager) to auto manage EBS snapshots
+    - can configure region level auto-encryption for all new EBS volumes & snapshots
 - Volume Types
     - General purpose SSD
     - High performance (io1/io2)
         - business critical apps
         - can multi-attach
     - st1 low cost hdd
+- RAID
+    - RAID 0 when i/o matters 
+    - RAID 1 when Fault tolerance matters
+
 
 
 ## Instance Store
 - backups and replication your responsibility
 - gp2/gp3 io1/io2 can be boot volumes
+- Instance store is reset when you stop, terminate or hibernate the instance
 
 
 
@@ -103,6 +150,15 @@
         - For Latency sensitive use cases like web serving environments
     - Max I/O
         - Highly parallelized applications and workloads, such as big data analysis, media processing, and genomic analysis, can benefit from this mode.
+- Throughput modes
+    - Bursting
+        - high throughput for load spikes
+        - AWS recommends it by default
+        - however, for large amounts of data migration, switch to provisioned
+    - Provisioned
+        - for requirements > bursting
+        - can increase or decrease based on load
+        - change b/w modes require 24 hours at least
 - Storage Tiers
     - Standard
     - EFS-IA
@@ -157,6 +213,7 @@
 
 ## ELB
 - Highly available across AZs
+- can run in 1 region only at a time
 - Types
     - ALB
         - Supported Protocols
@@ -165,7 +222,7 @@
             - HTTP/2
             - WebSocket
             - gRPC
-        - port mapping feature for ECS
+        - Dynamic port mapping feature for ECS
         - Target Groups
             - Private IPs
             - EC2
@@ -194,6 +251,12 @@
 - Free
 - ELB health checks must be specifically enabled
 - Have a scaling cooldown of default 300 seconds
+- Rebalancing
+    - launches new instances before terminating old ones to maintain perf/avail.
+- Scaling activity
+    - creates new scaling activity for terminating the unhealth instance first
+        - then terminates it
+    - later, another scaling activity launched to replace the terminated instance
 - Launch templates (LTs) are newer than Launch Configs and provide more options to work with
     - AWS recommends you create ASG from LTs for latest features
     - LC
@@ -221,17 +284,19 @@
     - Step scaling
         - require CW alarms
         - very similar to Simple, except no cooldown
+        - can specify Instance warm-up time
     - Scheduled Actions
     - Predictive Scaling
+        - assumes that ASG has homogenous instances with equal capacity 
 - Termination Policies
-    - Default
+    - default
     - AllocationStrategy
     - OldestLaunchTemplate
     - OldestLaunchConfiguration
     - ClosestToNextInstanceHour
     - NewestInstance
     - OldestInstance
-- Default Termination Policy
+- default Termination Policy
     - All same instances
         - same as below except step 1
     - Mixed instances
@@ -239,6 +304,22 @@
         - old LC > old LT
         - closest to billing hour
         - random
+- health checks
+    - default are EC2 health checks only
+    - recommended to configure ELB based checks
+        - ASG considers an instance unhealthy
+            - if it fails either EC2 or ELB health checks
+- Lifecycle hooks
+    - custom actions when instance launch or terminate
+    - hooks
+        - EC2_INSTANCE_LAUNCHING
+        - Pending:Wait
+        - Pending:Proceed
+        - Terminating:Wait
+        - Terminating:Proceed
+- Warm pools
+    - collection of pre-initialized ec2 instances sitting along with ASG
+    - in scale-out, ASG will pick an instance from warm pool
 
 
 
@@ -249,8 +330,12 @@
 ## RDS
 - Continuous backups (PITR)
     - 1 to 35 days of retention
-    - for more do manual backup
+    - for more do manual backup or use AWS Backup
+    - AWS creates a storage volume snapshot once a day during backup window
+        - also captures transaction logs and uploads to S3 every 5 minutes
 - read replicas
+    - up to 5 read replicas
+    - recommended to be of same compute and storage resources
     - replication is async (eventual consistency)
     - replicas can be promoted to their own DB
         - apps must update connection string
@@ -259,11 +344,19 @@
     - mainly used for DR and not read-enhancement
     - read replicas can be set up as multi-AZ as well
     - no need to stop the DB to switch for 1AZ to MulAZ
+    - DB engine level upgrade
+        - upgrades primary & secondary at the same time
+        - this causes downtime until the upgrade is completed
 - Auto-scaling
     - must set Max Scaling Threshold
+    - can enable from Console w/o migrating/replacing DB
+    - no additional cost
 - RDS vs RDS Custom
     - full admin access to underlying OS and DB
 - Fail-over
+    - AWS provisions and maintans a secondary DB instance in different AZ
+        - sync replicated
+        - auto failover to the standby
     - during failover, RDS flips CNAME to point at the standby (NOT IP addr)
 - RDS Proxy
     - improve DB efficiency by pooling connections
@@ -278,6 +371,16 @@
     - gathers its metrics from an agent on the instance
     - while CW gathers from hypervisor
         - that's why Enhanced Monitoring metrics are more accurate 
+    - provide more accurate info on:
+        - RDS child processes
+        - OS processes
+- IAM DB Auth
+    - no need to use DB username/password
+    - supported only for PostgreSQL & MySQL RDS
+    - benefits
+        - in transit SSL
+        - centrally manages access to DBs
+        - for EC2, can use profile creds of instance instead of pwd
 
 —
 
@@ -300,6 +403,12 @@
     - Dedicated Endpoints
         - e.g. Reader endpoint, writer endpoint, custom endpoint
 - Auto Fail-over
+    - Replica in same or different AZ
+        - flips CNAME to healthy replica
+        - takes 30 seconds max
+    - No Replica & no serverless
+        - attempt to create a new DB instance in same AZ as original
+        - best-effort basis, may not succeed
 - Aurora Serverless
     - auto-scaling on-demand config version of Aurora
     - Pay per second, can be more cost-effective
@@ -322,6 +431,25 @@
 - Aurora Parallel Query
     - faster analytical queries, w/o having to copy data to another system
     - can speed up 2x, while maintaing high throughput for OLTP workloads
+- Aurora Replicas vs MySQL Replicas
+    - number
+        - 15 : 5
+    - replication type
+        - async (milliseconds) : async (seconds)
+    - performance impact on primary
+        - low : high
+    - replication location
+        - in-region : cross-region
+    - act as a failover target
+        - yes (no data loss) : yes (potentially minutes of data loss)
+    - automated failover
+        - yes : no
+    - support for user defined replication delay
+        - no : yes
+    - support for different data or schema vs primary
+        - no : yes
+
+
 
 
 
@@ -331,6 +459,7 @@
     - Read-replicas
     - persistant
     - Sets and Sorted Sets
+    - geospatial data support
 - MemCacheD
     - no HA
     - non persistent
@@ -376,8 +505,13 @@
     - For Private Hosted Zones, use CW Metric and Alarm, since Route53 health checkers cannot access private
     - AWS Route 53 health checks and failovers
     - can be active-active OR active-passive failover configuration
-        - Active-passive can is used when primary resources are available most of the time, and secondary resources are only used if primary resources are not available
-        - Active-Active: Use this failover configuration when you want all of your resources to be available the majority of the time. When a resource becomes unavailable, Route 53 can detect that it's unhealthy and stop including it when responding to queries.
+        - Active-passive 
+            - is used when primary resources are available most of the time, and secondary resources are only used if primary resources are not available
+        - Active-Active
+            - Use this failover configuration when you want all of your resources to be available the majority of the time. 
+            - When a resource becomes unavailable, Route 53 can detect that it's unhealthy and stop including it when responding to queries.
+            - use weighted routing policy
+                - no primary or secondary resource in this case
 - VPC <-> on-prem DNS queries
     - for DNS queries in VPC from on-prem
         - create inbound endpoint on Route53 Resolver
@@ -403,6 +537,9 @@
 - must use multi-part upload for > 5GB
 - Static Web Hosting
     - S3 bucket name must be the same as custom registered Domain name
+    - S3 web endpoints formats:
+        - http://{bucket-name}.s3-website-{Region}.amazonaws.com
+        - http://{bucket-name}.s3-website.{Region}.amazonaws.com
 - Versioning
     - can be enabled at bucket level
 - Replication
@@ -411,6 +548,9 @@
         - compliance
         - lower latency access
         - replication across accounts
+        - takes about 15 minutes
+            - not the faster way to copy data
+            - just use Transfer Acceleration with MPUpload
     - Same-Region replication (SRR)
         - log aggregation
         - live replication b/w prod and test
@@ -429,16 +569,25 @@
 - Consistency model
     - S3 delivers strong read-after-write consistency automatically, without changes to performance or availability, w/o sacrificing regional isolation for applications, and at no additional cost
     - all S3 GET, PUT, and LIST operations, as well as operations that change object tags, ACLs, or metadata, are strongly consistent. What you write is what you will read, and the results of a LIST will be an accurate reflection of what’s in the bucket.
+    - 3500 PUT per sec, 5500 GET per sec
 - Storage classes
     - Standard
+        - no minimum storage duration requirement
     - Standard-IA
+        - 30 day min storage requirement
+            - will be charged for 30 days at least
         - IA, but rapid access once needed
         - for slower access, use Glacier
     - Standard 1z-IA
+        - 30 days min duration
     - Glacier Instant retrieval
+        - 90 days min duration
     - Glacier Flexible Retrieval
+        - 90 days min duration 
     - Glacier Deep Archive
+        - 180 days min duration
     - Intelligent Tiering
+        - no min duration
 - Lifecycle Rules
     - Transition Actions
         - Waterfall
@@ -459,7 +608,7 @@
 - Event Notifications
     - Output to
         - SNS
-        - SQS
+        - SQS (only standard SQS, NOT SQS FIFO)
         - Lambda
         - EventBridge
 - Performance
@@ -470,6 +619,9 @@
 - ByteRange Fetches
 - S3 Select
     - server side filtering for retrieving less data
+    - does not support ByteRange Fetches
+    - use ScanRange instead
+    - max query size = 256kB
 - Batch Operations
     - can be used for encrypting
     - copy modify object metadata
@@ -493,8 +645,12 @@
         - AWS Lambda can assume an IAM Role in another AWS account to access resources (e.g. S3) and do tasks (starting/stopping instances)
         - Configure your Lambda function's execution role to allow the function to assume an IAM Role in another AWS account
         - Modify your cross-account IAM Role's trust policy to allow your Lambda function to assume the role
+    - S3 metadata is not encrypted
+        - therefore, not recommended to put sensitive info there
     - Key Types
         - SSE-S3 (Amazon Owned and managed key)
+            - each object encrypted with unique key
+            - encrypts the key itself with root key, regularly rotated
         - SSE-KMS (your key in KMS)
             - may impact KMS service quota limits
         - SSE-C (bring your own Key)
@@ -522,9 +678,26 @@
         - has its own policy (simillar to bucket policy)
         - VPC origin
         - Internet Origin
+    - uploader accout by default owns the object
+        - to copy an object such that destination account holds it
+            - add bucket policy to allow read objects on the bucket
+            - create IAM policy that allows copying
+            - copy using destinationa account to gain ownership
+        - can create a bucket policy to require external users to grant bucket owner the object ownership
+            - use `bucket-owner-full-control`
 - Object Lambda
     - use to change object before retrieval
     - use cases: redacting PII, converting formats, pre-processing
+- Provisioned capacity for retrievals
+    - to ensure your retrieval capacity is available when you need it
+    - purchase when workload requires high reliable and predictible access to a subset of data
+- Server access logs
+    - detailed records for the access requests made to an S3 buckets
+    - vs CW
+        - CW provides record of actions taken by user, rol, or AWS service
+- S3 Console vs S3 Glacier Console
+    - Glacier Console can be used to access the vaults and objects in them
+    - however, it cannot be used to restore the object to other classes
 
 
 
@@ -594,6 +767,7 @@
     - Signed Cookies
         - allow access to content without changing URLs
     - Signed URLs
+    - along with Origin Access Identifier on S3 to limit Origin to CF only
 
 
 
@@ -612,6 +786,11 @@
 - DNS vs Global Accelerator for Blue/Green Deployments
     - With AWS Global Accelerator, you can shift traffic gradually or all at once between the blue and the green environment and vice-versa without being subject to DNS caching on client devices and internet resolvers, traffic dials and endpoint weights changes are effective within seconds.
     - DNS has TTL, so not suitable for B/G deployments
+- use cases:
+    - easily move endpoints b/w AZs or Regions w/o need for DNS config change
+    - Dial traffic up or down for a region by configuring a traffic dial %
+        - especially useful for testing performance and releasing updates
+    - control traffic to endpoints by assigning weights
 
 
 
@@ -778,6 +957,7 @@
     - increases efficiency
     - wait time can be b/w 1 to 20 sec
     - preferable to short polling
+    - `ReceiveMessageWaitTimeSeconds` == 0 (Default) ? Short Polling : Long Polling
 - SQS FIFO
     - name of the queue must end with .ffo suffix
     - cannot convert std to FIFO
@@ -792,13 +972,20 @@
             - but removed within 5 minutes
     - msgs can be bundled with a group ID
         - all messages within a group are in strict order
+    - not allowed as destination for S3 Event Notifications
+        - only Standard is allowed
 - SQS can act as a buffer to DB writes (Aurora, RDS, DynamoDB)
 - vs Kinesis Data Streams
     - real time processing of streaming big data
     - ability to read and replay records to multiple Amazon Kinesis Apps
 - Security
     - can use SSE for sensitive data
-- A dead-letter queue is an Amazon SQS queue to which a source queue can send messages if the source queue’s consumer application is unable to consume the messages successfully.
+- Dead letter Queues: 
+    - is an Amazon SQS queue to which a source queue can send messages if the source queue’s consumer application is unable to consume the messages successfully.
+- SQS temporary queues
+    - helps save dev time and cost
+    - use common message patterns such as request-reponse
+    - high throughput
 
 
 
@@ -845,7 +1032,7 @@
     - use SES for transactional emails
 
 
-## Kinesis Data Streams
+## Kinesis Data Streams (KDS)
 - Streaming service for ingest/process at scale
     - KDS can continuously capture gigabytes of data per second from hundreds of thousands of sources 
     - sources: 
@@ -860,6 +1047,11 @@
         - running real-time metrics and analytics
         - deriving more complex data streams for further processing
 - Real time (~200 ms)
+    - combine with following for real-time data analysis
+        - Kinesis Data Analytics
+        - Lambda
+        - EC2
+        - Spark on EMR
 - Producers
     - Custom apps and clients
     - SDK, KPL (kinesis producer Library)
@@ -883,8 +1075,13 @@
     - Output
         - shared
             - 2MB/sec (shared) per shard per all consumers
-        - enhanced
+        - enhanced fan-out feature
             - 2MB/sec per shard per consumer
+    - To increase throughput:
+        - increase number of shards
+            - costly
+        - send data in batches
+            - cost effective
 - Capacity modes
     - Provisioned
         - 1MB/sec IN, 2MB/sec out
@@ -917,7 +1114,7 @@
 
 
 
-## Kinesis Data Firehose
+## Kinesis Data Firehose (KDF)
 - Load streaming data / Streaming ETL Solution
 - Auto scaling
 - no data storage
@@ -933,6 +1130,7 @@
     - Kinesis Data Streams
     - Amazon CloudWatch (Logs and events)
     - AWS IoT
+- can dump data in a single data repository at a time
 - Outputs
     - 3rd party
         - Splunk
@@ -942,7 +1140,7 @@
     - AWS
         - S3
         - Amazon Redshift (through S3 COPY)
-        - OpenSearch
+        - ElasticSearch
     - custom endpoints
 - Failed data goes to S3 Backup bucket
 - Can invoke a Lambda for data transformation
@@ -973,7 +1171,7 @@
             - uses EC2 Instance profile
     - Fargate
         - Serverless
-        - Fargat + EFS = Serverless
+        - Fargate + EFS = Serverless
 - EC2 Task Role - for each task
 - Tasks can be Target Groups for ALB/NLB 
 - Auto-Scaling
@@ -985,9 +1183,21 @@
 - Tasks can be invoked by EventBridge
 - Networking modes in Amazon ECS tasks Ec2 launch type
     - Host Mode
+        - n/w of container tied to underlying host
+            - basic
     - Bridge mode
+        - port remapping b/w host & container ports
     - None mode
+        - no external connectivity for containers
     - AWSVPC mode
+        - seperate ENI, IP and SG for each task
+        - helps for separate security policies for each task
+        - and get granular traffic monitoring
+- ALB supported and works 
+    - ECS Tasks can be target groups for ALB
+- NLB only for high thoughput / performance
+    - or pair it with AWS PrivateLink
+- ELB not supported
 
 
 
@@ -1010,12 +1220,18 @@
     - uses VMWare vSphere
 
 
+# Fargate
+- managed container service
+- Fargate tasks are given 20GiB of free ephemeral storage
+
 
 
 —
 
 
 # Serverless
+
+
 
 ## Lambda
 - CRON job with CloudWatch Events or EventBridge
@@ -1212,6 +1428,18 @@
     - prevent re-processing old data
 
 
+## EMR
+- industry leading big-data platform
+- PB scale
+- using tools like
+    - Apache Spark
+    - Apache Hive
+    - Apache HBase
+    - Apache Flink
+    - Presto
+- used for launching Hadoop/Spark clusters
+
+
 ## Lake Formation
 - Data Lake
 - central place to have all your data for analytics
@@ -1251,6 +1479,9 @@
 - use Automatic Speech Recognition
 - Auto remove PII
 - support Auto Lang detection
+- supports speaker identification
+    - label individual speakers
+    - identify 2-10 speakers in an audio clip
 
 
 ## Polly
@@ -1260,13 +1491,45 @@
 - SSML (synthesis markup lang)
     - emphasize words or phrases
     - including breathing sounds etc
+- Brand Voice
+    - create custom NTTS (Neutral Text to Speech) voice
+    - used for adverts
+    - used to create unique vocal identifiers for specific products
 
 ## Lex
 - speech to text using NLP
-- helps builds chatbots, call center bots
+- helps builds conversational chatbots, call center bots
+- used to build Alexa
+    - Alexa cannot be used as Auto Speech Recognition service
+        - althought internally it uses ASR
 
 ## Comprehend
 - NLP
+- use ML to uncover insights and relationships in your unstructured data
+- the service
+    - identifies the language of the text
+    - extracts key phrases
+    - places
+    - people
+    - brands 
+    - events
+- can integration with Lambda and ElasticSearch (& its dashboard for visualization)
+
+## Comprehend Medical
+- NLP service
+- use ML to extract relevant medical info from unstructured text
+- can quicky gather accurate info like
+    - medical conditions
+    - medication
+    - dosage
+    - strength
+    - frequency
+- HIPAA eligible
+- can quickly identify Protected Health Info (PHI)
+
+
+## Textract
+- extract text from documents like pdf
 
 ## SageMaker
 - devs/data scientist can build ML models
@@ -1384,7 +1647,7 @@
 - vs SQS
     - SQS does not integrate with 3rd party
 - Event Buses
-    - Default Event Bus
+    - default Event Bus
         - connect to AWS services
     - Partner Event Bus
         - connect to 3rd party like zendesk and Datadog
@@ -1418,6 +1681,8 @@
     - for longer, log to S3 and use Athena
 - CloudTrail Log File integrity validation feature
     - to check if a log file was modified or deleted or unchanged
+- Encryption
+    - SSE enabled by default
 
 
 ## Config
@@ -1546,6 +1811,9 @@
 - version tracking
 - notifications with EventBridge
 - allows a TTL assignment to force update or delete
+- vs Secrets Manager
+    - SSP Parameter store is cheaper
+    - recommended for app parameters like db passwords etc
 
 
 ## Secrets Manager
@@ -1559,6 +1827,10 @@
         - multi-region apps
         - DR
         - multi-region DB
+- vs SSM Parameter store
+    - SM allows auto rotation
+    - is mainly used for keys, not app params
+    - SM is more costly
 
 
 ## ACM
@@ -1571,6 +1843,8 @@
 - ACM issued certs valid for 395 days
     - Email validated certs require action by domain owner
     - email contains a link for easy renewal
+- ACM lets you import 3rd party certs
+    - if ACM is not available, IAM cert store can be used
 
 
 ## WAF
@@ -1580,6 +1854,7 @@
     - API G/w
     - CloudFront
     - Cognito User Pool
+    - NOT on EC2 instances directly
 - Define Web ACL
     - can filter out IPs
     - can block countries
@@ -1599,9 +1874,16 @@
 - protect against DDoS
 
 
-## Firewall manager
+## Firewall Manager
 - Manage rules in all accounts of Organizations
-
+- As new applications are created, Firewall Manager makes it easy to bring new applications and resources into compliance by enforcing a common set of security rules
+- resource it can configure across accounts
+    - AWS WAF rules
+    - AWS Shield Advanced protection
+    - VPC SGs
+    - AWS Network Firewalls
+    - Route53 DNS Resolver Firewall
+- DOES NOT support NACLs
 
 ## Guard Duty
 - threat discovery
@@ -1622,6 +1904,8 @@
 - ML and pattern matching to discover sensitive data and PII in AWS
 
 
+## Artifact
+- central resource for all compliance-related info
 
 
 —
@@ -1630,7 +1914,7 @@
 # VPC
 - 5 vpcs per region (can be increased)
 - vpc can span multiple AZs
-    - subnets are in 1 AZ
+    - however, subnets are in 1 AZ
     - if instances are in different subnets which are in different AZ
         - $0.01 per GB data transfer
 - 5 max CIDRs per vpc
@@ -1686,6 +1970,8 @@
             - for analysis by Athena
 - Traffic Mirroring
     - capture and inspect n/w traffic in VPC
+    - simply copies the traffic, no analysis
+        - for analysis, use N/w Firewall
 - VPC Wizard options
     - single public subnet
     - public and pvt subnets
@@ -1694,6 +1980,13 @@
 - For instances without public IPs to access internet
     1. use NATGW and its public IP 
     2. with h/w VPN or DX, route the traffic through VPGW to existing DC
+- DNS resolution and DNS hostname config
+    - instance launched in default VPC
+        - provided with public and private DNS hostnames
+            - correspond to public and private IPv4 add of the instacnes
+        - instance launched in non-default VPC
+            - provided with a private DNS hostname only
+            - public hostname when DNS resolution and DNS hostname config are enabled
 
 
 
@@ -1788,6 +2081,8 @@
 ## Transit Gateway
 - transitive peering connections b/w thousands of VPC and on-prem
 - hub and spoke star connection
+- attach all your hybrid connectivity (VPN & DX) to it
+    - consolidating and controlling your org's entire AWS routing config in 1 place
 - regional resource
     - but can work cross region
     - can peer Transit Gateways across regions
@@ -1799,6 +2094,8 @@
 
 ## PrivateLink
 - tech behind VPC Endpoints
+- provides secure connectivity for services behind separate VPCs
+    - used in conj. with NLB
 
 
 ## Network Firewall
@@ -1817,6 +2114,10 @@
     - S3
     - CW Logs
     - KDF
+- use cases
+    - pass traffic only thru known domains or IP address endpoints
+    - use custom lists of known bad domains
+    - perform deep packet inspection
 
 
 
@@ -1835,6 +2136,9 @@
 - Continuous Data Replication
     - on-prem to AWS or vice-versa
 - can encrypt source and target endpoints by using SSL certs
+- can be used to migrate RDS Aurora to 
+    - Aurora Serverless
+    - Aurora in different region
 
 
 ## Backup
@@ -1863,12 +2167,21 @@
         - details of n/w connections
 
 
+## Application Migration Service
+- to perform the actual migration
+- beings by installing the AWS Replication Agent on your source servers
+
 
 
 ## RAM
 - securely share resources across AWS accounts within Org or OU
 - can also share with IAM roles and users for supported resources
 - eliminates the need to provision and manage resources in every account
+- can share
+    - Transit g/w
+    - subnets
+    - License Manager configs
+    - Route53 Resolver rules
 
 
 ## CloudFormation
@@ -1881,6 +2194,7 @@
         - Lambda backed
             - Lambda is invoked when a custom resource is CRUD
 - template anatomy
+    - Version
     - metadata
     - parameters
         - values to pass at runtime
@@ -1893,10 +2207,15 @@
     - resources
     - outputs
         - values that can be imported to other stacks to create cross-stack references
+- use `CreationPolicy` attribute ona resource to prevent its status from reaching completion
+    - unless CloudFormation receives a specified number of success signals
+        - OR
+    - the timeout is exceeded
 
 ## X-Ray
 - helps you analyze and debug modern micro-services apps and serverless archi
 - quantify customer impact
+- collect data about requests that your app serves
 
 ## Outposts
 - delivers AWS infra to any on-prem or edge location
@@ -1919,3 +2238,34 @@
 - Automation
     - simplify common maintenance tasks
         - e.g. restart instances, create an AMI, EBS snapshot
+
+
+
+## Well-Architected Framework
+- helps cloud architects build secure, high performing, resilient and efficients apps
+- battle tested workloads reviews by other architects
+- provides a consistent approach for evaluating your cloud arch
+    - and implementing designs that will scale your app need over time
+
+
+## AWS Health
+- provides ongoing visibility into your resource perf & availability of your AWS services
+- can use AWS health events to learn how service and resource changes affect your app
+
+
+## Trusted Advisor
+- inspects your AWS env and makes recommendations
+    - to save money
+    - improve system avail. and perf.
+    - or close security gaps
+- can run service limit checks
+- checks in the following categories
+    - Cost Optimization
+    - Security
+    - Fault Tolerance
+    - Performance
+    - Service Limits
+
+
+## AppSync
+- serverless GraphQL and Pub/Sub API Service
