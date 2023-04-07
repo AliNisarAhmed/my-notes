@@ -961,7 +961,7 @@
 - SQS FIFO
     - name of the queue must end with .ffo suffix
     - cannot convert std to FIFO
-    - throughput: 300 msg / s (w/o batching), 3000 msgs/s (with batching)
+    - throughput: 300 msg / s (w/o batching), 3000 msgs/s (with batching of 10)
         - SQS FIFO Batch Mode
             - By default, FIFO queues support up to 300 msgs/s
             - When you batch 10 msgs per operation (max value), FIFO queue can support up to 3000 msgs/sec
@@ -1332,6 +1332,16 @@
         - by a service call
     - any request over the limit receives a 429
     - uses token bucket algorithm
+- Access control mechanisms
+    - resource-based policies
+    - IAM roles and policies
+    - CORS
+    - Lambda Authorizers
+        - use bearer token auth + HTTP request info
+    - Cognito User pools
+    - Client-side SSL certs
+    - Usage plans
+        - issue API keys and track usage
 
 
 
