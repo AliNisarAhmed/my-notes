@@ -1,0 +1,165 @@
+{
+  "main": {
+    "id": "4dd7623a97c5d983",
+    "type": "split",
+    "children": [
+      {
+        "id": "ebbfd63a3cd729ff",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "04fc4a0c64e38113",
+            "type": "leaf",
+            "state": {
+              "type": "empty",
+              "state": {}
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "ac86ff3db4ab307c",
+    "type": "split",
+    "children": [
+      {
+        "id": "fa8cfd6bcbb60dc8",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "e24d881f469716cb",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical"
+              }
+            }
+          },
+          {
+            "id": "0ed789417319b7af",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              }
+            }
+          },
+          {
+            "id": "59327795a5253351",
+            "type": "leaf",
+            "state": {
+              "type": "starred",
+              "state": {}
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "right": {
+    "id": "384262030b1233be",
+    "type": "split",
+    "children": [
+      {
+        "id": "c378fff8597a97f2",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "321cb8542ccc0f83",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "collapseAll": false,
+                "extraContext": true,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              }
+            }
+          },
+          {
+            "id": "2cb72d662a234d6c",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              }
+            }
+          },
+          {
+            "id": "b7b5c4cbd6fe5fc8",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true
+              }
+            }
+          },
+          {
+            "id": "26e388e7d909869d",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {}
+            }
+          }
+        ],
+        "currentTab": 3
+      }
+    ],
+    "direction": "horizontal",
+    "width": 381.5
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:Open quick switcher": false,
+      "graph:Open graph view": false,
+      "canvas:Create new canvas": false,
+      "daily-notes:Open today's daily note": false,
+      "templates:Insert template": false,
+      "command-palette:Open command palette": false,
+      "table-editor-obsidian:Advanced Tables Toolbar": false
+    }
+  },
+  "active": "04fc4a0c64e38113",
+  "lastOpenFiles": [
+    "Philosophy/moralities-of-everyday-life/1-a-the-moral-instint.md",
+    "presentation/craft.md",
+    "presentation/9aa0de45077215128b5f6e119d81aef3.png",
+    "Networks/CompTIA+/4-Ethernet.md",
+    "Networks/CompTIA+/Protocols.md",
+    "Networks/CompTIA+/1-basics.md",
+    "Networks/CompTIA+/compTIA-Net+.pdf",
+    "Networks/CompTIA+/3-TCP-IP.md",
+    "Networks/CompTIA+/2-OSI-Model.md",
+    "Networks/ccna/04-04+Navigating+the+Cisco+IOS+Operating+System.pdf",
+    "Networks/ccna",
+    "2023-04-12.md",
+    "AWS/Solutions-Arch/15-services-notes.md",
+    "AWS/Solutions-Arch/100-misc.md",
+    "REST.md",
+    "Microservices/3. Kubernetes.md",
+    "Microservices/2. docker.md",
+    "Microservices/1. Microservice.md",
+    "AWS/ASG.md",
+    "AWS/AMI.md"
+  ]
+}

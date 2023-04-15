@@ -5,7 +5,10 @@
 IEEE 802.11  -> Wifi
 IEEE 802.3   -> Ethternet
 ISO/IEC 7498 -> OSI Model
-
+IEEE 802.3ad -> Link Aggregation (Ethernet)
+IEEE 802.3af -> PoE (Power over Ethernet) (15.4 Watts)
+IEEE 802.3at -> PoE+ (25.5 Watts)
+IEEE 802.1x  -> User Authentication
 
 ## Ports
 
@@ -38,3 +41,5 @@ ISO/IEC 7498 -> OSI Model
 | MySQL                         | 3306      | Used by MySQL                                                                     |
 | RDP                           | 3389      | GUI for remote control another client or server                                   |
 | SIP (Session Initiation)      | 5060,5061 | initiate VoIP & video calls                                                       |
+
+
