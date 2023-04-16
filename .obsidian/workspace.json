@@ -11,8 +11,12 @@
             "id": "04fc4a0c64e38113",
             "type": "leaf",
             "state": {
-              "type": "empty",
-              "state": {}
+              "type": "markdown",
+              "state": {
+                "file": "Networks/CompTIA+/0-Protocols.md",
+                "mode": "source",
+                "source": false
+              }
             }
           }
         ]
@@ -81,6 +85,7 @@
             "state": {
               "type": "backlink",
               "state": {
+                "file": "Networks/CompTIA+/0-Protocols.md",
                 "collapseAll": false,
                 "extraContext": true,
                 "sortOrder": "alphabetical",
@@ -97,6 +102,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
+                "file": "Networks/CompTIA+/0-Protocols.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -118,7 +124,9 @@
             "type": "leaf",
             "state": {
               "type": "outline",
-              "state": {}
+              "state": {
+                "file": "Networks/CompTIA+/0-Protocols.md"
+              }
             }
           }
         ],
@@ -139,18 +147,18 @@
       "table-editor-obsidian:Advanced Tables Toolbar": false
     }
   },
-  "active": "04fc4a0c64e38113",
+  "active": "e24d881f469716cb",
   "lastOpenFiles": [
+    "Networks/CompTIA+/4-Ethernet.md",
+    "Networks/CompTIA+/3-TCP-IP.md",
+    "Networks/ccna/04-04+Navigating+the+Cisco+IOS+Operating+System.pdf",
+    "Networks/CompTIA+/2-OSI-Model.md",
     "Philosophy/moralities-of-everyday-life/1-a-the-moral-instint.md",
     "presentation/craft.md",
     "presentation/9aa0de45077215128b5f6e119d81aef3.png",
-    "Networks/CompTIA+/4-Ethernet.md",
-    "Networks/CompTIA+/Protocols.md",
+    "Networks/CompTIA+/0-Protocols.md",
     "Networks/CompTIA+/1-basics.md",
     "Networks/CompTIA+/compTIA-Net+.pdf",
-    "Networks/CompTIA+/3-TCP-IP.md",
-    "Networks/CompTIA+/2-OSI-Model.md",
-    "Networks/ccna/04-04+Navigating+the+Cisco+IOS+Operating+System.pdf",
     "Networks/ccna",
     "2023-04-12.md",
     "AWS/Solutions-Arch/15-services-notes.md",
