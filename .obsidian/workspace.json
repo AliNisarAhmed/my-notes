@@ -11,15 +11,26 @@
             "id": "04fc4a0c64e38113",
             "type": "leaf",
             "state": {
+              "type": "pdf",
+              "state": {
+                "file": "Networks/ccna/04-04+Navigating+the+Cisco+IOS+Operating+System.pdf"
+              }
+            }
+          },
+          {
+            "id": "dc6418eba13ba069",
+            "type": "leaf",
+            "state": {
               "type": "markdown",
               "state": {
-                "file": "Networks/CompTIA+/0-Protocols.md",
+                "file": "Networks/ccna/1-subnetting-examples.md",
                 "mode": "source",
                 "source": false
               }
             }
           }
-        ]
+        ],
+        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -85,7 +96,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Networks/CompTIA+/0-Protocols.md",
+                "file": "Networks/ccna/1-subnetting-examples.md",
                 "collapseAll": false,
                 "extraContext": true,
                 "sortOrder": "alphabetical",
@@ -102,7 +113,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Networks/CompTIA+/0-Protocols.md",
+                "file": "Networks/ccna/1-subnetting-examples.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -125,7 +136,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Networks/CompTIA+/0-Protocols.md"
+                "file": "Networks/ccna/1-subnetting-examples.md"
               }
             }
           }
@@ -147,16 +158,18 @@
       "table-editor-obsidian:Advanced Tables Toolbar": false
     }
   },
-  "active": "e24d881f469716cb",
+  "active": "dc6418eba13ba069",
   "lastOpenFiles": [
+    "Networks/ccna/04-04+Navigating+the+Cisco+IOS+Operating+System.pdf",
+    "Networks/ccna/1-subnetting-examples.md",
+    "Networks/networks.md",
+    "Networks/CompTIA+/0-Protocols.md",
     "Networks/CompTIA+/4-Ethernet.md",
     "Networks/CompTIA+/3-TCP-IP.md",
-    "Networks/ccna/04-04+Navigating+the+Cisco+IOS+Operating+System.pdf",
     "Networks/CompTIA+/2-OSI-Model.md",
     "Philosophy/moralities-of-everyday-life/1-a-the-moral-instint.md",
     "presentation/craft.md",
     "presentation/9aa0de45077215128b5f6e119d81aef3.png",
-    "Networks/CompTIA+/0-Protocols.md",
     "Networks/CompTIA+/1-basics.md",
     "Networks/CompTIA+/compTIA-Net+.pdf",
     "Networks/ccna",
