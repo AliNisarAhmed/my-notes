@@ -3,13 +3,23 @@
 ## Standards
 
 IEEE 802.11  -> Wifi
-IEEE 802.3   -> Ethternet
 ISO/IEC 7498 -> OSI Model
+
+
+IEEE 802.1x  -> User Authentication
+IEEE 802.1D -> STP (Spanning Tree P)
+
+IEEE 802.3   -> Ethernet
+IEEE 802.3i -> 10 Mbps Ethernet (10BASE-T)
+IEEE 802.3u -> 100 Mbps FastEthernet (100BASE-T)
+IEEE 802.3ab -> 1 Gbps Ethernet (1000BASE-T)
+IEEE 802.3an -> 10 Gbps Ethernet (10GBASE-T)
+IEEE 802.3z -> 1000BASE-LX
+IEEE 802.3ae -> Fiber cables (10GBASE-SR, 10GBASE-LR, 10GBASE-ER)
+
 IEEE 802.3ad -> Link Aggregation (Ethernet)
 IEEE 802.3af -> PoE (Power over Ethernet) (15.4 Watts)
 IEEE 802.3at -> PoE+ (25.5 Watts)
-IEEE 802.1x  -> User Authentication
-IEEE 802.1D -> STP (Spanning Tree P) 
 
 ## Ports
 
