@@ -1,4 +1,6 @@
 
+##### Subnetting on 4th octet
+
 
 Allocated IP = Class C: 200.15.10.0/24
 We want /28 subnets
@@ -158,3 +160,150 @@ Solution:
 	  - Broadcast address:   200.15.10.99
 	  - Hosts
 		  - 200.15.10.97 to 200.15.10.98
+
+
+---
+
+Allocated: Class B: 135.15.0.0/16 
+Target: 135.15.10.138/29
+
+Number of networks: 2^(29-16) = 2^13 = 8192
+Number of hosts = 2^(32 - 29) - 2 = 2^3 - 2 = 6 per network
+N/w address: 135.15.10.136
+- how to calculate:
+	- 138 in binary: 1000 1010
+	- Since 2^3 is the host number, we drop/zero the last 3 bits
+	- Hence: 10001000 = 136 (128 + 0 + 0 + 0 + 8 + 0...)
+Broadcast address: 135.15.10.143
+Next nw address: 135.15.10.144
+Valid host addresses: 135.15.10.137 to 135.15.10.142
+
+
+---
+
+Allocated Class A: 60.0.0.0/8
+
+Question: If we apply subnet mask 255.255.255.240
+- how many subnets do we have?
+- how many hosts per subnet?
+
+Solution:
+- subnet mask is 255.255.255.1111_0000
+- which is /28
+- which means we have
+	- subnets = 2^(28 - 8) = 2^20 = 1,048,576
+	- hosts: 2^(32-28) - 2 = 14
+
+
+---
+
+Allocated: Class A: 60.0.0.0/8
+Target: 60.15.10.75/28
+
+Question: 
+- n/w address
+- broadcast address
+- range of valid IP addresses
+
+Solution:
+- n/w address = 60.15.10.64/28
+	- 75 in binary: 01001011
+	- host number: 2^4, zero that last 4 bits
+	- 01000000 = 64
+- Broadcast address = 60.15.10.79
+- next network address = 60.15.10.80
+- valid hosts
+	- 60.15.10.65 to 60.15.10.78
+
+
+
+---
+
+Allocated: Class A 60.0.0.0/8
+
+Question: subnet into /19
+- how many networks
+- how many hosts?
+
+Solution:
+- networks = 2^(19 - 8) = 2^11 = 2048
+- hosts = 2^(32 - 19) - 2 = 2^13 - 2 = 8190
+
+
+---
+
+Q: for IP 172.19.216.50 Mask=255.255.255.240
+- what is the n/w addr
+- broadcast addr
+- valid hosts
+
+Solution:
+- n/w addr: 172.19.216.48
+	- host number: 256 - 240 = 16 or 2^4
+	- starting with 172.19.216.0 , keep adding 16 tilll we reach <50
+	- hence: 172.19.216.48
+- broadcast addr:
+	- 172.19.216.63
+- next n/w addr
+	- 172.19.216.64
+- valid hosts:
+	- 172.19.216.49 to 62
+
+---
+
+#### Subnetting on 3rd octet
+
+
+Allocated: Class A: 60.0.0.0/8
+Given: 60.15.10.75/19
+Question:
+- n/w address
+- Broadcast address
+- next network address
+- valid hosts
+
+Solutions:
+- n/w address = 60.15.0.0/19
+	- Given IP in binary = 60.15.0000_1010.0100_1011
+	- host num: 32-19 = 13, hence zero last 13
+	- 60.15.0.0
+- Broadcast address: 60.15.31.255
+	- Subnet mask is 255.255.224.0
+	- subtract value in subnetted octet = 256 - 224 = 32 (number to increment for next n/w address)
+- next n/w address
+	- 60.15.32.0
+- Valid hosts
+	- 60.15.0.1 to 60.15.31.254
+
+
+---
+
+Question: subnet 134.65.0.0 to 6 different networks
+- what subnet mask to use
+
+Solution:
+- from 134.x.0.0 we know its a class B
+- default subnet mask is /16
+- to get 6 networks, we can use /19 or 255.255.224.0
+- 8190 hosts in each n/w (2^13 -2)
+- next network addr: 
+	- 134.65.32.0 
+	- 134.65.64.0
+	- (256 - 224) = 32
+
+
+---
+
+Q: IP = 172.19.216.50/23
+- n/w addr
+- b/c addr
+- valid hosts
+
+Solution:
+- Since its /23 we are subnetting on 3rd octet
+	- another way to see this: Mask = /23 = 255.255.254.0
+- n/w addr: 172.19.216.0
+- next network addr: 172.19.218.0 (+2 on 3rd octet, since 256 - 254 = 2)
+- broadcast: 179.19.217.255
+- valid hosts
+	- 172.18.216.1 to 172.18.217.254
