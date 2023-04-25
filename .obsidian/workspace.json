@@ -4,33 +4,22 @@
     "type": "split",
     "children": [
       {
-        "id": "ebbfd63a3cd729ff",
+        "id": "2248ae0583a1781e",
         "type": "tabs",
         "children": [
           {
-            "id": "04fc4a0c64e38113",
-            "type": "leaf",
-            "state": {
-              "type": "pdf",
-              "state": {
-                "file": "Networks/ccna/04-04+Navigating+the+Cisco+IOS+Operating+System.pdf"
-              }
-            }
-          },
-          {
-            "id": "dc6418eba13ba069",
+            "id": "748d034ce5937060",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Networks/ccna/1-subnetting-examples.md",
+                "file": "Networks/ccna/01-ios-commands.md",
                 "mode": "source",
                 "source": false
               }
             }
           }
-        ],
-        "currentTab": 1
+        ]
       }
     ],
     "direction": "vertical"
@@ -96,7 +85,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Networks/ccna/1-subnetting-examples.md",
+                "file": "Networks/ccna/01-ios-commands.md",
                 "collapseAll": false,
                 "extraContext": true,
                 "sortOrder": "alphabetical",
@@ -113,7 +102,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Networks/ccna/1-subnetting-examples.md",
+                "file": "Networks/ccna/01-ios-commands.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -136,7 +125,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Networks/ccna/1-subnetting-examples.md"
+                "file": "Networks/ccna/01-ios-commands.md"
               }
             }
           }
@@ -158,12 +147,23 @@
       "table-editor-obsidian:Advanced Tables Toolbar": false
     }
   },
-  "active": "dc6418eba13ba069",
+  "active": "748d034ce5937060",
   "lastOpenFiles": [
+    "Networks/ccna/02-subnetting-examples.md",
+    "Networks/ccna/01-ios-commands.md",
+    "Networks/ccna/notes/12 The Life of a Packet/12-06 The Life of a Packet.pdf",
     "Networks/ccna/04-04+Navigating+the+Cisco+IOS+Operating+System.pdf",
-    "Networks/ccna/1-subnetting-examples.md",
-    "Networks/networks.md",
+    "Networks/ccna/notes/16 Routing Fundamentals/16-06 Summarisation and Default Routes.pdf",
+    "Networks/ccna/notes/16 Routing Fundamentals/16-04 Static Routes.pdf",
+    "Networks/ccna/notes/16 Routing Fundamentals/16-02 Connected and Local Routes.pdf",
+    "Networks/ccna/notes/16 Routing Fundamentals",
+    "Networks/ccna/notes/15 Cisco Device Management/15-08 Licensing.pdf",
+    "Networks/ccna/notes/15 Cisco Device Management/15-07 Upgrading IOS.pdf",
+    "Networks/ccna/notes/15 Cisco Device Management/15-06 Backing up the System Image and Configuration.pdf",
+    "Networks/ccna/notes/15 Cisco Device Management/15-04 Factory Reset and Password Recovery.pdf",
+    "AWS/Solutions-Arch/15-services-notes.md",
     "Networks/CompTIA+/0-Protocols.md",
+    "Networks/networks.md",
     "Networks/CompTIA+/4-Ethernet.md",
     "Networks/CompTIA+/3-TCP-IP.md",
     "Networks/CompTIA+/2-OSI-Model.md",
@@ -171,10 +171,7 @@
     "presentation/craft.md",
     "presentation/9aa0de45077215128b5f6e119d81aef3.png",
     "Networks/CompTIA+/1-basics.md",
-    "Networks/CompTIA+/compTIA-Net+.pdf",
-    "Networks/ccna",
     "2023-04-12.md",
-    "AWS/Solutions-Arch/15-services-notes.md",
     "AWS/Solutions-Arch/100-misc.md",
     "REST.md",
     "Microservices/3. Kubernetes.md",

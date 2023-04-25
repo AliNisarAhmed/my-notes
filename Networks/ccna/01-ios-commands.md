@@ -1,5 +1,5 @@
 
-### Modes
+### Modes & Interfaces
 1. `conf t`
 	- Go to Global Config
 2. `enable`
@@ -8,9 +8,42 @@
 	- Go to Interface config mode
 4. `show ip interface brief`:
 	- show interface, IP addr, and ports
+	- shortcut: `sh ip int br`
 5. `show interface <interface_number>`: 
 	- e.g. `show interface gig0/0`
 	- show details about an interface
+	 - can be used to find speed and duplex mode
+6. `show interfaces` or `show interfaces <interface_id>`
+	- shows various counters of errors detected on an interface
+7. `show interfaces description`
+	- shows the description column (in addition to what `show interface` command shows) 
+	- helpful in identifying the purpose of each interface 
+	- set description using `description <description>` (requires interface config mode)
+ 8. `show interfaces status`
+	 - **NOTE**: command only works on Switches
+	 - shows name (description), status, vlan, duplex, speed and type of all interfaces
+ 9. `hostname <host_name>`
+	  - sets hostname (requires interface config mode)
+ 10. `duplex full` vs `duplex half` vs `duplex auto`
+ 11. `speed 100`
+	 - to set speed to 100Mbps
+ 12. `show run` vs `show run interface <interface_id>`
+	 - show running config vs show running config for a particular interface
+ 13. `show version`
+	 - show IOS version
+ 14. `interface range f0/5 - 12`
+	 - Enter **interface range config** mode, configuring multiple instances at once
+	 - in the above exampe, we are confuguring interfaces 5-12
+	 - can also do non-continuous ranges like `int range f0/5 - 6, f0/9 - 12`
+
+### IP addr
+ 1. `ip adrress <ip_address> <subnet_mask>`
+	 - set IP address on an interface (requires interface config mode)
+	 - subnet mask should be in dotted decimal (NOT slash notation)
+ 2. `shutdown` and `no shutdown`
+	  - disable and enable an interface (requires interface config mode)
+ 3. `ip default-gateway <default-gw-ip>` 
+	  - requires global config mode
 
 ### MAC Addresses & Routing
 1. `show mac address-table dynamic`:
@@ -36,3 +69,31 @@
   - Additional DNS Server commands:
 	  - `ip dns server` (once set up is done, start the DNS server)
 	  - `ip host LinuxA 172.23.4.2` (Add host (either name or FQDN) against DNS for the IP)
+
+
+### CDP
+- `cdp run` 
+	- enabled by default though
+- `no cdp run`
+	- disable cdp globally (requires global config mode)
+- `no cdp enable`
+	- requires interface config mode
+	- disable cdp on an interface
+	 - UseCase: for hiding info about this interface to other devices usually external
+		 - do not forget to run `no cdp run` and then `cdp run` on the external device to flush their cache
+- `show cdp`
+	- shows whether enabled or not
+- `show cdp neighbors`
+	- shows a summary of neighbors
+- `show cdp neighbors detail`
+
+
+### LLDP
+- `lldp run`
+- `no lldp run`
+- `no lldp transmit`
+- `no lldp receive`
+	- disable transmit and receive at interface level
+ - `show lldp`
+ - `show lldp neighbors`
+ - `show lldp neighbors detail`
