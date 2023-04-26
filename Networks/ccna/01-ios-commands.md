@@ -97,3 +97,29 @@
  - `show lldp`
  - `show lldp neighbors`
  - `show lldp neighbors detail`
+
+
+### Flash & Memory
+- `boot system flash:<file_name_in_flash>`
+	- choose the IOS image file which boots on system start
+- `show flash`
+	- list system images on Flash
+- `delete flash:<file_name>`
+	- delete flash `file_name`
+ - `write erase`
+	 - delete the startup config
+	 - run `reload` to reload the device to boot up with a blank configuration
+ - `config-register`
+	 - can be used to change the way the router boots
+	 - use in global config mode
+	 - in rommon mode, this command changes to `confreg XXXX`
+	 - e.g. `config-register 0x2142`
+	 - options
+		 - `0x2102` - boot normally
+		 - `0x2120` - boot into rommon
+		 - `0x2142` - ignore contents of NVRAM (startup config)
+ - `copy flash tftp` 
+	 - copy system image to a TFTP server
+	 - vs `copy running-config tftp` 
+	 - vs `copy startup-config usb`
+	 - vs `copy flash start` (and so on)
