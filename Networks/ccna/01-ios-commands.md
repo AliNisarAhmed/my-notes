@@ -1,4 +1,7 @@
 
+CheatSheet: https://www.netwrix.com/cisco_commands_cheat_sheet.html
+
+
 ### Modes & Interfaces
 1. `conf t`
 	- Go to Global Config
@@ -123,3 +126,57 @@
 	 - vs `copy running-config tftp` 
 	 - vs `copy startup-config usb`
 	 - vs `copy flash start` (and so on)
+
+### Routes
+- `show ip route`
+	- show routing table
+	- starting IOS v 15 also shows router IP
+- `ip route <target_network> <subnet_mask> <next_hop_address>`
+	- add a static route to `target_network` using `next_hop_address`
+	- `next_hop_address` is IP address of the directly connected router
+- `ip route <target_network> <subnet_mask> <exit_interface>`
+	- instead of next hop IP addr, we can also specify a Router's own interface name from where the Router will exit/output the traffic
+	- e.g: `ip route 192.168.1.0 255.255.255.0 g0/0`
+	- uses `Proxy ARP` protocol to find next hop, and shows up in routing table as a "Connected" route
+- `ip route <target_network> <subnet_mask> <exit_interface> <next_hop>`
+	- combine the 2 commands above
+	- does not use proxy ARP, and appears as a Static route not directly connected
+- `ip route <target_n/w> <subnet_mask> <next_hop_address> <Administrative-Distance: Int>
+	- makes this route a Floating Static Route
+	- e.g. `ip route 10.0.1.10 255.255.255.0 10.1.3.2 115`
+
+
+### Pipe operator
+- `show running-config | include ip route`
+- `show run | section rip`
+- `show run | begin rip`
+
+
+
+### Debug
+- `debug`
+	- debug is like show, but prints updates as they happen
+	- e.g. `debug ip rip` - shows info as RIP exchanges happen
+- `undebug all`
+	- stops all debugging info
+
+
+
+### Protocols
+- `show ip protocols`
+- `show ip rip database`
+	- shows all the routes learned from the neighbors
+- `show ip ospf database`
+- `network <ip_add>`
+	- in router config mode, associates a network with a routing protocol
+
+
+
+### Loopback interfaces
+- `interface loopback <interface_number>`
+	- ceates a loopback interface with a virtual interface of <interface_number>
+	- used to configure a single IP address for a router, so that it can be reached via that IP no matter the path available
+	- best practice to give loopback addr an IP of /32 (any IP can be used)
+		- e.g. `ip address 192.168.1.1 255.255.255.255`
+- `passive-interface <loopback_interface`
+	- sets the loopback interface as a passive interface
