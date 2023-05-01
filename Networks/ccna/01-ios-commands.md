@@ -54,6 +54,8 @@ CheatSheet: https://www.netwrix.com/cisco_commands_cheat_sheet.html
 2. `clear mac address-table dynamic`
 3. `show ip route`:
 	- view Routing table
+4. `mac-address <mac_address>`
+	- configure MAC address for an interface (requires interface config mode)
 
 ### ARP
 1. `show arp` (View arp)
@@ -180,3 +182,18 @@ CheatSheet: https://www.netwrix.com/cisco_commands_cheat_sheet.html
 		- e.g. `ip address 192.168.1.1 255.255.255.255`
 - `passive-interface <loopback_interface`
 	- sets the loopback interface as a passive interface
+
+
+### VLAN
+- `show vlan brief`
+	- displays existing vlans and interfaces on them
+ - Assigning interfaces to vlans
+	 - `interface range g1/0-3`
+	 - `switchport mode access`
+	 - `switchport access vlan 10`
+ - `vlan <vlan_number>`
+	 - enter config mode for vlan
+ - `name <vlan_name>`
+	 - rename a vlan from vlan config mode
+ - `no vlan <vlan_number>`
+	 - delete a vlan

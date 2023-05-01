@@ -1,3 +1,9 @@
+##### Resources
+
+- subnettingquestions.com
+- subnetting.org
+- subnettingpractice.com
+
 ##### Binary form of Subnet Masks
 
 0000_0000 = 0    = /24
@@ -10,6 +16,7 @@
 1111_1110     = 254  = /31
 1111_1111      = 255  = /32
 
+ 
 ##### Subnetting on 4th octet
 
 
@@ -318,3 +325,111 @@ Solution:
 - broadcast: 179.19.217.255
 - valid hosts
 	- 172.18.216.1 to 172.18.217.254
+
+
+---
+
+Given: 192.168.1.0/24
+
+Divide for
+1. Tokyo LAN A = 110 hosts
+2. Toronto LAN B = 45 hots
+3. TN LAN A = 29 hosts
+4. Tokyo LAN B = 8 hosts
+5. point-to-point connection
+
+Solution:
+
+Tokyo LAN A = 110 hosts
+- use /25 prefix length = 255.255.128.0
+- n/w addr = 192.168.1.0
+- b/c addr  = 192.168.1.127
+- 1st IP = 192.168.1.1
+- Last IP = 192.168.1.126
+- Total hosts = 128 - 2 = 126
+
+TN LAN B = 45 hosts
+- /26
+- n/w addr = 192.168.1.128/26 (starts right after Tokyo LAN B)
+- b/c addr = 192.168.1.191
+- 1st IP = 192.168.1.129/26
+- Last IP = 192.168.1.190/26
+- Total hosts = 64 - 2 = 62
+
+TN LAN A = 29 hosts
+- prefix length = /27
+- n/w addr = 192.168.1.192
+- b/c addr = 192.168.1.223
+- 1st IP = 192.168.1.193
+- Last IP = 192.168.1.222
+- Total Hosts = 32 - 2 = 30
+
+Tokyo LAN B = 8 hosts
+- prefix length = /28
+- n/w addr = 192.168.1.224
+- b/c addr = 192.168.1.239
+- 1st IP = 192.168.1.225
+- Last IP = 192.168.1.238
+- Total Hosts = 14
+
+Point-to-Point
+- prefix length = /30
+- n/w addr = 192.168.1.240
+- b/c addr = 192.168.1.243
+- 1st IP = 192.168.1.241
+- Last IP = 192.168.1.242
+- Total Hosts = 4 - 2 = 2
+
+
+---
+
+Given: 192.168.5.0/24
+
+Targets:
+1. LAN2 = 64 hosts
+2. LAN1 = 45 hosts
+3. LAN3 = 14 hosts
+4. LAN4 = 9 hosts
+5. point-to-point b/w two Routers
+
+Solution:
+
+LAN2 = 64 hosts
+- prefix length = /25 = 255.255.255.128
+- n/w addr = 192.168.5.0
+- b/c addr = 192.168.5.127
+- 1st IP = 192.168.5.1
+- Last IP = 192.168.5.126
+- Total Hosts = 128 - 2 = 126
+
+LAN1 = 45 hosts
+- prefix length = /26 = 255.255.255.192
+- n/w addr = 192.168.5.128
+- b/c addr = 192.168.5.191
+- 1st IP = 192.168.5.129
+- Last IP = 192.168.5.190
+- Total Hosts = 62
+
+LAN3 = 14 hosts
+- prefix length = /28 = 255.255.255.240
+- n/w addr = 192.168.5.192
+- b/c addr = 192.168.5.207
+- 1st IP = 192.168.5.193
+- Last IP = 192.168.5.206
+- Total Hosts = 14
+
+LAN 4 = 9 hosts
+- prefix length = /28
+- n/w addr = 192.168.5.208
+- b/w addr = 192.168.5.223
+- 1st IP = 192.168.5.209
+- Last IP = 192.168.5.222
+- Total Hosts = 14
+
+P2P
+- prefix length = /30
+- n/w addr = 192.168.5.224
+- b/c addr = 192.168.5.227
+- 1st IP = 192.168.5.225
+- Last IP = 192.168.5.226
+- Total Hosts = 2
