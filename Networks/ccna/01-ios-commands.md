@@ -187,6 +187,8 @@ CheatSheet: https://www.netwrix.com/cisco_commands_cheat_sheet.html
 ### VLAN
 - `show vlan brief`
 	- displays existing vlans and interfaces on them
+	- only shows the access ports assigned to each VLAN
+		- NOT the trunk ports that allow each VLAN
  - Assigning interfaces to vlans
 	 - `interface range g1/0-3`
 	 - `switchport mode access`
@@ -197,3 +199,24 @@ CheatSheet: https://www.netwrix.com/cisco_commands_cheat_sheet.html
 	 - rename a vlan from vlan config mode
  - `no vlan <vlan_number>`
 	 - delete a vlan
+ - Trunk Configuration
+	 - `switchport trunk encapsulation dot1q` 
+		 - (not needed on switches which only support dot1q)
+	 - `switchport mode trunk`
+ - `show interfaces trunk`
+	 - see all trunk switchports
+ - Allowing vlans on trunk
+	 - `switchport trunk allowed vlan <comma_separated_vlan_ids>`
+		 - configure these vlan ids to be allowed on trunk port
+	 - `switchport trunk allowed vlan add <vlan_id>`
+		 - add this vlan to allowed list
+	 - `switchport trunk allowed vlan remove <vlan_id>`
+		 - remove this vlan from the allowed list
+	 - `switchport trunk allowed vlan all`
+		 - allow all vlans on this trunk port
+	 - `switchport trunk allowed vlan except <comma_sep_vlan_ids>`
+		 - allow all vlans except these vlans
+	 - `switchport trunk allowed vlan none`
+		 - No vlans allowed
+ - `switchport trunk native vlan <vlan_id>`
+	 - change native vlan
