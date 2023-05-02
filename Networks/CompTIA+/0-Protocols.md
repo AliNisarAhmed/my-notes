@@ -21,6 +21,8 @@ IEEE 802.3ad -> Link Aggregation (Ethernet)
 IEEE 802.3af -> PoE (Power over Ethernet) (15.4 Watts)
 IEEE 802.3at -> PoE+ (25.5 Watts)
 
+IEEE 802.1q -> Trunking Protocol
+
 ## Ports
 
 | Protocol                      | Port      | Protocol purpose                                                                  |

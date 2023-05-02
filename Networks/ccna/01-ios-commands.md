@@ -214,9 +214,21 @@ CheatSheet: https://www.netwrix.com/cisco_commands_cheat_sheet.html
 		 - remove this vlan from the allowed list
 	 - `switchport trunk allowed vlan all`
 		 - allow all vlans on this trunk port
+		 - default settings, by default all vlans are allowed
 	 - `switchport trunk allowed vlan except <comma_sep_vlan_ids>`
 		 - allow all vlans except these vlans
 	 - `switchport trunk allowed vlan none`
 		 - No vlans allowed
  - `switchport trunk native vlan <vlan_id>`
 	 - change native vlan
+ 
+ 
+### Router on a Stick (ROAS)
+- `interface g0/0.<sub_interface_number>`
+	- enter interface config mode for sub-interface
+	- recommended to match `sub_interface_number` with `<vlan_number>` below
+- `encapsulation dot1q <vlan_number>`
+	- instructs router to behave as if all frames arriving for `vlan_number` arrived for the sub-interface we are configuring
+	- router tags the frame with vlan number and sends it to appropriate vlan
+- `ip address <ip_address>
+	- assign IP to the sub-interface
