@@ -38,6 +38,8 @@ CheatSheet: https://www.netwrix.com/cisco_commands_cheat_sheet.html
 	 - Enter **interface range config** mode, configuring multiple instances at once
 	 - in the above exampe, we are confuguring interfaces 5-12
 	 - can also do non-continuous ranges like `int range f0/5 - 6, f0/9 - 12`
+ 15. `default interface <interface_id>`
+	 - reset an interface to its default config
 
 ### IP addr
  1. `ip adrress <ip_address> <subnet_mask>`
@@ -232,3 +234,22 @@ CheatSheet: https://www.netwrix.com/cisco_commands_cheat_sheet.html
 	- router tags the frame with vlan number and sends it to appropriate vlan
 - `ip address <ip_address>
 	- assign IP to the sub-interface
+- Configuring Native vlan on a router
+	1. `encapsulation dot1q <vlan_id> native`
+		- on the router sub-interface
+	2. configure IP addr for native VLAN on router's physical interface
+
+
+### Multi-Layer Switch (Layer 3 Switch)
+- `SW(config)# ip routing`
+	- enables Layer 3 routing on the switch
+	- requires global config mode
+- `SW(config-if)# no switchport`
+	- This configures the interface as a *routed port* (Layer 3 port, not a Layer 2/switchport)
+	- requires interface config mode
+	- vs `ip routing`
+		- `ip routing` enables Routing on a switch
+		- `no switchport` configures an SVI as a routed port
+- `SW(config)# interface vlan <vlan_number>`
+	- create an SVI for a VLAN
+	- assign IP and use `no shutdown` to enable SVI
