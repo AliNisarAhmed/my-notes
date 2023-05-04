@@ -204,6 +204,7 @@ CheatSheet: https://www.netwrix.com/cisco_commands_cheat_sheet.html
  - Trunk Configuration
 	 - `switchport trunk encapsulation dot1q` 
 		 - (not needed on switches which only support dot1q)
+		 - default: `switchport trunk encapsulation negotiate`
 	 - `switchport mode trunk`
  - `show interfaces trunk`
 	 - see all trunk switchports
@@ -253,3 +254,42 @@ CheatSheet: https://www.netwrix.com/cisco_commands_cheat_sheet.html
 - `SW(config)# interface vlan <vlan_number>`
 	- create an SVI for a VLAN
 	- assign IP and use `no shutdown` to enable SVI
+
+
+### DTP
+- `show interfaces <interface_id> switchport`
+	- show Adminstrative mode and Operational mode
+- `switchport mode dynamic desirable`
+	- switchport will actively try to form a trunk with other switches in the following modes
+		- `switchport mode trunk`
+		- `switchport mode dynamic desirable`
+		- `switchport mode dynamic auto`
+- `switchport mode dynamic auto`
+	- default administrative mode
+	- switchport does not actively try to form trunk with other switches
+	- unless the other switch is actively trying to form a trunk, in the following modes
+		- `switchport mode trunk`
+		- `switchport mode dynamic desirable`
+- `switchport nonegotiate`
+	- disable DTP negotiation on an interface
+	- recommended to disable
+	- `switchport mode access` also disables DTP neg.
+
+
+### VTP
+- `show vtp status`
+- `vtp domain <domain_name>`
+- `vtp mode server`
+	- default
+	- van modify/add/delete VLANs
+- `vtp mode client`
+	- cannot modify/add/delete VLANs
+- `vtp mode transparent`
+	- a switch in this mode
+		- will forward vtp advertisements
+		- will not sync its db to the VTP server
+		- will not advertise its own db
+		- can add/modify/delete VLANs
+- `vtp version <version_number>`
+	- version number is 1 or 2 or 3
+	- version 1 is the default
