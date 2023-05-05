@@ -293,3 +293,7 @@ CheatSheet: https://www.netwrix.com/cisco_commands_cheat_sheet.html
 - `vtp version <version_number>`
 	- version number is 1 or 2 or 3
 	- version 1 is the default
+
+
+### STP
+- `show spanning-tree`
