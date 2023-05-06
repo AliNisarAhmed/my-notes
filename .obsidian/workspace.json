@@ -4,11 +4,11 @@
     "type": "split",
     "children": [
       {
-        "id": "2248ae0583a1781e",
+        "id": "8448c93bfea86b4b",
         "type": "tabs",
         "children": [
           {
-            "id": "748d034ce5937060",
+            "id": "2f96dbd8039a5dc0",
             "type": "leaf",
             "state": {
               "type": "markdown",
@@ -62,6 +62,14 @@
             "type": "leaf",
             "state": {
               "type": "starred",
+              "state": {}
+            }
+          },
+          {
+            "id": "38701677d619d889",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
               "state": {}
             }
           }
@@ -128,13 +136,21 @@
                 "file": "Networks/ccna/01-ios-commands.md"
               }
             }
+          },
+          {
+            "id": "e12cad7be698a7ad",
+            "type": "leaf",
+            "state": {
+              "type": "advanced-tables-toolbar",
+              "state": {}
+            }
           }
         ],
         "currentTab": 3
       }
     ],
     "direction": "horizontal",
-    "width": 381.5
+    "width": 211.5
   },
   "left-ribbon": {
     "hiddenItems": {
@@ -147,23 +163,35 @@
       "table-editor-obsidian:Advanced Tables Toolbar": false
     }
   },
-  "active": "748d034ce5937060",
+  "active": "2f96dbd8039a5dc0",
   "lastOpenFiles": [
-    "Networks/ccna/02-subnetting-examples.md",
+    "Networks/ccna/03-STP.md",
+    "Networks/ccna/images/Pasted image 20230505194855.png",
+    "Networks/ccna/images",
     "Networks/ccna/01-ios-commands.md",
+    "Networks/ccna/02-subnetting-examples.md",
+    "Networks/images/Pasted image 20230505165522.png",
+    "Networks/images/Pasted image 20230505165031.png",
+    "images/Pasted image 20230504232619.png",
+    "Networks/images/Pasted image 20230504231935.png",
+    "Networks/images",
+    "dotnet-C#/1.0 C#.md",
+    "Networks/images/Pasted image 20230504232744.png",
+    "Networks/images/Pasted image 20230504232309.png",
+    "Networks/ccna/notes/25 STP - Spanning Tree Protocol/25-04 Spanning Tree Terminology - The Bridge.pdf",
+    "Networks/ccna/notes/25 STP - Spanning Tree Protocol/25-03 Why we have the Spanning Tree Protocol.pdf",
+    "Networks/ccna/notes/25 STP - Spanning Tree Protocol/25-02 Layer 3 Path Selection and Loop Prevention Review.pdf",
+    "books/pragmatic-programmer/notes.md",
+    "Philosophy/Stoicism/4. Death.md",
+    "Networks/CompTIA+/0-Protocols.md",
+    "Networks/Intro-to-networks.md",
+    "Networks/networks.md",
     "Networks/ccna/notes/12 The Life of a Packet/12-06 The Life of a Packet.pdf",
     "Networks/ccna/04-04+Navigating+the+Cisco+IOS+Operating+System.pdf",
     "Networks/ccna/notes/16 Routing Fundamentals/16-06 Summarisation and Default Routes.pdf",
     "Networks/ccna/notes/16 Routing Fundamentals/16-04 Static Routes.pdf",
     "Networks/ccna/notes/16 Routing Fundamentals/16-02 Connected and Local Routes.pdf",
-    "Networks/ccna/notes/16 Routing Fundamentals",
-    "Networks/ccna/notes/15 Cisco Device Management/15-08 Licensing.pdf",
-    "Networks/ccna/notes/15 Cisco Device Management/15-07 Upgrading IOS.pdf",
-    "Networks/ccna/notes/15 Cisco Device Management/15-06 Backing up the System Image and Configuration.pdf",
-    "Networks/ccna/notes/15 Cisco Device Management/15-04 Factory Reset and Password Recovery.pdf",
     "AWS/Solutions-Arch/15-services-notes.md",
-    "Networks/CompTIA+/0-Protocols.md",
-    "Networks/networks.md",
     "Networks/CompTIA+/4-Ethernet.md",
     "Networks/CompTIA+/3-TCP-IP.md",
     "Networks/CompTIA+/2-OSI-Model.md",

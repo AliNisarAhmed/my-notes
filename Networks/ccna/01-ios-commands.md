@@ -297,3 +297,36 @@ CheatSheet: https://www.netwrix.com/cisco_commands_cheat_sheet.html
 
 ### STP
 - `show spanning-tree`
+	- shows SP Tree for all VLANS
+- `show spanning-tree vlan<number>`
+	- show SP Tree for the VLAN
+- `show spanning-tree detail`
+	- like above, but with more detail
+	- shows root cost of an interface
+- `show spanning-tree summary`
+- `spanning-tree portfast`
+	- enable portfast
+	- should only be done on ports connected to single end hosts
+	- requires interface config mode
+- `spanning-tree portfast default`
+	- enables portfast on all access ports (not trunk ports)
+	- requires global config mode
+- `spanning-tree bpduguard enable`
+	- requires interface config mode
+- `spanning-tree portfast bpduguard default`
+	- enables BPDU Guard on all Portfast-enabled interfaces
+	- requires global config mode
+- Spanning tree config
+	- `spanning-tree mode ?`
+		- `mst`
+		- `pvst`
+		- `rapid-pvst`
+	- `spanning-tree vlan <vlan_number> root primary`
+		- sets the STP priority to 24576
+		- if another sw has Pr < 24576, it sets this sw Pr to 4096 less than other's
+	- `spanning-tree vlan <vlan_number> root secondary`
+		- sets the STP priority to 28672
+	- `spanning-tree vlan <vlan_number> cost <cost>`
+		- change SP cost anywhere from 1 - 200M
+	- `spanning-tree vlan <vlan_number> port-priority <pr>`
+		- pr = 0-224 in increments of 32
