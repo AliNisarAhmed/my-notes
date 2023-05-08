@@ -8,6 +8,8 @@ ISO/IEC 7498 -> OSI Model
 
 IEEE 802.1x  -> User Authentication
 IEEE 802.1D -> STP (Spanning Tree P)
+IEEE 802.1w -> Rapid STP
+IEEE 802.1s -> Multiple STP
 
 IEEE 802.3   -> Ethernet
 IEEE 802.3i -> 10 Mbps Ethernet (10BASE-T)
@@ -22,6 +24,8 @@ IEEE 802.3af -> PoE (Power over Ethernet) (15.4 Watts)
 IEEE 802.3at -> PoE+ (25.5 Watts)
 
 IEEE 802.1q -> Trunking Protocol
+
+IEEE 802.3ad -> LACP
 
 ## Ports
 

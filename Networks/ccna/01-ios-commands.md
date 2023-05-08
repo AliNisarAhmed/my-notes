@@ -305,7 +305,7 @@ CheatSheet: https://www.netwrix.com/cisco_commands_cheat_sheet.html
 	- shows root cost of an interface
 - `show spanning-tree summary`
 - `spanning-tree portfast`
-	- enable portfast
+	- enable portfast (or Edge link type on RSTP)
 	- should only be done on ports connected to single end hosts
 	- requires interface config mode
 - `spanning-tree portfast default`
@@ -330,3 +330,52 @@ CheatSheet: https://www.netwrix.com/cisco_commands_cheat_sheet.html
 		- change SP cost anywhere from 1 - 200M
 	- `spanning-tree vlan <vlan_number> port-priority <pr>`
 		- pr = 0-224 in increments of 32
+- `spanning-tree link-type point-to-point`
+	- configures an interface as point-to-point link type (ie. b/w 2 sw)
+	- auto enabled, but can be manually enabled with the above command
+- `spanning-tree link-type shared`
+
+
+### EtherChannel
+
+- `show etherchannel load-balance`
+	- shows how etherchannel is load balancing
+- `port-channel load-balance <load_balance_method>`
+	- requires  global config
+	- choices
+		- `dst-ip`
+		- `dst-mac`
+		- `src-dst-ip`
+		- `src-dst-mac`
+		- `src-ip`
+		- `src-mac`
+- `channel-group <virtual_interface_number> mode <mode>`
+	- configure an interface to join an Ethernet Channel
+	- requires interface config mode (commonly done with `interface range`)
+	- To configure PAgP
+		- mode
+			- `auto` (like DTP auto)
+			- `desirable` (like DTP desirable)
+	- To configure LACP
+		- mode
+			- `active` (like desirable above)
+			- `passive` (like auto above)
+	- To configure static EtherChannel
+		- `on` only works with `on` mode (will not work with desirable or active)
+- `channel-protocol <etherchannel_protocol>`
+	- manually sets protocol (usually not needed as auto configured)
+	- protocols
+		- `lacp`
+		- `pagp`
+- `interface port-channel <etherchannel_identifier>`
+	- configure and create/establish etherchannel on an interface
+	- requires interface config mode for port channel created before
+- `show etherchannel summary`
+- `show etherchannel port-channel`
+- Layer 3 EtherChannel
+	- `int range g0/0-3`
+	- `no switchport` (make interfaces Layer3 Routed interfaces)
+	- `channel-group 1 mode active`
+	- Now configure IP address on port-channel
+	- `int po1`
+	- `ip address 10.0.0.1 255.255.255.252`
