@@ -3,14 +3,15 @@
 # EtherChannel
 
 
-EtherChannels solve the problem of network congestion by oversubscription.
+EtherChannels solve the problem of network congestion by *oversubscription*.
 
 EtherChannels also known as:
 	- Port Channels
 	- LAG (Link Aggregation Group)
 
 **OverSubscription**:
-> When the bandwidth of the interfaces connected to end hosts is > than the b/w of the conncetion to the distribution switches
+> When the bandwidth of the interfaces connected to end hosts is > than the b/w of the connection to the distribution switches
+> 
 > Some oversubscription is acceptable, but too much causes congestion
 
 If we connect two sw together with multiple links w/o setting up EtherChannel, all except one will be disabled by SPT
@@ -26,7 +27,7 @@ Traffic using EtherChannel will be **Load Balanced** among the physical interfac
 
 An algo is used to determine which traffic will use the interface.
 
-EhterChannel load balances based on **flows**
+EtherChannel load balances based on **flows**
 
 A **flow** is communication between two nodes in the same network
 
@@ -55,7 +56,7 @@ You can change the inputs used in the interface selection calculation
 2. LACP
 	- Industy Standard (IEEE 802.3ad)
 	- works same (dynamically) as PAgP
-	- 8  interfaces per EtherChannel
+	- 8 interfaces per EtherChannel
 		- allows 16 but only 8 will be active
 		- others in standby mode
 3. Static EtherChannel

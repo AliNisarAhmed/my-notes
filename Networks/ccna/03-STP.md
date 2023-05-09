@@ -18,7 +18,7 @@
 	- Bridge Priority (16 bits) + MAC Addr (48 bits)
 	- Default Bridge Priority is 32768
 - PVST (Per-Vlan ST)
-	- Bridge Priority (16 bits) = Bridge Priority (4 bits) + Extended System Id aka VLAN ID (12 bits)
+	- Bridge Priority (16 bits) = Bridge Priority (4 bits) + Extended System Id aka VLAN ID (12 bits) = Total = **64 bits**
 	- MAC addr
 	- With the default VLAN of 1, the default Bridge Priority is 32769 (32768 + 1)
 	- Minimum unit of incr/decr of Bridge Priority = 4096
@@ -97,7 +97,7 @@ Solution:
 ---
 ---
 
-## Router States
+## Port States
 
 Stable = { Forwarding, Blocking }
 Transition = { Listening, Learning }
