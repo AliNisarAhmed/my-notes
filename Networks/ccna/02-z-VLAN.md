@@ -1,7 +1,7 @@
 
 ## LAN
 
-A single *broadcast domain,* including all devices in that broadcast domain
+A LAN is a single *broadcast domain,* including all devices in that broadcast domain
 
 *Broadcast Domain*
 >A broadcast domain is the group of devices which will receive a broadcast frame (destination MAC `FFFF.FFFF.FFFF`) sent by any one of the members
@@ -22,7 +22,7 @@ VLANs are configured on a per-interface basis
 
 The SW does not perform inter-VLAN routing, it must send traffic through the Router (or a Layer 3 SW)
 
-VLANs 1, 1002-1005 exist by default and **cannot be deleted*
+VLANs 1, 1002-1005 exist by default and **cannot be deleted**
 
 
 ## Access Ports vs Trunk Ports
@@ -210,3 +210,135 @@ Conditions for Routing
 4. Configure native VLANs on a Router in ROAS?
 	1. `R1(config-subif)# encapsulation dot1q 112 native` and then `ip addre xxxx`
 	2. `R1(config-if)# ip address <ip>`
+
+
+
+---
+---
+---
+
+# DTP & VTP
+
+## DTP
+
+Dynamic Trunking Protocol
+
+> DTP is a Cisco proprietary protocol that allows switches to dynamically determine their interface status (*access* or *trunks*) without manually configuring them
+
+DTP is enabled by default on all Cisco sw
+
+manual sw configuration by commands
+- `switchport mode access`
+- `switchport mode trunk`
+
+With DTP, above commands are not needed.
+
+**NOTE**: For security puposes, manual configuration is recommended, *DTP should be disabled on all Switchports*
+
+DTP is configured by the following commands:
+- `switchport mode dynamic desirable`
+- `switchport mode dynamic auto`
+
+Desirable eagerly forms a trunk, hence, with:
+- `trunk` or `dynamic desirable` or `auto`
+
+Auto does not eagerly form trunk, hence, only with:
+- `trunk`
+- `dynamic desirable`
+
+![[Pasted image 20230509223406.png]]
+
+
+**NOTE**: DTP will not form a trunk with a Router, PC etc. The switchport will be in access mode
+
+
+On older sw, `dynamic desirable` is the default
+
+While on new sw, `dynamic auto` is the default
+
+
+*Disable DTP* with the following command:
+- `switchport nonegotiate`
+	- this command stops the interface from sending DTP negotiation frames
+- `switchport mode access`
+	- confuguring the swport as access also disables DTP
+
+
+### Trunk Encapsulation Negotiation
+
+- Sw that support both *dot1q* and *ISL* trunk encapsulations can use DTP to negotiate the encapsulation they will use.
+- This negotiation is enabled by default, as the default trunk encapsulation mode is
+	- `switchport trunk encapsulation negotiate`
+- *ISL* is favored over *dot1q*, so if both switches support ISL, it will be selected
+- DTP frames are sent in *VLAN1* when using *ISL*
+- DTP frames are sent in the *native VLAN* when using *dot1q*
+
+
+---
+
+
+## VTP
+
+VLAN Trunking Protocol
+
+> Allows you to configure VLANs on a central VTP server sw, and other switches (VTP clients) will sync their VLAN database to the server
+
+
+VTP is designed for large networks with many VLANs, so that we do not have to configure each VLAN on every switch.
+
+**NOTE**: rarely used, and it's *NOT* recommended
+
+
+### Versions
+
+Three VTP versions: 1, 2, 3
+
+VTP versions 1 and 2 do not support the extended VLAN (1006-4094)
+
+Only VTP v3 supports extended VLANs
+
+Changing the VTP version *increases the revision number*
+
+
+### Modes
+
+1. **Server**
+	- sw operate in Server mode by default
+	- can add/modify/delete VLANs
+	- store the VLAN database in NVRAM
+	- will increase the *revision number* every time a VLAN is added/modified/deleted
+		- *revision number* is important, as VTP uses to determine the latest version of the database, the version that the switches will sync to
+	- servers advertise the latest version of the VLAN DB on trunk interfaces, and the VTP clients will sync their VLAN DB to it
+		- VTP advertisements only happen on trunk ports (not access ports)
+	- *VTP servers also function as VTP Clients*
+		- i.e. VTP server will sync to to another VTP server with a higher revision number, as higher revision number = latest version of DB
+2. **Client**
+	- Cannot add/modify/delete VLAN
+	- do not store the VLAN DB in NVRAM
+		- however, they do store it in VTP v3
+	- VTP clients will sync their VLAN DB to the server with the highest revision number in their *VTP domain*
+	- VTP clients will advertise their VTP DB and forward VTP. advertisements to other clients over their trunk ports
+3. **Transparent**
+	- Does not participate in the VTP domain (does not sync its VLAN DB)
+	- Maintains its own independent VLAN DB in NVRAM
+	- It can add/modify/delete VLANs, but they will NOT advertise to other sw
+	- It will forward VTP adverts that are in the same domain as itself
+
+
+### VTP Domains
+
+If a sw with no VTP domain (domain NULL) receives a VTP advertisement with a VTP domain name, it will automatically join that VTP domain
+
+If a sw receives a VTP advert in the same domain with a higher revision number, it will update its VLAN DB to match
+
+
+### Danger
+
+If you connect an old sw with a higher revision number to your nw (and the VTP domain name matches), all switches in the domain will sync their VLAN DB to that sw 
+
+
+### Reset revision number
+
+1. Changing the VTP domain to an *unused domain* will reset the revision number to 0
+2. Changing the VTP mode to *transparent* will also reset the revision number to 0
+
