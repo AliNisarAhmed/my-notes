@@ -1,4 +1,8 @@
 
+### ASW vs DSW
+
+Access Swtiches -> To which End hosts connect to
+Distrubution Layer Switches -> A SW that ccess layer switches connect to
 
 # EtherChannel
 
@@ -32,7 +36,7 @@ EtherChannel load balances based on **flows**
 A **flow** is communication between two nodes in the same network
 
 Frames in the same flow will be forwarded using the same physical interface.
-- If frames in teh same flow were forwarded using different physical interfaces, some frames may arrive out of order at the destination, which can cause problems
+- If frames in the same flow were forwarded using different physical interfaces, some frames may arrive out of order at the destination, which can cause problems
 
 You can change the inputs used in the interface selection calculation
 
@@ -51,7 +55,7 @@ You can change the inputs used in the interface selection calculation
 
 1. PAgP (Port Aggregation Protocol)
 	- Cisco proprietary
-	- dynamically negotiates creation/maintenaces of the EtherChannel (like DTP for trunks)
+	- dynamically negotiates creation/maintenance of the EtherChannel (like DTP for trunks)
 	- 8 interfaces per EtherChannel
 2. LACP
 	- Industy Standard (IEEE 802.3ad)
@@ -77,6 +81,7 @@ If an individual interfaces config does not match, it wll be excluded from Ether
 ### Ether Port flags
 
 D = down
+U = up (good)
 P = bundled in port-channel (good)
 s = suspended
 S = Layer 2
@@ -90,4 +95,10 @@ STP can cause Broadcast Storms even using EtherChannels
 That is why, if the connections between interfaces are made with layer 3 Routing ports, and not switchports, there is no need to use STP at all, thus loops and storms are avoided.
 
 Routed ports do no forward Layer 2 broadcasts, so no Layer 2 loops can be formed.
+
+
+
+## Commands
+
+[[01-ios-commands#EtherChannel]]
 

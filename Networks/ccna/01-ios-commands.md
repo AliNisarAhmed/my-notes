@@ -338,6 +338,8 @@ CheatSheet: https://www.netwrix.com/cisco_commands_cheat_sheet.html
 
 ### EtherChannel
 
+[[05-EtherChannel]]
+
 - `show etherchannel load-balance`
 	- shows how etherchannel is load balancing
 - `port-channel load-balance <load_balance_method>`
