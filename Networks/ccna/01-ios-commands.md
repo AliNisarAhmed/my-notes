@@ -381,3 +381,49 @@ CheatSheet: https://www.netwrix.com/cisco_commands_cheat_sheet.html
 	- Now configure IP address on port-channel
 	- `int po1`
 	- `ip address 10.0.0.1 255.255.255.252`
+
+
+### Floating Static Routes
+
+- `ip route <network_addr> <subnet_mask> <next_hop> <AD>`
+	- where AD is bw 1 to 255
+
+
+### RIP
+- `router rip`
+	- enters RIP config mode
+	- represented by `R1(config-router)#`
+	- most of the commands below require R  config mode
+- `version 2`
+	- use RIPv2
+- `no auto-summary`
+	- use CIDR
+- `network <addr>`
+	- note: network command is classful 
+	- even if you enter CIDR addr, it will be converted to respective classful addr
+	- no need to enter the subnet mask
+	- e.g. `10.0.0.1` is treated as `10.0.0.0` (Class A)
+	- `10.0.0.0` is assumed to be `10.0.0.0/8`
+- `passive-interface <interface_id>`
+	- sets an interface as passive
+	- NOTE: requires R config mode
+- `default-information originate`
+	- share default route info to RIP neighbors
+- `show ip protocols`
+	- shows the current IP protocol enabled
+- `maximum-paths <1-32>`
+	- set maximum paths
+- `distance <1-255>`
+	- change the AD
+
+
+### EIGRP
+- `router eigrp <AS number>`
+	- AS number must match bw all R on same EIGRP
+- `no auto-summary`
+- `passive-interface <interface_id>`
+- `network <nw>`
+- `network <nw> <wildcard_mask>`
+	- NOTE: uses wildcard mask instead of subnet mask
+- `eigrp router-ip <id>`
+	- id is not a network, just a unique ID in address format
