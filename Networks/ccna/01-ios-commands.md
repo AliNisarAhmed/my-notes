@@ -377,7 +377,7 @@ CheatSheet: https://www.netwrix.com/cisco_commands_cheat_sheet.html
 - Layer 3 EtherChannel
 	- `int range g0/0-3`
 	- `no switchport` (make interfaces Layer3 Routed interfaces)
-	- `channel-group 1 mode active`
+	- `channel-group 1 mode <active | on | desirable>`
 	- Now configure IP address on port-channel
 	- `int po1`
 	- `ip address 10.0.0.1 255.255.255.252`
@@ -427,3 +427,14 @@ CheatSheet: https://www.netwrix.com/cisco_commands_cheat_sheet.html
 	- NOTE: uses wildcard mask instead of subnet mask
 - `eigrp router-ip <id>`
 	- id is not a network, just a unique ID in address format
+- `show ip eigrp neighbors`
+	- show EIGRP neighbors
+- `show ip route <filter>`
+	- filter routes
+	- filter = `eigrp | ospf | connected | static | local`
+- `show ip eigrp topology`
+
+
+### Loopback Addr
+- `interface loopback <integer>`
+	- create a loopback interface on a R

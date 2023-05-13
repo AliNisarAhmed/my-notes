@@ -126,6 +126,70 @@ Notice above:
 ![[Pasted image 20230511215945.png]]
 
 
+### Metric
+
+EIGRP used **bandwidth** and **delay** to calculate its metric (used K1-5 to calculate)
+
+Metric = Bandwidth of the slowest link + the delay of all links
+
+Default K values 
+- K1 = 1
+- K2 = 0
+- K3 = 1
+- K4 = 0
+- K5 = 0
+
+
+### Terminology
+
+#### *Feasible Distance* (FD)
+- This router's metric value to the route's destination
+
+#### *Reported Distance* (RD)  
+- aka *Advertised Distance*
+- The neighbors metric value to the route's destination
+- **NOTE**: the above two terms are not related to AD (but rather Metric)
+
+![[Pasted image 20230512205830.png]]
+^Red is R1's FD, Blue is R1's RD (via R2)
+
+![[Pasted image 20230512205925.png]]
+^Yellow is R1's FD, Pink is R1's RD (via R3)
+
+#### *Successor*
+- The route with the lowest metric to the destination (the best route)
+
+#### *Feasible Successor*
+- an alternate route to the destination (not the best rotue) which meets the feasibility condition
+
+#### *Feasibility condition*
+- A route is considered a feasible successor if it's RD is lower than the successor routers FD
+- Feasibility condition is a loop prevention mechanism
+	- If a route meets feasibility condition, it is guaranteed to be loop-free
+
+
+![[Pasted image 20230512210237.png]]
+
+
+### Unequal-Cost Load-Balancing
+
+![[Pasted image 20230512210611.png]]
+
+With *variance* 1, default, EIGRP does ECMP
+- A route's FD must be *equal* to successor
+	- in fact, that route is also a successor (there can be multiple successors)
+
+We can change the default variance with the command `variance <n=1-128>`
+
+So Variance 2 = feasible successor routes with an FD up to 2x the successor route's FD can be used to load balance (and this enabled Unequal CMP)
+
+**NOTE** EIGRP will only perform UCMP over *feasible successor* routes. 
+- If a route does not meet the feasibility condition, it will *NEVER* be selected for load-balancing, regardless of *variance*
+
+
+![[Pasted image 20230512210846.png]]
+
+
 
 # Quiz
 
@@ -136,6 +200,3 @@ Answer: a
 Explanation:
 
 ![[Pasted image 20230511220401.png]]
-
-
-

@@ -82,7 +82,7 @@ If an individual interfaces config does not match, it wll be excluded from Ether
 
 D = down
 U = up (good)
-P = bundled in port-channel (good)
+P = bundled in port-channel (good) vs I = Standalone (bad, not connected)
 s = suspended
 S = Layer 2
 R = Layer 3
