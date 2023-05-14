@@ -41,7 +41,7 @@ If multiple routes to a destination are learned, the R determins which route is 
 
 - When using *link state*, every R creates a *connectivity map* of the nw
 	- This map will be the same on each router
-- To allow this,  each R advertises info abt its interfaces (connected nw) to its neighbors
+- To allow this, each R advertises info abt its interfaces (connected nw) to its neighbors
 	- These adverts are pased along to other Rs, until all Rs in the nw develop the same map of the nw
 - Each R independently uses this map to calculate the best routes to each destination
 

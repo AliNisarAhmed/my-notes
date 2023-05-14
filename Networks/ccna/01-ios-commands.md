@@ -438,3 +438,21 @@ CheatSheet: https://www.netwrix.com/cisco_commands_cheat_sheet.html
 ### Loopback Addr
 - `interface loopback <integer>`
 	- create a loopback interface on a R
+
+
+### OSPF
+- `router ospf <process_id::1-65535>`
+- `network <nw_addr> <wildcard_mask> area <area_number>`
+	- usually area number = 0
+- `passive-interface <interface_id>`
+	- requires OSPF config mode
+	- stops OSPF hello msg propagation through that interface
+- `default-information originate`
+- `maximum-paths <1-32>`
+	- maximum number of paths an OSPF router will use to perform ECMP load-balancing
+	- default 4
+- `distance <1-255>`
+	- Modify the OSPF AD on the local router
+- `clear ip ospf process`
+	- Reset the OSPF process on the local Router
+	- requires global config mode on a R
