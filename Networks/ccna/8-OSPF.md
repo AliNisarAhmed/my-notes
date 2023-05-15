@@ -156,6 +156,115 @@ ABRs maintain a separate LSDB for each area they are connected to.
 - An ASBR is an OSPF router that connects OSPF nw to an external nw
 
 
+
+### Cost
+
+OSPF's metric is called *cost*
+
+It is automatically calculated based on the bandwidth (speed) of the interface
+
+It is calculated by
+
+> *reference bandwidth* / interface's bandwidth
+
+where *reference bandwidth* = 100 Mbps by default
+
+Cost cannot be lower than *1* and any smaller values are automatically converted to 1
+
+Examples:
+- Reference = 100 mbps / Inteface = 10 mbps = cost of *10*
+- Reference = 100 mbps / Interface = 100 mbs = cost of *1*
+- Reference = 100 mbps / Interface 1000 mbps = cost of *1*
+- Reference = 100 mbps / Interface 100000 mbps = cost of *1*
+
+The default cost of 1 for any connection higher than 100 mbps is not ideal, we can change the reference cost by the following command:
+
+`R1(config-router)# auto-cost reference-bandwidth <megabits_per_second>`
+
+Ensure that Reference bandwidth is consistent across all OSPF Routers in th nw
+
+
+![[Pasted image 20230514134153.png]]
+
+![[Pasted image 20230514134317.png]]
+
+
+To check cost of a specific interface, use `show ip ospf interface <interface_id>`
+
+![[Pasted image 20230514134024.png]]
+
+
+To manually configure a cost of an interface, there are 3 methods:
+
+1. use the command:
+	- `R1(config-if)# ip ospf cost <1-65535>`
+2. change interface's bandwidth
+	- `bandwidth <bandwidth>`
+		- **NOTE**: Interface bandwidth is not the same as speed of the interface
+		- E.g. bandwidth is just a number, which can be changed, the interface will still operate at its original speed
+	- Recommended *not* to use this method
+![[Pasted image 20230514134737.png]]
+
+
+Thus 3 ways to modify OSPF cost
+1. change reference bandwidth
+2. manually configure cost for an interface
+3. change the interface bandwidth
+
+
+### OSPF neighbors
+
+Making sure that Rs succesfully become OSPF neighbors is the main task in configuring and troubleshooting OSPF
+
+Once Rs become neighbors, they automatically do the work of sharing nw info, calculating routes etc.
+
+#### Hello messages
+
+When OSPF is activated on an interface, the R starts sending OSPF **hello** messages out of the interface at regular intervals (determined by the **hello timer**). 
+- These are used to introduce the R to potential OSPF neighbors
+
+The default **hello timer** is *10 seconds* on an Ethernet connection
+
+OSPF hello messages are multicast to `224.0.0.5` (multicast address for all OSPF routers)
+
+OSPF messages are encapsulated in an IP header, with a value of `89` in the *Protocol* field
+
+
+#### Steps & States
+
+Can use mnemonic `DoITwEELFully` to remember states
+
+![[Pasted image 20230514135706.png]]
+
+![[Pasted image 20230514135740.png]]
+
+![[Pasted image 20230514135807.png]]
+
+![[Pasted image 20230514135840.png]]
+
+![[Pasted image 20230514140209.png]]
+
+![[Pasted image 20230514140234.png]]
+
+![[Pasted image 20230514140255.png]]
+
+![[Pasted image 20230514140346.png]]
+
+
+##### Summary
+
+![[Pasted image 20230514140440.png]]
+
+
+#### Message Types
+
+![[Pasted image 20230514140521.png]]
+
+
+![[Pasted image 20230514140626.png]]
+
+
+
 ### Configuration
 
 Configure with `# router ospf <process_id>`
@@ -186,6 +295,13 @@ Doing `clear ip ospf process` is a bad idea in real networks
 ![[Pasted image 20230513222851.png]]
 
 
+Configure OSPF and passive interfaces directly
+
+![[Pasted image 20230514140739.png]]
+
+
+
+
 # Quiz
 
 ![[Pasted image 20230513223330.png]]
@@ -213,3 +329,33 @@ Doing `clear ip ospf process` is a bad idea in real networks
 ![[Pasted image 20230513223748.png]]
 (a, d)
 
+
+
+---
+
+![[Pasted image 20230514140848.png]]
+Down Init 2-way Exstart Exchange Loading Full
+DoITwEELFully
+
+
+
+![[Pasted image 20230514141113.png]]
+(c)
+
+
+![[Pasted image 20230514141209.png]]
+(a)
+
+
+
+![[Pasted image 20230514141243.png]]
+(c)
+
+
+
+![[Pasted image 20230514141324.png]]
+(b)
+
+
+![[Pasted image 20230514141409.png]]
+(b)

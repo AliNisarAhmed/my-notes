@@ -438,12 +438,23 @@ CheatSheet: https://www.netwrix.com/cisco_commands_cheat_sheet.html
 ### Loopback Addr
 - `interface loopback <integer>`
 	- create a loopback interface on a R
+	- then use `ip addr <addr>` to configure an IP addr (usually /32)
 
 
 ### OSPF
 - `router ospf <process_id::1-65535>`
 - `network <nw_addr> <wildcard_mask> area <area_number>`
 	- usually area number = 0
+	- 4 ways to enable OSPF on an interface
+		1. `network 0.0.0.0 255.255.255.255 area 0`
+			- enables OSPF on all interfaces at once
+			- not recommended in real interfaces
+		2. `network 10.0.13.2 0.0.0.0 area 0`
+			- this one uses the exact interface ip address to match, thus with /32 wildcard mask
+		3. `network 10.0.0.0 0.0.255.255 area 0`
+			- this matches networks `10.0.34.0/30` and `10.0.13.0/30`
+		4. `network 10.0.12.0 0.0.0.3 area 0`
+			- this matches the exact network addr, thus the /3 wildcard mask
 - `passive-interface <interface_id>`
 	- requires OSPF config mode
 	- stops OSPF hello msg propagation through that interface
@@ -456,3 +467,38 @@ CheatSheet: https://www.netwrix.com/cisco_commands_cheat_sheet.html
 - `clear ip ospf process`
 	- Reset the OSPF process on the local Router
 	- requires global config mode on a R
+- `show ip ospf database`
+	- show LSDB
+	- required Global config more
+- `show ip ospf neighbor`
+	- show ospf neighbors and OSPF state
+	- requires global config mode
+- `show ip ospf interface`
+	- show details for all interfaces
+- `show ip ospf interface <interface_id>`
+	- shows OSPF details for this interface, like Cost, Hello and Dead timers
+- `auto-cost reference-bandwidth <b/w>`
+	- requires OSPF config mode
+	- change the reference cost to b/w which should be in Mbps
+- `ip ospf cost <cost::1-65535>`
+	- manually configure cost of an interface
+	- requires interface config mode
+	- this cost takes priority over the auto-configured cost
+- `bandwidth <b/w>`
+	- manually change the b/w of an interface
+	- b/w is in kbps
+	- this also affects OSPF cost calculation
+	- requires interface config mode
+	- NOT RECOMMENDED to change the b/w manually 
+		- as it is used in many places besides OSPF
+- `R1(config-if)# ip ospf <process_id> area <area_number>`
+	- configure an OSPF directly on an interface
+	- alternate to `network` command
+	- requires Interfac Config mode
+	- no need for OSPF config mode
+	- do `router ospf <process_id>` after the above command to enable OSPF on the R
+- `R1(config-router)# passive-interface default`
+	- configure ALL interfaces as OSPF passive interfaces
+	- requires OSPF config mode
+- `no passive-interface <interface_id>`
+	- Once you configure all interfaces as passive, this command can be used to undo it for specific interfaces
