@@ -433,6 +433,7 @@ CheatSheet: https://www.netwrix.com/cisco_commands_cheat_sheet.html
 	- filter routes
 	- filter = `eigrp | ospf | connected | static | local`
 - `show ip eigrp topology`
+- `eigrp router-id a.b.c.d`
 
 
 ### Loopback Addr
@@ -502,3 +503,26 @@ CheatSheet: https://www.netwrix.com/cisco_commands_cheat_sheet.html
 	- requires OSPF config mode
 - `no passive-interface <interface_id>`
 	- Once you configure all interfaces as passive, this command can be used to undo it for specific interfaces
+- `R2(config-if)# ip ospf priority <0-255>`
+	- manually configure opsf priority of an interface 
+	- requires interface config mode
+	- If the priority is set to 0, the R cannot be the DR/BDR for the subnet
+- `R1(config-if)# ip ospf hello-interval <1-65535>`
+	- change Hello timer
+	- hello timer default = 10 seconds
+	- reset to default with `no ip ospf hello-interval`
+- `R1(config-if)# ip ospf dead-interval <1-65535>`
+	- change Dead Timer
+	- default = 40 seconds
+	- reset to default with `no ip ospf dead-interval`
+- `router-id a.b.c.d`
+	- change router id
+	- defaults to loopback addr ip OR physical addr IP
+- `R1(config-if)# ip ospf authentication-key <password>`
+	- sets the OSPF password
+- `R1(config-if)# ip ospf authentication`
+	- enables th previously set password
+- `R1(config-if)# ip mtu <68-1500 bytes>`
+	- change IP MTU (max transmission unit)
+	- Default 1500 bytes
+	- reset with `no ip mtu`

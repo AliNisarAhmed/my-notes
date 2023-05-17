@@ -6,7 +6,6 @@ Uses the *Shortest Path First* algo (aka Djikstra's algo)
 
 ### Versions
 
-
 OSPF v1
 - 1989
 - Old, not used anymore
@@ -265,6 +264,159 @@ Can use mnemonic `DoITwEELFully` to remember states
 
 
 
+### OSPF Neighbor Requirements
+
+![[Pasted image 20230516203153.png]]
+
+
+#### 1. Area Numbers must match
+
+![[Pasted image 20230516204423.png]]
+
+
+#### 2. Interfaces must be in the same subnet
+
+![[Pasted image 20230516204456.png]]
+
+![[Pasted image 20230516204508.png]]
+
+
+#### 3. process must not be shutdown
+
+![[Pasted image 20230516204552.png]]
+
+
+#### 4. Router IDs must be unique
+
+![[Pasted image 20230516204643.png]]
+
+![[Pasted image 20230516204655.png]]
+
+
+#### 5. Hello and Dead timers must match
+
+![[Pasted image 20230516204959.png]]
+
+![[Pasted image 20230516205011.png]]
+
+
+#### 6. Authentication settings must match
+
+![[Pasted image 20230516205527.png]]
+
+
+#### 7. IP MTU settings must match
+
+![[Pasted image 20230516205701.png]]
+
+![[Pasted image 20230516205708.png]]
+
+
+#### 8. OSPF Network Type must match
+
+![[Pasted image 20230516205821.png]]
+
+![[Pasted image 20230516205904.png]]
+^Note above: R2's loopback address missing from R1's Routing Table
+
+
+### OSPF LSA Types
+
+![[Pasted image 20230516212316.png]]
+
+![[Pasted image 20230516212445.png]]
+^ DR = Designated Router
+
+
+
+
+### OSPF Network Types
+
+The OSPF "network type" refers to the type of connection between OSPF neighbors (Ethernet, etc)
+
+3 main OSPF nw types
+1. **Broadcast**
+	- enabled by default on *Ethernet* and *FDDI* (Fiber Distrubuted Data Interfaces) interfaces
+2. **Point-to-point**
+	- Enabled by default on *PPP* (Point-to-Point Protocol) and *HDLC* (High-level Data Link Control) interfaces
+3. **Non-broadcast**
+	- enabled by default on *Frame Relay* and *X.25* interfaces
+
+
+#### 1. Broadcast Network type
+
+
+![[Pasted image 20230516191942.png]]
+
+![[Pasted image 20230516192028.png]]
+
+![[Pasted image 20230516192040.png]]
+Note above: State DR, Priority 1, Backup DR with ID 4.4.4.4    
+
+![[Pasted image 20230516192212.png]]
+^ DROther
+
+![[Pasted image 20230516192924.png]]
+
+Even after changing the proirity above, the DR/BDR/DROther do not change
+- because they are non-preemptive (require the OSPF process restart as shown below)
+
+![[Pasted image 20230516193034.png]]
+
+![[Pasted image 20230516193931.png]]
+Reword point 2 above: DROthers will only sync to *FULL* state with DRs and BDRs, with other DROthers they will only sync up to *2-WAY* state
+
+![[Pasted image 20230516194111.png]]
+
+![[Pasted image 20230516194128.png]]
+
+![[Pasted image 20230516200124.png]]
+
+![[Pasted image 20230516201645.png]]
+coz of DR/BDR/DROther rules, R3 shows 2 Full neighbors, out of 3 total neighbors
+- In other words: 2 Adjacencies, 3 total neighbors
+
+
+Same info shown below:
+![[Pasted image 20230516201831.png]]
+
+
+
+#### 2. Point-to-Point Network type
+
+![[Pasted image 20230516202017.png]]
+^ Notice serial connection bw R1 and R2
+
+![[Pasted image 20230516202056.png]]
+
+
+![[Pasted image 20230516202239.png]]
+
+![[Pasted image 20230516202357.png]]
+^ Note: no MAC address
+
+![[Pasted image 20230516202433.png]]
+
+![[Pasted image 20230516202443.png]]
+
+![[Pasted image 20230516202710.png]]
+
+Summary of Serial Interfaces
+![[Pasted image 20230516202814.png]]
+
+![[Pasted image 20230516202859.png]]
+^Notice no DR/BDR
+
+![[Pasted image 20230516202953.png]]
+
+
+#### Comparison
+
+![[Pasted image 20230516203015.png]]
+
+
+
+
 ### Configuration
 
 Configure with `# router ospf <process_id>`
@@ -359,3 +511,29 @@ DoITwEELFully
 
 ![[Pasted image 20230514141409.png]]
 (b)
+
+---
+
+
+![[Pasted image 20230516213850.png]]
+(b)
+
+
+![[Pasted image 20230516213959.png]]
+(c)
+
+
+![[Pasted image 20230516214212.png]]
+(a, d)
+
+
+![[Pasted image 20230516214245.png]]
+(b)
+
+
+![[Pasted image 20230516214410.png]]
+(d, f)
+
+
+![[Pasted image 20230516221551.png]]
+(d)
