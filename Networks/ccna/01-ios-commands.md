@@ -526,3 +526,19 @@ CheatSheet: https://www.netwrix.com/cisco_commands_cheat_sheet.html
 	- change IP MTU (max transmission unit)
 	- Default 1500 bytes
 	- reset with `no ip mtu`
+
+
+### HSRP
+- `R1(config-if)# standby <group_number> ip <virtual_ip>`
+	- confgures HSRP with that group number and virual ip
+- `R1(config-if)# standby <group_number> priority <0-255>`
+	- sets the priority of the interface
+	- Higher priority gets preference to be Active
+- `R1(config-if)# standby <group_number> preempt`
+	- enables preemption for this Router
+	- This Router will auto become Active if it ever goes down and comes back
+- `R1(config-if)# standby version 2`
+	- use version 2 of HSRP on this R
+	- this must match the other Rs in the VLAN
+- `R1# show standby`
+	- shows Router's HSRP details
