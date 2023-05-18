@@ -257,7 +257,9 @@ On older sw, `dynamic desirable` is the default
 While on new sw, `dynamic auto` is the default
 
 
-*Disable DTP* with the following command:
+### Disable DTP
+
+Disable DTP with the following commands:
 - `switchport nonegotiate`
 	- this command stops the interface from sending DTP negotiation frames
 - `switchport mode access`
