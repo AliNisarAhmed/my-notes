@@ -1,5 +1,9 @@
 # STP
 
+> Spanning Tree is a networking protocol that builds a loop-free logical topology for Ethernet networks
+>
+> Spanning tree also allows a network design to include backup links providing fault tolerance if an active link fails
+
 
 #### Step 1: Selecting Root Bridge
 

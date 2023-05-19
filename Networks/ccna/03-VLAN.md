@@ -143,7 +143,7 @@ Some older devices cannot use extended VLANs, however, it is safe to assume that
 
 ##### Native VLAN
 
-Native VLAN is `1` bu default, but can be manually configured
+Native VLAN is `1` by default, but can be manually configured
 
 The sw *DOES NOT* add a 802.1Q tag to frames in Native VLAN
 - When a sw receives an untagged frame on a trunk port, it assumes that frame belongs to the Native VLAN
@@ -163,7 +163,7 @@ ROAS is used to route bw multiple VLANs using a single interface on the router a
 - The router will behave as if the frames arriving with a certain VLAN tag have arrived on the sub-interface configured with that VLAN tag
 - The router will tag frames sent out of each sub-interface with the VLAN tag configured on the sub-interface
 
-Written with a dot notation e.g. `g0/0.10` where the last number usually matches the VLAN id the interface is for.
+Sub-interfaces are written with a dot notation e.g. `g0/0.10` where the last number usually matches the VLAN id the interface is for.
 
 ![[Pasted image 20230508205258.png]]
 
@@ -201,15 +201,36 @@ Conditions for Routing
 
 ## Quiz 2
 
-1. configure SW1 to send VLAN10 frames untagged, command?
-	- `switchport trunk native vlan 10`
-2. return a trunk interface to its default state?
-	- `switchport trunk allowed vlan all`
-3. `switchport mode trunk` rejected, which command may fix this?
-	- `switchport trunk encapsulation dot1q`
-4. Configure native VLANs on a Router in ROAS?
-	1. `R1(config-subif)# encapsulation dot1q 112 native` and then `ip addre xxxx`
-	2. `R1(config-if)# ip address <ip>`
+![[Pasted image 20230518194726.png]]
+(d) - ie make VLAN 10 the native VLAN
+
+
+![[Pasted image 20230518200334.png]]
+(b) - By default all VLANs are allowed on a trunk port
+
+
+
+![[Pasted image 20230518200421.png]]
+(c) - trunk mode requires dot1q
+
+
+![[Pasted image 20230518200535.png]]
+(a)
+
+
+## Quiz 3
+
+![[Pasted image 20230518184137.png]]
+(b, c)
+
+![[Pasted image 20230518184303.png]]
+(a, d)
+
+![[Pasted image 20230518184442.png]]
+(a)
+
+![[Pasted image 20230518184502.png]]
+(b)
 
 
 
