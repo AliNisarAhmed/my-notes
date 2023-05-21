@@ -12,7 +12,7 @@
 	- compare Bridge priority first
 	- if equal, lowest MAC wins
 - ALL ports on the Root bridge are marked as **Designated Ports** and put in a forwarding state, and other switches in the topology must have a path to reach the root bridge
-	- (to be exact, Root Bridge has a Deisgnated port in *each collision domain* it is connected to, so if two interfaces are connced to a hub, it is possible for 1 of them to be Blocking/Alternate)
+	- (to be exact, Root Bridge has a Deisgnated port in *each collision domain* it is connected to, so if two interfaces in the Root bridge are connced to a hub, it is possible for 1 of them to be Blocking/Alternate)
 
 ###### Criteria for selection
 - Root Bridge is the one with the lowest **Bridge ID**
@@ -22,8 +22,8 @@
 	- Bridge Priority (16 bits) + MAC Addr (48 bits)
 	- Default Bridge Priority is 32768
 - PVST (Per-Vlan ST)
-	- Bridge Priority (16 bits) = Bridge Priority (4 bits) + Extended System Id aka VLAN ID (12 bits) = Total = **64 bits**
-	- MAC addr
+	- Bridge Priority (16 bits) = Bridge Priority (4 bits) + Extended System Id aka VLAN ID (12 bits) 
+	- Bridge Priority (4 bits) + VLAN ID (12 bits) + 48 bits MAC address= Total = **64 bits**
 	- With the default VLAN of 1, the default Bridge Priority is 32769 (32768 + 1)
 	- Minimum unit of incr/decr of Bridge Priority = 4096
 
@@ -38,7 +38,7 @@
 2. lowest neighbor **Bridge ID** (i.e: step 1 above)
 3. Lowest neighbor **Port ID** 
 
-**Root Cost**
+**Root Cost** (STP)
 - 10 Mbps = 100
 - 100 Mbps = 19 (Fast Ethernet)
 - 1 Gbps = 4
@@ -210,7 +210,7 @@ In RSTP, Blocking & Disables states are combined into one, and Listening state i
 		- functions as *backup to the root port*
 		- if the root port fails, the sw can immediately move its best alternate port to forwarding
 	2. **Backup port**
-		- a discarding port that receives a superior BPDUE from *another* *interface on the same sw*
+		- a discarding port that receives a superior BPDU from *another* *interface on the same sw*
 		- This only happens when 2 interfaces are connected to the same collision domain (via a hub)
 		- since hubs are no longer used, unlikely to be encountered in real life
 		- Function as *backup for Deisgnated ports*
@@ -226,6 +226,8 @@ In RSTP, Blocking & Disables states are combined into one, and Listening state i
 	- can minimize/nullify the max-age timer
 3. PortFast
 	- enabled via Edge Link Types (see Link Types below)
+	- should only be used on ports connected to end devices
+	- Cisco recommends that switches should not be connected to access ports that are configured with PortFast; switches should always be connceted by trunk ports
 
 
 ## Differences with STP
@@ -241,7 +243,7 @@ In RSTP, Blocking & Disables states are combined into one, and Listening state i
 - Switches also "age" the BPDU info much quickly
 	- in STP, a sw waits 10 hello intervals (i.e 20 seconds)
 	- in RSTP, a sw considers a neighbor lost if it misses 3 BPDUs (6 seconds).
-		- it will then flush all MAC addresses learne on that interface
+		- it will then flush all MAC addresses learnt on that interface
 
 
 ## RSTP Link Types
@@ -269,6 +271,8 @@ RSTP distinguishes bw 3 different link types
 
 Solution: 
 
+Root Bridge is SW1 (since lowest priority)
+
 1. Identify Root Bridge & Root ports
 	- notice SW4's G0/0 becomes Root Port as SW3's cost is lower (8193 vs 32769)
 ![[Pasted image 20230506215804.png]]
@@ -283,3 +287,61 @@ Solution:
 4. Identify Link-types
 ![[Pasted image 20230506215705.png]]
 
+
+---
+
+![[Pasted image 20230520230717.png]]
+
+
+![[Pasted image 20230520231117.png]]
+SW1 top left
+SW2 top right
+
+SW1's F0/3 is backup, since higher ID and connected to hub with another Designated port
+
+SW3's g0/1 became D as lower root cost
+SW2's f0/2 became D as lower root cost
+
+Link Types:
+- SW4
+	- f0/1 - 2 will be p2p since connected to other switches
+	- f0/24 will be edge/portfast
+- SW3
+	- F0/1 - g0/1 are p2p
+	- F0/2 is shared (since connected to a Hub)
+	- f0/24 is edge/portfast
+- SW2
+	- all are p2p (since connected to sw/end devices)
+- SW1
+	- f0/1 is p2p
+	- F0/24 is both Edge and Shared
+		- both p2p and shared can also be Edge ports
+	- all others are shared (since connected to a Hub)
+
+# Quiz
+
+![[Pasted image 20230520224725.png]]
+(a, c)
+
+
+![[Pasted image 20230520224816.png]]
+(c) - First half of port ID (0x80) is the port-priority (0x80) is 128
+
+
+![[Pasted image 20230520224909.png]]
+(d) - BPDU guard shuts down an interface if a BPDU is received on the interface
+
+
+![[Pasted image 20230520224954.png]]
+(d)
+
+
+![[Pasted image 20230520225316.png]]
+
+
+![[Pasted image 20230520225419.png]]
+(d)
+
+
+![[Pasted image 20230520225448.png]]
+(c)

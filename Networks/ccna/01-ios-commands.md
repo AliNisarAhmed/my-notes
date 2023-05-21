@@ -304,11 +304,11 @@ CheatSheet: https://www.netwrix.com/cisco_commands_cheat_sheet.html
 	- like above, but with more detail
 	- shows root cost of an interface
 - `show spanning-tree summary`
-- `spanning-tree portfast`
+- `R1(config-if)# spanning-tree portfast`
 	- enable portfast (or Edge link type on RSTP)
 	- should only be done on ports connected to single end hosts
 	- requires interface config mode
-- `spanning-tree portfast default`
+- `R1(config)# spanning-tree portfast default`
 	- enables portfast on all access ports (not trunk ports)
 	- requires global config mode
 - `spanning-tree bpduguard enable`
@@ -542,3 +542,12 @@ CheatSheet: https://www.netwrix.com/cisco_commands_cheat_sheet.html
 	- this must match the other Rs in the VLAN
 - `R1# show standby`
 	- shows Router's HSRP details
+
+
+### IPv6
+
+- `R1(config)# ipv6 unicast-routing`
+- `R1(config-if)# ipv6 address <ipv6_addr>`
+	- address short forms are accepted
+- `R1# show ipv6 int br`
+
