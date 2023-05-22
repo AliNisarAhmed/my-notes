@@ -547,7 +547,14 @@ CheatSheet: https://www.netwrix.com/cisco_commands_cheat_sheet.html
 ### IPv6
 
 - `R1(config)# ipv6 unicast-routing`
+	- enables ipv6 on the device
+- `R1(config-if)# ipv6 enable`
+	- enables  ipv6 on the interface
 - `R1(config-if)# ipv6 address <ipv6_addr>`
 	- address short forms are accepted
+- `R1(config-if)# ipv6 address <network_addr> eui-64`
+	- instructs the interface to eui-64 convert its MAC address to an IPv6 IP
+- `R1(config-if)# ipv6 address <address>/<prefix-length> anycast`
+	- configure an ipv6 anycast address
 - `R1# show ipv6 int br`
 
