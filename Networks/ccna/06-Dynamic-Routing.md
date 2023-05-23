@@ -10,7 +10,7 @@ Host Route = Local Route = A route to a specific host (/32 mask)
 - They form *adjacencies* (aka  *neighbor relationships* OR *neighborships*) with adjacent routes to exchange this info
 
 
-If multiple routes to a destination are learned, the R determins which route is superior and adds it to the R table.
+If multiple routes to a destination are learned (from same protocol), the R determines which route is superior and adds it to the R table.
 - it uses *metric* of the route to decide which is superior
 - lower metric = superior
 

@@ -2,7 +2,7 @@
 ### ASW vs DSW
 
 Access Swtiches -> To which End hosts connect to
-Distrubution Layer Switches -> A SW that ccess layer switches connect to
+Distrubution Layer Switches -> A SW that access layer switches connect to
 
 # EtherChannel
 
@@ -57,16 +57,21 @@ You can change the inputs used in the interface selection calculation
 	- Cisco proprietary
 	- dynamically negotiates creation/maintenance of the EtherChannel (like DTP for trunks)
 	- 8 interfaces per EtherChannel
-2. LACP
+	- will form EtherChannel with `desirable-desirable` or `desirable-auto`
+	- Will not form EtherChannel with `auto-auto` 
+1. LACP
 	- Industy Standard (IEEE 802.3ad)
 	- works same (dynamically) as PAgP
 	- 8 interfaces per EtherChannel
 		- allows 16 but only 8 will be active
 		- others in standby mode
-3. Static EtherChannel
+	- will form EtherChannel with `active-active`
+	- `passive` does not form an EtherChannel
+2. Static EtherChannel
 	- no protocol is used to determine if EtherChannel should be formed
 	- interfaces are statically configured to form an EtherChannel
 	- usually not used
+	- will form EtherChannel with `on-on`
 
 Member interfaces must have matching configs:
 - same duplex
@@ -102,3 +107,19 @@ Routed ports do no forward Layer 2 broadcasts, so no Layer 2 loops can be formed
 
 [[01-ios-commands#EtherChannel]]
 
+
+# Quiz
+
+![[Pasted image 20230522104609.png]]
+(a, c, g)
+
+
+![[Pasted image 20230522105155.png]]
+(b)
+
+![[Pasted image 20230522105219.png]]
+(c, d)
+
+
+![[Pasted image 20230522105301.png]]
+(b) - coz `on` is used with `pagp`

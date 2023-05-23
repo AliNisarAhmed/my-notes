@@ -343,7 +343,7 @@ CheatSheet: https://www.netwrix.com/cisco_commands_cheat_sheet.html
 - `show etherchannel load-balance`
 	- shows how etherchannel is load balancing
 - `port-channel load-balance <load_balance_method>`
-	- requires  global config
+	- requires global config
 	- choices
 		- `dst-ip`
 		- `dst-mac`
@@ -354,6 +354,8 @@ CheatSheet: https://www.netwrix.com/cisco_commands_cheat_sheet.html
 - `channel-group <virtual_interface_number> mode <mode>`
 	- configure an interface to join an Ethernet Channel
 	- requires interface config mode (commonly done with `interface range`)
+	- `<virtual_interface_number>` does not matter (just choose 1)
+	- The above commands create a new VIF (usually `po1`), change to that interface and then convert it to trunk/access
 	- To configure PAgP
 		- mode
 			- `auto` (like DTP auto)
@@ -547,7 +549,7 @@ CheatSheet: https://www.netwrix.com/cisco_commands_cheat_sheet.html
 ### IPv6
 
 - `R1(config)# ipv6 unicast-routing`
-	- enables ipv6 on the device
+	- enables ipv6 routing on the device
 - `R1(config-if)# ipv6 enable`
 	- enables  ipv6 on the interface
 - `R1(config-if)# ipv6 address <ipv6_addr>`
@@ -557,4 +559,17 @@ CheatSheet: https://www.netwrix.com/cisco_commands_cheat_sheet.html
 - `R1(config-if)# ipv6 address <address>/<prefix-length> anycast`
 	- configure an ipv6 anycast address
 - `R1# show ipv6 int br`
-
+- `R1# show ipv6 neighbor`
+	- shows the neighbor table on a Router
+- `ipv6 address autoconfig`
+	- R uses NDP to learn the prefix used on the local link
+- `ipv6 route <destination>/<prefix_length> {next-hop | exit-interface [next-hop]} [ad]`
+	- `{}` specifies required choice (either `next-hop` or `exit-interface` with `next-hop`)
+	- `[ad]` is optional
+	- Types
+		- Directly attached
+			- `ipv6 route <dest>/<prefix> <exit_interface>`
+		- Recursive
+			- `ipv6 route <dest>/<prefix> <next-hop>`
+		- Fully Specified
+			- `ipv6 route <dest>/<prefix> <exit_interface> <next-hop>`
