@@ -126,7 +126,7 @@ Rs with interfaces in multiple areas are called ABRs
 ABRs maintain a separate LSDB for each area they are connected to.
 
 **NOTE**: It is recommended that you connect an ABR to a maximum of 2 areas.
-- Connecting ABRs to 3+ areas can overburder the R
+- Connecting ABRs to 3+ areas can overburden the R
 
 
 ![[Pasted image 20230513220930.png]]
@@ -180,7 +180,7 @@ The default cost of 1 for any connection higher than 100 mbps is not ideal, we c
 
 `R1(config-router)# auto-cost reference-bandwidth <megabits_per_second>`
 
-Ensure that Reference bandwidth is consistent across all OSPF Routers in th nw
+Ensure that Reference bandwidth is consistent across all OSPF Routers in the nw
 
 
 ![[Pasted image 20230514134153.png]]

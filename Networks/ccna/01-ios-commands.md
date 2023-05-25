@@ -573,3 +573,43 @@ CheatSheet: https://www.netwrix.com/cisco_commands_cheat_sheet.html
 			- `ipv6 route <dest>/<prefix> <next-hop>`
 		- Fully Specified
 			- `ipv6 route <dest>/<prefix> <exit_interface> <next-hop>`
+
+
+### ACLs
+
+#### Standard Numbered
+- `R1(config)# access-list <number> {deny | permit} <ip> <wildcard_mask>`
+	- `access-list <number> deny <host_ip>`
+		- deny an IP address (ie /32)
+	- `access-list <number> deny host <ip_addr>`
+		- deny an IP address (/32)
+	- `access-list <number> permit any`
+		- allow all hosts
+	- `access-list <number> permit 0.0.0.0 255.255.255.255`
+		- permit all hosts
+- `access-list <number> remark <remark>`
+	- add a "comment" / remark to an ACL
+- `show access-lists`
+	- Display ALL ACLs
+- `show ip access-lists`
+	- show all IP ACLs configured
+- `show running-config | include access-list`
+	- check the access-list section of the running config
+- `R1(config-if)# ip access-group <number> {in | out}`
+	- apply ACL numbered `number` to an interface in mode `in` or `out`
+	- requires interface config mode
+
+### Standard Named
+- `R1(config)# ip access-list standard <acl_name>
+	- create an acl with `acl_name` and enter ACL config mode
+- `R1(config-std-nacl)# [entry-number] {deny | permit} <ip> <wildcard_mask>`
+	- create an entry in the standard named ACL
+	- **NOTE**: requires NACL config mode
+	- `entry-number` is optional, defaults to `10, 20, 30...`
+- `R1(config-if)# ip access-group <acl_name> {in | out}`
+	- apply a named ACL to an interface
+	- requires interface config mode
+- `R1# show access-lists`
+	- show the NACL
+- `R1# show running-config | section access-list`
+	- show the section `access-list` in the running-config
