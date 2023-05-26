@@ -577,6 +577,14 @@ CheatSheet: https://www.netwrix.com/cisco_commands_cheat_sheet.html
 
 ### ACLs
 
+- `R1# show ip interface <interface_id>`
+	- this command shows the inbound and outbound config names/numbers for the interface
+- `R1(config)# ip access-list resequence <acl_id> <starting_seq_num> <increment>`
+	- resequence the whole ACL
+	- requires Global Config mode
+	- `acl_id` can be name or number
+	- `starting_seq_num` is the sequence's first element, and `increment` will generate the rest of the elements. Example: `starting_seq_num = 10` & `increment=10` will generated 10, 20, 30, 40...
+
 #### Standard Numbered
 - `R1(config)# access-list <number> {deny | permit} <ip> <wildcard_mask>`
 	- `access-list <number> deny <host_ip>`
@@ -599,7 +607,7 @@ CheatSheet: https://www.netwrix.com/cisco_commands_cheat_sheet.html
 	- apply ACL numbered `number` to an interface in mode `in` or `out`
 	- requires interface config mode
 
-### Standard Named
+#### Standard Named
 - `R1(config)# ip access-list standard <acl_name>
 	- create an acl with `acl_name` and enter ACL config mode
 - `R1(config-std-nacl)# [entry-number] {deny | permit} <ip> <wildcard_mask>`
@@ -613,3 +621,13 @@ CheatSheet: https://www.netwrix.com/cisco_commands_cheat_sheet.html
 	- show the NACL
 - `R1# show running-config | section access-list`
 	- show the section `access-list` in the running-config
+
+
+#### Extended
+- `R1(config)# access-list <number> [permit | deny] <protocol> <src_ip> <dest_ip>`
+	- configure an extended ACL in Global config mode
+- `R1(config)# ip access-list extended { <name> | <number> }`
+	- configure a named or numbered extended list in "named" mode (preferred)
+	- created ACL and enters ACL config mode
+	- `R1(config-ext-nacl)# [seq-num] [permit | deny] <protocol> <src_ip> <dest_ip>`
+
