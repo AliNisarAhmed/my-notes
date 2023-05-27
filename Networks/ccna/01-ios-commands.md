@@ -631,3 +631,41 @@ CheatSheet: https://www.netwrix.com/cisco_commands_cheat_sheet.html
 	- created ACL and enters ACL config mode
 	- `R1(config-ext-nacl)# [seq-num] [permit | deny] <protocol> <src_ip> <dest_ip>`
 
+
+### CDP
+- `show cdp`
+- `show cdp traffic`
+	- shows how many CDP packets sent/received
+- `show cdp interface`
+	- basic info about each interface
+- `show cdp interface <interface_id>`
+	- show cdp info about a particular interface
+- `show cdp neighbors`
+- `show cdp neighbors detail`
+- `show cdp entry <hostname>`
+	- show neighbor details for a particular neighbor
+- `R1(config)# cdp run`
+- `R1(config-if)# cdp enable`
+	- enable CDP on a particular interface
+	- **NOTE**: CDP is enabled on all cisco devices on all their interfaces by default (unlike LLDP which must be manually enabled)
+- `R1(config)# cdp timer <seconds>`
+	- configure CDP timer
+- `R1(config)# cdp holdtime <seconds>`
+- `R1(config)# cdp advertise-v2`
+
+
+### LLDP
+- `R1(config)# lldp run`
+- `R1(config-if)# lldp transmit`
+- `R1(config-if)# lldp receive`
+	- **NOTE**: LLDP requires 2 separate commands to enable Tx and Rx on interfaces (unlike CDP which uses `cdp enable`)
+- `R1(config)# lldp timer <seconds>`
+- `R1(config)# lldp holdtime <seconds>`
+- `R1(config) lldp reinit <seconds>`
+	- configure the LLDP reinit timer
+- `show lldp`
+- `show lldp traffic`
+- `show lldp interface`
+- `show lldp neighbors`
+- `show lldp neighbors detail`
+- `show lldp entry <hostname>`
