@@ -669,3 +669,55 @@ CheatSheet: https://www.netwrix.com/cisco_commands_cheat_sheet.html
 - `show lldp neighbors`
 - `show lldp neighbors detail`
 - `show lldp entry <hostname>`
+
+
+### NTP
+- `show clock`
+	- shows the time in UTC, the default timezone
+- `show clock detail`
+	- shows the time + the time source
+- `show logging`
+	- shows device logs
+- `clock set <hh:mm:ss> <dd> <mm> <yyyy>`
+	- manually configure the time on the software clock of the device
+- `calendar set <hh:mm:ss> <dd> <mm> <yyyy>`
+	- manually configure the hardware clock of the device
+- `R2# clock udpate-calendar`
+	- sync the calendar (h/w clock) to the clock (s/w clock)
+- `R2# clock read-calendar`
+	- sync the clock to the calendar (h/w clock)
+- `R1(config)# clock timezone <timezone_name> <hours_offset> <minutes_offset>`
+	- `timezone_name` is just a name, not checked by anything
+	- `hours_offset` is how many hours + or - from UTC
+	- `minutes_offset` is optional
+- `R2(config)# clock summer-time <name> recurring <week_number_start> <day> <month> <time_to_start> <week_number_end> <day> <month> <time_to_end>`
+	- set the Daylight Saving time manually
+	- `week_number` is 1-4 or first or last
+- `R1(config)# ntp server <ip_addr>`
+	- manually configure the ntp server to the ip above
+	- use `ntp server <ip_addr> prefer` to make that server the preferred one
+- `show ntp associations`
+	- shows all the ntp serves configured on the device
+- `show ntp status`
+- `ntp update-calendar`
+	- update calendar to match ntp time
+- `R1(config)# ntp source <loopback_interface>`
+	-  configure this device to use loopback address when advertising NTP packets
+- `R1(config)# ntp master <stratum_number>`
+	- set this device as an NTP server
+	- default `stratum_number` = 8
+- `R2(config)# ntp peer <ip_address>`
+	- configure two NTP servers as peers
+	- the peers have same stratum level usually
+	- this command must be run on both devices
+- `ntp authenticate`
+	- enables ntp auth
+- `ntp authentication-key <key_number> md5 <key>`
+	- create NTP auth key with identifies `key_number`
+- `ntp trusted-key <key_number>`
+	- specify the `key_number` key as trusted
+- `ntp server <ip_addr> key <key_number>`
+	- specify the ntp service along with the auth key
+	- specify which key to use to communicate with the server
+	- this command is not needed on the server itself
+- `ntp peer <peer_ip_address> key <key_number>`
