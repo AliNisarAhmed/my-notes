@@ -721,3 +721,21 @@ CheatSheet: https://www.netwrix.com/cisco_commands_cheat_sheet.html
 	- specify which key to use to communicate with the server
 	- this command is not needed on the server itself
 - `ntp peer <peer_ip_address> key <key_number>`
+
+
+### DNS
+- `R1(config)# ip dns server`
+	- configures R1 to act as a DNS Server
+- `R1(config)# ip host <hostname> <ip_addr>`
+	- adds `hostname/ip_addr` to list of address mappings for DNS
+- `R1(config)# ip name-server <dns_server_ip>`
+	- configure a DNS server that R1 will query if the requested record is not in its host table
+- `R1(config)# ip domain lookup`
+	- Enable R1 to perform DNS queries
+	- enabled by default
+- `R1(config)# show hosts`
+	- view configured hosts as well as cached hosts learned via DNS
+- `R1(config)# ip domain name <domain_name>`
+	- configure the default domain name
+	- This will be auto appended to any hostnames without a specified domain
+	- e.g `ping PC1` will become `ping pc1.jeremysitlab.com`
