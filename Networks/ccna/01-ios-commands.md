@@ -739,3 +739,36 @@ CheatSheet: https://www.netwrix.com/cisco_commands_cheat_sheet.html
 	- configure the default domain name
 	- This will be auto appended to any hostnames without a specified domain
 	- e.g `ping PC1` will become `ping pc1.jeremysitlab.com`
+
+
+### DHCP
+
+#### Server config
+- `R1(config)# ip dhcp excluded-address <ip_addr_start> <ip_addr_end>`
+	- specify a range of addresses that will not be given to DHCP clients
+- `R1(config)# ip dhcp pool <pool_name>`
+	- create a subnet of ip addresses that can be assigned to clients + dns server + default route
+	- Enters the DHCP configuration mode
+- `R1(dhcp-config)# network <nw_address> <prefix_length | netmask>`
+	- specify the subnet of addresses to be assigned to clients (except the excluded addresses)
+	- can use /24 or subnet mask
+- `R1(dhcp-config)# dns-server <dns_server_ip>`
+	- specify the DNS server that DHCP clients should use
+- `R1(dhcp-config)# domain-name <domain>`
+	- specify the domain name of the nw (i.e PC1 = pc1.jeremysitlab.com)
+- `R1(dhcp-config)# default-router <default_router_ip>`
+- `R1(dhcp-config)# lease <days> <hours> <minutes>`
+	- specify the lease time
+- `R1(dhcp-config)# lease infinite`
+	- specify to use permanent lease all the time
+- `R1# show ip dhcp binding`
+	- show all the clients currently assigned IP addresses
+ 
+#### Relay Agent Config
+- `R1(config-if)# ip helper-address <ip_addr>`
+	- configure an interface to act as the DHCP Relay
+	- **NOTE**: This interface is connected to the client (and NOT facing the DHCP server)
+
+#### Client
+- `R1(config-if)# ip address dhcp`
+	- use this command to tell the Router to use DHCP to learn its own IP addresses
