@@ -772,3 +772,23 @@ CheatSheet: https://www.netwrix.com/cisco_commands_cheat_sheet.html
 #### Client
 - `R1(config-if)# ip address dhcp`
 	- use this command to tell the Router to use DHCP to learn its own IP addresses
+
+
+### SNMP
+- `R1(config)# snmp-server contact <email>`
+- `R1(config)# snmp-server location <location_description>`
+	- The above two are optional commands for ease of identification
+- `R1(config)# snmp-server community <password> {ro | rw}`
+	- Configure the SNMP community strings (basically passwords)
+	- `ro`  = read only = no Set messages allowed to be sent by the Managed devices 
+	- `rw` = read/write = Managed devices can use Set messages
+	- example: 
+		- `R1(config)# snmp-server community Jeremy1 ro`
+- `R1(config)# snmp-server host <ip_addr> version <version> <community_string>`
+	- specify the NMS (with the ip_addr), version (e.g `2c`), and community (set by the previous commands)
+	- example: `R1(config)# snmp-server host 192.168.1.1 version 2c Jeremy1`
+- `R1(config)# snmp-server enable traps snmp linkdown linkup`
+- `R1(config)# snmp-server enable traps config`
+	- specify the Trap types to send to the NMS
+		- in the command above, `linkdown` and `linkup` traps are set, so that when a link goes up or down, the NMS sends the server a message
+		- `config` traps asks managed devices to send Trap messages to NMS on config changes
