@@ -792,3 +792,112 @@ CheatSheet: https://www.netwrix.com/cisco_commands_cheat_sheet.html
 	- specify the Trap types to send to the NMS
 		- in the command above, `linkdown` and `linkup` traps are set, so that when a link goes up or down, the NMS sends the server a message
 		- `config` traps asks managed devices to send Trap messages to NMS on config changes
+
+
+### Syslog
+- level
+	- can be 0-7 OR
+	- `emergency` | `alert` | `critical` | `error` | `warning` | `notice` | `informational` | `debugging`
+- `R1(config)# logging console <level>`
+	- log to the console line
+	- enables logging for upto and including level 6, starting from 0
+- `R1(config)# logging monitor <level>`
+	- enable logging to VTY (terminal)
+- `R1(config)# logging buffered [size] <level>`
+	- enable log to a buffer
+	- buffer size is optional
+- `R1(config)# logging <server_ip_addr>`
+- `R1(config)# logging host <server_ip_addr>`
+	- enable logging to an external server
+	- both commands are the same
+- `R1(config)# logging trap <level>`
+	- configure the range of messages sent to the external server
+	- sends all levels upto and including `level`, starting from 0
+- `R1# terminal monitor`
+	- by default, Syslog messages will not be displayed when connected via telnet or ssh (even when `logging monitor <level>` is applied)
+	- this command enables messages to be displayed for those protocols
+- `R1(config)# line console 0`
+- `R1(config-line)# logging synchronous`
+	- prints a new line after a log 
+- `R1(config)# service timestamps log {datetime | uptime}`
+	- control whether sequence number and timestamps are displayed in the log messages
+	- `datetime`: timestamps will display the date/time when the event occurred
+	- `uptime`: timestamps will display how long the device had been running when the event occurred
+- `R1(config)# service sequence-numbers`
+	- enable printing of sequence numbers in the log messages
+
+
+### Telnet & SSH
+
+#### Console Port Security
+- `R1(config)# line console 0`
+	- configure the console line e.g. set a password
+- `R1(config-line)# password ccna`
+	- configure the console line's password
+- `R1(config-line)# login`
+	- tell the device to require a user to enter the configured password to access the CLI via the console port
+	- next time when accessing the device the password will be requiredja
+- `R1(config-line)# login local`
+	- tell the device to require a user to login using one of the configured usernames on the device
+- `R1(config-line)# exec-timeout <minutes> <seconds>`
+	- Log the user out after this inactivity
+ 
+#### Layer 2 switch - configuring a Management IP
+- `SW1(config)# interface vlan1`
+- `SW1(config-if)# ip address <ip_addr> <netmask>`
+- `SW1(config-if)# no shutdown`
+- `SW1(config-if)# exit
+- `SW1(config)# ip default-gateway <ip_addr>`
+	- The above commands configure an IP address on the SVI of the switch to allow remote access
+ 
+#### Telnet
+- `D(config)# enable secret <password>`
+	- configure a password
+	- If an enable password/secret is not configured, you will not be able to access priviliged exec mode when connecting via telnet
+- `D(config)# username <username> secret <secret>`
+	- enter a username password to be used on login-local
+- `D(config)# access-list <number> permit host <host_ip_addr>`
+	- (Optional) configure an access-list to only allow certain hosts to connect via telnet
+- `D(config)# line vty 0 15`
+	- Telnet/SSH is configured on the VTY lines
+	- There are 16 lines available, so up to 1 users can be connected at once
+	- Here we are configuring all 16 lines at once
+	- VTY = Virtual Teletype
+- `D(config-line)# login local`
+	- enable logging in when telnet connects
+- `D(config-line)# exec-timeout <minutes> <seconds>`
+	- configure a default inactivity timeout
+- `SW1(config-line)# access-class <access_list_number> in`
+	- Apply the ACL to the VTY lines
+	- `access-class` applies an ACL to the VTY lines, as opposed to `ip access-group` which applies to an interface
+
+#### SSH
+- `D(config)# show ip ssh`
+	- show ssh related details
+##### Enable
+- `D(config)# ip domain name <domain_name>`
+	- configure a domain name of the device
+	- this FQDN is used to name the RSA keys
+- `D(config)# crypto key generate rsa`
+	- Generate the RSA keys
+- `D(config)# crypto key generate rsa modulus <length>`
+	- Another method to generate RSA keys
+	- *This then enables SSH on the device*
+	- Length must be 768 bits or greater for SSHv2 (just use 2048)
+##### Configuration
+- `D(config)# enable secret ccna`
+- `D(config)# username <username> secret <secret>`
+	- enable password and login-local password
+- `D(config)# ip ssh version 2`
+	- enable SSHv2
+	- (Optional)
+- `D(config)# line vty 0 15`
+	- configure all VTY lines at once
+- `D(config-line)# login local`
+	- enable local user authentication
+- `D(config-line)# exec-timeout <minutes> <seconds>`
+	- (Optional, but recommended) configure the inactivity timeout
+- `D(config-line)# transport input ssh`
+	- a best practice to limit VTY line connections to ssh only
+- `D(config-line)# access-class <access_list_number in`
+	- apply access list (recommended)
