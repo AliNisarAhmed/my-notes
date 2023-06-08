@@ -901,3 +901,28 @@ CheatSheet: https://www.netwrix.com/cisco_commands_cheat_sheet.html
 	- a best practice to limit VTY line connections to ssh only
 - `D(config-line)# access-class <access_list_number in`
 	- apply access list (recommended)
+
+
+### TFTP-FTP
+
+#### TFTP
+- `R1# show flash`
+	- show the contents of flash memory
+	- can be used to see the IOS version
+- `R1# copy tftp: flash:`
+	- copy the file from source to destination
+	- the Router will ask for the remote address of the TFTP server, Source and destination filenames
+- `R1(config)# boot system <filepath>`
+	- boot this IOS file next time
+	- filepath can be like `flash:<number>`
+	- if this command is not used, the R will use the first IOS file it finds in the flash
+	- be sure to save to startup-config using `write memory`
+	- and then `reload` to restart the device
+- `R1# delete <filepath>`
+	- delete the file from the device
+
+
+#### FTP
+- `R1(config)# ip ftp username <username>`
+- `R1(config# ip ftp password <password>`
+	- configure the FTP username/password that the device will use when connecting to an FTP server
