@@ -906,6 +906,8 @@ CheatSheet: https://www.netwrix.com/cisco_commands_cheat_sheet.html
 ### TFTP-FTP
 
 #### TFTP
+- `R1# show file systems`
+	- display the file systems of the device
 - `R1# show flash`
 	- show the contents of flash memory
 	- can be used to see the IOS version
@@ -926,3 +928,22 @@ CheatSheet: https://www.netwrix.com/cisco_commands_cheat_sheet.html
 - `R1(config)# ip ftp username <username>`
 - `R1(config# ip ftp password <password>`
 	- configure the FTP username/password that the device will use when connecting to an FTP server
+
+
+
+### NAT
+
+- `R1# show ip nat translations`
+	- shows the NAT mappings currently configured
+- `R1# clear ip nat translations *`
+	- clear all the dynamic NAT translations
+- `R1# show ip nat statistics`
+
+#### Static NAT
+- `R1(config-if)# ip nat inside
+	- define this interface as an "inside" interface, connected to the internal network
+- `R1(config-if)# ip nat outside`
+	- define this interface as an "outside" interface, connected to the external network
+- `R1(config)# ip nat inside source static <inside_local_ip_addr> <inside_global_ip_add>`
+	- configure the one-to-one IP address mapping
+	- e.g `ip nat inside source static 192.168.0.167 100.0.0.1`
