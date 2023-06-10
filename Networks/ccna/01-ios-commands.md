@@ -947,3 +947,26 @@ CheatSheet: https://www.netwrix.com/cisco_commands_cheat_sheet.html
 - `R1(config)# ip nat inside source static <inside_local_ip_addr> <inside_global_ip_add>`
 	- configure the one-to-one IP address mapping
 	- e.g `ip nat inside source static 192.168.0.167 100.0.0.1`
+
+#### Dynamic NAT
+- `R1(config-if)# ip nat inside`
+- `R1(config-if)# ip nat outside`
+	- define inside and outside interfaces
+- `R1(config)# access-list <acl_number_or_name> permit <ip_addr_range_start> <ip_addr_range_end>`
+	- Define the traffic that should be translated
+	- Traffic permitted by the above ACL will be translated, however, the remaining traffic will not be dropped, it just won't be translated
+- `R1(config)# ip nat pool <pool_name> <ip_addr_range_start> <ip_addr_range_end> prefix-length <pref_length>`
+	- Define the pool of inside global IP adresses
+	- instead of `prefix-length 24`, we can also use `netmask 255.255.255.0`
+	- with `prefix_length`/`netmask`, NAT checks if the start and end address are in the same subnet, else the command will be rejected
+- `R1(config)# ip nat inside source list <acl_number_or_name> pool <pool_name>`
+	- Configure dynamic NAT by mapping the ACL to the pool
+
+#### PAT
+- same configuration as Dynamic NAT, except the following command
+- `R1(config)# ip nat inside source list <acl_number_or_name> pool <pool_name> overload`
+	- notice the `overload` keyword at the end, to enable PAT
+
+#### PAT (interface method)
+- `R1(config)# ip nat inside source list <acl_number_or_name> interface <interface_id> overload`
+	- we specify the interface whose public IP should be used to NAT mapping
