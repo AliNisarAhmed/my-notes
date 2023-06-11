@@ -970,3 +970,23 @@ CheatSheet: https://www.netwrix.com/cisco_commands_cheat_sheet.html
 #### PAT (interface method)
 - `R1(config)# ip nat inside source list <acl_number_or_name> interface <interface_id> overload`
 	- we specify the interface whose public IP should be used to NAT mapping
+
+
+### Voice VLAN
+- `SW1(config-if)# switchport mode access`
+- `SW1(config-if)# switchport access vlan 10`
+- `SW1(config-if)# switchport voice vlan 11`
+	- The above commands configure vlan 11 for voice
+
+
+### POE
+- `SW1(config-if)# power inline police`
+	- configures power policing with the default settings: disable the port and send a Syslog message if a PD draws too much power
+	- equivalent to the command below
+	- `power inline police action err-disable`
+		- the interface can then be re-enabled with `shutdown` followed by `no shutdown`
+- `SW1(config-if)# power inline police action log`
+	- does not shut down the interface if PD draws too much power
+	- Instead it will restart the interface and send a Syslog message
+- `SW1# show power inline police <interface_id>`
+	- power stats
