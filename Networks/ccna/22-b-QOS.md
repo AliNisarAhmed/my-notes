@@ -34,6 +34,60 @@
 
 
 
+## Classification
+
+
+![[Pasted image 20230613194900.png]]
+
+
+### PCP & CoS
+
+![[Pasted image 20230613195042.png]]
+^ To **mark** traffic means to set the value in the PCP or DSCP fields.
+- then the network devices look at those markings and use them to classify the traffic as high-priority, low-priority etc
+- So when an IP phone marks its traffic as PCP5, it's coz it wants the routers and switches to classify those packets as high-priority
+
+![[Pasted image 20230613195424.png]]
+^ Only the traffic originating from the phones will be marked with PCP, since it is the only traffic in the network above that is tagged with a VLAN
+
+
+### DSCP & ToS
+
+ToS = Type of Service
+
+![[Pasted image 20230613204510.png]]
+
+![[Pasted image 20230613204610.png]]
+
+![[Pasted image 20230613204809.png]]
+
+![[Pasted image 20230613205747.png]]
+
+
+![[Pasted image 20230613205833.png]]
+
+![[Pasted image 20230613210942.png]]
+
+![[Pasted image 20230613211022.png]]
+
+![[Pasted image 20230613211045.png]]
+
+![[Pasted image 20230613211134.png]]
+
+![[Pasted image 20230613211151.png]]
+
+![[Pasted image 20230613211207.png]]
+
+Formula for above conversions: 
+
+> DSCP = 8X + 2Y where AFXY is the AF value in decimal
+
+
+![[Pasted image 20230613211325.png]]
+
+
+
+
 ---
 
 
