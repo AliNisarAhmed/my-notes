@@ -55,16 +55,26 @@
 
 ToS = Type of Service
 
+#### IPP
+
 ![[Pasted image 20230613204510.png]]
 
 ![[Pasted image 20230613204610.png]]
 
+
+#### DSCP
+
 ![[Pasted image 20230613204809.png]]
 
 ![[Pasted image 20230613205747.png]]
+^ when configuring QoS, class-maps are used to identify which traffic you want to match
 
+
+##### DF/EF
 
 ![[Pasted image 20230613205833.png]]
+
+##### AF
 
 ![[Pasted image 20230613210942.png]]
 
@@ -86,7 +96,40 @@ Formula for above conversions:
 ![[Pasted image 20230613211325.png]]
 
 
+##### CS
 
+![[Pasted image 20230625204317.png]]
+
+#### RFC 4954
+
+![[Pasted image 20230625204510.png]]
+
+
+## Trust Boundaries
+
+![[Pasted image 20230625204819.png]]
+
+![[Pasted image 20230625204951.png]]
+
+
+## Queuing / Congestion Management
+
+![[Pasted image 20230625205037.png]]
+
+![[Pasted image 20230625205145.png]]
+
+### CBWFQ
+
+![[Pasted image 20230625205300.png]]
+
+### LLQ
+
+![[Pasted image 20230625205344.png]]
+
+
+## Shaping & Policing
+
+![[Pasted image 20230625205621.png]]
 
 ---
 
@@ -113,3 +156,30 @@ Formula for above conversions:
 
 ![[Pasted image 20230610220124.png]]
 (d) - RED is random, while WRED drops based on traffic class
+
+
+---
+
+
+![[Pasted image 20230625205709.png]]
+(b, d, e)
+
+
+![[Pasted image 20230625205753.png]]
+(d) -> 46 in Decimal
+
+
+![[Pasted image 20230625205839.png]]
+(b) - Highest Priority class with lowest drop precedence
+
+
+![[Pasted image 20230625205915.png]]
+(a)
+
+
+![[Pasted image 20230625210002.png]]
+(b)
+
+
+![[Pasted image 20230625210024.png]]
+(d)
