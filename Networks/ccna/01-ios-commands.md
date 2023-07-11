@@ -990,3 +990,57 @@ CheatSheet: https://www.netwrix.com/cisco_commands_cheat_sheet.html
 	- Instead it will restart the interface and send a Syslog message
 - `SW1# show power inline police <interface_id>`
 	- power stats
+
+
+### Port Security
+- `SW(config-if)# switchport port-security`
+	- enable Port security with default setting (1 MAC addr allowed)
+	- Port security can be enabled on access or trunk ports, but they must be statically configured to be so
+- `$ show port-security interface <interface_id>`
+- `# show port-security`
+- `$ show err-disable recovery`
+	- shows `psecure-violation` in case of port security breach
+- `SW(config)# errdisable recovery cause psecure-violation`
+- `SW(config)# errdisable recovery interval <interval>`
+- `SW(config-if)# switchport port-security violation <violation_mode>`
+	- mode = `shutdown | restrict | protected`
+- `SW(config-if)# switchport port-security aging time <time>`
+- `SW(config-if)# switchport port-security aging type {absolute | inactivity}`
+- `SW(config-if)# switchport port-security aging static`
+- `SW(config-if)# switchport port-security mac-address sticky`
+- `# show mac address-table secure`
+	- show all secure mac addresses on the switch
+
+
+### DHCP Snooping
+- `SW(config)# ip dhcp snooping`
+	- globally enable DHCP snooping
+	- however, this is not enough, must enable on each VLAN
+- `SW(config)# ip dhcp snooping vlan <vlan_number>`
+	- enable DHCP snooping on a VLAN
+- `SW(config)# no ip dhcp snooping information option`
+	- disabled DHCP Option 82 (which causes a packet to be dropped on untrusted ports)
+- `SW(config-if)# ip dhcp snooping trust`
+	- mark the interface as a trusted port
+- `# show ip dhcp snooping binding`
+	- show the DHCP Snooping Binding table
+- `SW(config-if-range)# ip dhcp snooping limit rate <limit>`
+	- set DHCP Snooping rate limit
+	- when rate limit is exceeded, the interface is err-disabled
+	- to check what caused the err-disable, use 
+		- `SW(config)# errdisable recovery cause dhcp-rate-limit`
+
+
+### Dynamic ARP Inspection
+- `SW(config)# ip arp inspection vlan <vlan_number>`
+	- DAI requires only 1 command to be enabled (per VLAN)
+	- can be done for multiple VLANs at once by comma separated list
+- `SW(config-if-range)# ip are inspection trust`
+- `# show ip arp inspection interfaces`
+- `SW(config-if-range)# ip arp inspection limit rate <rate> 25 burst interval <interval>`
+	- specifying burst interval is optional
+		- `ip are inspection limit rate <rate>`
+- `SW(config)# ip arp inspection validate {dst-mac | ip | src-mac}`
+- `SW(config)# arp access-list <access_list_name>`
+- `SW(config-arp-nacl)# permit ip host <ip_addr> mac host <mac_addr>`
+- `SW(config)# ip arp inspection filter <acl_name> vlan 1`
