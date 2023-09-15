@@ -130,6 +130,8 @@ In DFS, we start with a vertex, pick its neighbor, and do DFS on it.
 ![[Pasted image 20230912210155.png]]
 
 
+![[Pasted image 20230914220728.png]]
+
 
 ---
 
@@ -171,4 +173,78 @@ There are 4 ways to represent graphs
 ### Adjacency Matrix
 
 ![[Pasted image 20230912202904.png]]
+
+---
+
+
+## Minimum Spanning Trees
+
+Minimum Spanning Tree is a tree from a undirected connected Graph such that is contains all the vertices of G and has the minimum weight over all such trees
+
+Application example:
+- connect all computers in a new office building using least amount of cable
+
+### Important Proposition
+
+![[Pasted image 20230914210008.png]]
+
+Two algorithms for determining MSTs:
+1. Prim-Jarnik
+2. Kruskal
+
+
+### Prim-Jarnik
+
+Running time:
+- with heap-based PQ `O( (n + m) logn)`
+- with unsorted list `O(n^2)`
+
+
+![[Pasted image 20230914213234.png]]
+
+![[Pasted image 20230914213247.png]]
+
+
+### Kruskal's
+
+Running time:
+- with heap-based PQ initialized in `O(m)` time (using bottom-up heap construction) AND using efficient **union-find** data structures (disjoint partitions): `O(m log n)`
+
+
+![[Pasted image 20230914213312.png]]
+
+![[Pasted image 20230914213325.png]]
+
+![[Pasted image 20230914213345.png]]
+
+
+
+---
+
+
+
+## Disjoint Partitions & Union-Find Structures
+
+*Disjoint Sets*: an element belongs to 1 and only 1 of these sets
+
+A *partition* DS manages a universe of elements that are organized into disjoint sets.
+- Unlike with the Set ADT or Python’s `set` class, we do not expect to be able to iterate through the contents of a set
+- nor to efﬁciently test whether a given set includes a given element.
+
+These clusters of partitions are referred to as *groups* (to avoid confusion with a set (iteratable and testable for element presence))
+
+To differentiate between one group and another, we assume that at any point in time, each group has a designated entry that we refer to as the *leader* of the group
+
+*Partition ADT* supports the following methods:
+- `make_group(x)`
+	- Create a singleton group containing new element `x` and return the position storing `x`
+- `union(p, q)`
+	- Merge the groups containing positions `p` and `q`
+- `find(p)`
+	- Return the position of the leader of the group containing position `p`
+
+
+![[Pasted image 20230914215221.png]]
+
+![[Pasted image 20230914215307.png]]
 
