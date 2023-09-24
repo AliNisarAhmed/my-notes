@@ -96,3 +96,46 @@
 	- temporarily switch the user ID, primary group ID and home directory
 - `su - <username>`
 	- temporarily log on as another user and user their profile
+
+
+- `echo file{a,b,c} | xargs touch`
+	- create 3 files at one
+	- xargs gets space delimited arguments and passes them each to `touch`
+- `ls file* | xargs -I {} mv {} test.{}`
+	- `-I` option sets the placeholder for xargs argument (here filea, fileb, filec)
+- `find . -name "file[a-c]" | xargs -p \rm`
+	- -p = print command before executing
+
+
+- `typeset -f` (or `declare -f`)
+	- lists all functions defined
+- `unset <function_name>`
+	- remove a function
+
+
+- `hash`
+	- show the hash table which stores the absolute paths to commands executed thus far with count
+- `hash -r`
+	- clear the hash table
+
+
+- `type <command>`
+	- displays how the keyword will be interpreted as a command
+
+
+
+- `chattr <filename>`
+	- change file attributes
+	- ex: `chattr +i <file_name>`: make file immutable
+	- ex: `chattr -i <file_name>`: remove immutable attribute
+- `lsattr <file_name>`
+	- list file attributes
+
+
+
+- `getfacl <file_name>`
+	- get ACLs defined on the file
+- `setfacl -m u:<user_name>:r <file_name>`
+	- set an ACL where user would only have read perms
+- `setfacl -m mask:r <file_name>`
+	- set mask ACL, i.e., define max permission possible on a file
