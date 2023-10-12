@@ -139,3 +139,196 @@
 	- set an ACL where user would only have read perms
 - `setfacl -m mask:r <file_name>`
 	- set mask ACL, i.e., define max permission possible on a file
+
+
+- `ls -l /lib/modules/$(uname -r)/kernel/fs`
+	- list available filesystem modules
+- `cat /proc/filesystems`
+	- determine which kernel filesystem modules are currently loaded
+- `cat /etc/fstab`
+	- automatically mount filesystems at startup we can add them to a file
+- `df -T` or `df -h` or `df -hT`
+	- see disk utilization and file system type
+- `df -i`
+	- show inode utilization
+- `du -sh`
+	- monitor disk usage in the directory where the command is run
+
+
+- `mdadm -C /dev/md0 --level=1 --raid-disks=2 /dev/sdb /dev/sdc`
+	- meta-device administration command uses `-C` to create a new meta device called `/dev/md0` at a RAID 1 level (disk mirroring), which will use two hard drives `/dev/sdb` and `/dev/dbc`)
+- `mdadm --detail <meta_device_name>`
+- `mdadm --fail`
+	- mark the device as failed and prepare it for removal with `mdadm --remove`
+	- Once the faulty hard drive has been replaced, reenable using `mdadm --add`
+- `fstrim -av`
+	- `-a`: trim all of the SSDs with TRIM features in RAID
+	- `-v`: verbose
+
+
+- `ldconfig -p`
+	- view a list of all shared libraries available on your system
+- `ldd -v <executable>`
+	- view shared libraries required by the executable
+
+
+
+- `dmesg`
+	- read, display and control kernel ring buffer (a cyclical storage for logs)
+	- `-f` -> facilities = `kern | user | mail | daemon | auth | syslog | lpr | news`
+	- `-l` -> levels = `emerg | alert | crit | err | warn | notice | info | debug`
+	- `-T` -> display timestamps
+	- `-H` -> human readable
+	- example: 
+		- `dmesg -T -f <facility> -l <level>`
+
+
+
+- `lsusb`
+	- display a list of USB devices detected on the system
+- `lsusb -t`
+	- produces a hierarchical view of USB hubs and devices attached to hubs
+- `lsusb -D /dev/bus/usb/<bus_number><device_number>`
+	- display additional information on a device
+
+
+
+- `lspci`
+	- list PCI devices in format `Bus:Device:Function Class:Vendor Name`
+	- `-tv` to display tree, and print more detailed info
+- `lspci -nn | grep -i hba`
+	- view HBA adaptors (host bus adapter is an expansion card used to connect multiple devices)
+	- equivalent to command `systool -c <adapter_class>`
+		- or looking for info in `/sys/class`
+
+
+
+- `lsmod`
+	- view all currently loaded kernel modules (pulls data from `/proc/modules`)
+- `echo "blacklist <kernel_module> >> /etc/modprobe.d/<config_file>"`
+	- blacklist a kernel module
+- `modinfo <module_name>`
+	- view more info abt a loaded module
+- Load a kernel module
+	- first run `depmod` to build file `/lib/modules/<kernel_version>/modules.dep`
+		- lists dependencies between modules, helping kernel module utilities ensure that dependent modules are loaded whenever a module is loaded
+	- Once the file is created, there are two options
+		1. `insmod /lib/modules/<kernel_version>/kernel/<module_filename>`
+			- e.g `insmod /lib/modules/$(uname) -r)/kernel/drivers/...`
+		2. `modprobe <module_name>` (using the same directory for modules as above)
+	- Most admins prefer latter command since `modprobe` installs module dependencies, while `insmod` does not
+	- A module load is not persistent across system restarts, however, `modprobe` runs automatically every time the kernel loads
+		- reads `/etc/modprobe.d/*.conf` files to determine which modules to load during startup
+- Unload a currently loaded module
+	- `rmmod -r <module_name>`
+		- `-r` -> remove dependencies as well
+
+
+
+- `lsblk`
+	- view block devices
+	- can also use `systool -pc block` (systool comes from `sysfsutil` package)
+
+
+
+- `udevadm info <device_name_or_path>`
+	- searches the `udev` database for device information
+	- `-q, -n, -p` options for query, name and path
+- `udevadm monitor`
+	- listens for `uevents` and displays them on console
+- `udevadm test --action <udev_rule>`
+	- test a udev rule without implementing it
+	- rules are added to file `/etc/udev/rules.d`
+
+
+
+- `lsdev`
+	- displays info about installed h/w, retrieving info from `/proc/interrupts`, `/proc/ioports` and `/proc/dma`
+- `lshw`
+	- used to display detailed h/w config info
+	- replacement for `hwinfo`
+	- `-short` - for displaying succinct info
+	- `-class <storage | disk | volume>` 
+
+
+
+- `systemctl status bluetooth`
+	- check if bluetooth is active
+- `bluetoothctl list`
+	- display a list of available bluetooth controllers
+- `bluetoothctl show`
+	- displays a list of controllers and their status
+- `bluetoothctl scan on`
+	- displays a list of available controllers that have not been paired
+- `hcitool scan`
+	- scans & provides a controller's MAC address and name
+- `bluetoothctl select <controller_MAC_address>`
+	- apply any further `bluetoothctl` commands issued in the next 3 minutes
+- `bluetoothctl`
+	- Controller arguments
+		- `agent on`
+		- `discoverable on`
+		- `discoverable off`
+		- `pairable on`
+	- Device Arguments
+		- `info <device_MAC_address>`
+		- `connect <device_MAC_address>`
+		- `pair <device_MAC_address>`
+
+
+
+- `ip link show`
+- `ifconfig -a`
+- `ncmli connection show`
+- `ncmli device status`
+- `netstat -i`
+- `iw list`
+- `iw <interface_name> info`
+	- view status of interface, e.g. `iw wlp0s20f3 info`
+- `iw <interface_name> essid <essid_name> [channel <channel>]`
+	- connect to a wireless interface
+
+
+
+- `hdparam`
+	- `-v <device>`: displays disk settings
+	- `-I <device>`: displays detailed disk statistics
+
+
+
+- `lpadmin -p <printer_name> -v <device_name> -m raw`
+	- add and configure printers and printer classes
+		- a printer class is a group of printers associated with a single print queue
+	- config info stored in `/etc/cups/printers.conf`
+- `lpadmin -d`
+	- sets the default system printer
+ - `lpinfo -v`
+	 - determine available devices (before creating a printer)
+- `lpinfo -m`
+	- determines what drivers are available
+	- `lpinfo -m | grep <printer_name>`
+- `lpstat -c`
+	- display a list of printer classes
+	- `lpstat -c -p <printer_name>`
+		- check which classes a printer belongs to
+- `lpstat -d`
+	- determine the default printer
+- `lpstat -o`
+	- display all print jobs in all queues
+- `lpq -P <queue_name>`
+	- display jobs on a particular queue
+ - `lpstat -p <printer_name>`
+	 - display printer status
+	 - Can also see visually on http://localhost:631
+- `lp -d <printer_name> <file_path>`
+	- print a file
+	- returns a job id
+	- cancel with `cancel <job_id>` or `cancel <queue_name>`
+- `lpmove <old_print_queue> <new_print_queue>`
+	- move all jobs
+- `lpmove <job_id> <printer_queue>`
+	- move a job to a particular queue
+- `cupsreject <queue_name>`
+- `cupsaccept <queue_name>`
+- `cupsdisable <printer_name>`
+- `cupsenable <printer_name>`
