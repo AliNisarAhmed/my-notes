@@ -1,5 +1,15 @@
 # Commands
 
+| Parameter | Description                      |
+| --------- | -------------------------------- |
+| `$0`      | Name of command or script        |
+| `$#`      | Number of command line arguments |
+| `$*`      | List of command line arguments   |
+| `$$`      | Current Process's PID            |
+| `$!`      | PID of the last background job   |
+| `$?`      | last Command exit code status                                 |
+
+
 - `type -a <proposed_alias_name>`
 	- to display any commands, aliases or functions currently using the proposed name
  
@@ -332,3 +342,93 @@
 - `cupsaccept <queue_name>`
 - `cupsdisable <printer_name>`
 - `cupsenable <printer_name>`
+
+
+
+- `ip addr add <ip_addr> dev <interface>`
+- `ip addr del <ip_addr> dev <interface>`
+- `ip link set <interface> down`
+	- disable an interface
+- `ip link set <interface> up`
+	- enable an interface
+	- also:
+	- `systemctl restart network`
+	- `systemctl restart networking`
+
+
+
+- `hostnamectl set-hostname server-one`
+
+
+- `dhclient <interface>`
+	- acquire ip addr for this interface from DHCP server
+
+
+- `route add -net <netw_addr> netmask <netmask> gw <router_addr>`
+	- add routes to the host's routing table
+	- e.g. `route add -net 192.168.2.0/24 gw 10.0.0.254`
+- `route del -net <network_addr> netmask <netmask> gw <router_addr>`
+- `route add default gw <router_addr>`
+	- set the default route
+- `route` or `ip route show`
+	- show routing table
+- `ip route add <network/prefix> via <router_ip_addr> dev <interface>`
+	- add a static route to the routing table
+- `ip route del <network/prefix>`
+
+
+
+- `iptables -t <table> <command> <chain> <options>`
+	- commands
+		- `-L`: List all rules in the chain
+		- `-N <chain_name>`: Creates a new chain
+		- `-I`: Insert a rule into the chain
+		- `-R`: Replaces a rule in the chain
+		- `-D <chain_name> <rule_number>`: Deletes a rule from the chain
+		- `-F`: Deletes all rules from the chain (called *flushing*)
+		- `-P <chain_name> <policies>`: sets the default policy for the chain
+			- policies `ACCEPT | DROP | QUEUE | REJECT`
+		- `-A INPUT`: configure rule for all packets
+	- Options
+		- `-p`: specifies protocol to be checked by the rule
+			- `all | tcp | udp | icmp`
+		- `-s <ip_addess>/<mask>`: Specifies the source address to be checked. 
+			- to check all IP addrs: use `0/0`
+		- `-d <ip_addr>/<mask>`: Specifies the destination address to be checked
+			- to check all IP addrs: use `0/0`
+		- `-j <target>`: Specifies what to do if the packet matches the rule
+			- values: `ACCEPT | REJECT | DROP | LOG`
+		- `-i <interface>`: Specifies the interface where a packet is received
+			- applies only to `INPUT` and `FORWARD` chains
+		- `-o <interface>`: Specifies the interface where a packet is to be sent
+			- applies only to `OUTPUT` and `FORWARD` chains
+	- Default Chains
+		- `FORWARD`: Contains rules for packets being transferred b/w networks thru the Linux systems
+		- `INPUT`: Contains rules for packets that are being sent to the local Linux system
+		- `OUTPUT`: Contains rules for packets that are being sent from the local Linux system
+
+
+
+
+- `gpg --list-keys`
+- `gpg --gen-key`
+	- Generate gpg key
+	- use RSA and 2048
+	- Provide real name, email, comment and passphrase
+- `gpg --export-secret-keys --armor <key_owner_email> > <filename>.asc`
+	- save this on a USB drive as a backup
+- `gpg -e -r <key_user_name> <filename>`
+	- encrypt a file using gpg
+- `gpg --output <output_filename> --decrypt <encrypted_filename>`
+	- decrypt a file encrypted with gpg
+- `gpg --keyserver <server_addr | hkp://subkeys.pgp.net> --send-key <key_id>`
+	- copy public key to a key server
+	- to obtain key id:
+		- `gpg --fingerprint <key_owner_email>`
+- `gpg --export --armor <key_owner_email> > <public_file_name>`
+	- export the public key to a file, and then use `scp` to send a file to user
+- `gpg --import <pub_key_file>`
+	- import a gpg key
+- `gpg --output revoke.asc --get-revoke <KEY_ID>`
+	- create key revocation certificate
+	- store it in a USB drive
