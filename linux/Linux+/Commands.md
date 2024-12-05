@@ -432,3 +432,16 @@
 - `gpg --output revoke.asc --get-revoke <KEY_ID>`
 	- create key revocation certificate
 	- store it in a USB drive
+
+
+
+- `rm /lib/modules/$(uname -r)/kernel/drivers/usb/storage/usb-storage.ko.xz`
+	- Disable USB ports
+
+
+
+- `chage <option> <user>`
+	- configure password aging
+	- `-m <days>` - min no. of days b/w password changes
+	- `-M <days>` - max number of days b/w passwd changes
+	- `-W <days>` - number of warnings days b4 a passwd change 

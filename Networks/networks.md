@@ -106,6 +106,12 @@ for access to a communication link.
 
 Traditional telephone networks are examples of circuit-switched networks.
 
+###### Analogy
+- Circuit-switching is like a restaurant with reservation
+	- Capacity is reserved, must reserve before leaving, but no wait time once reserved
+- Packet-switching is a restaurant without reservation
+	- Can leave right away, but no guarantees seat will be found, so may have to wait at the restaurant
+
 ---
 
 ## The 4-layer Internet Model

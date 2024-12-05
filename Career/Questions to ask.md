@@ -12,7 +12,7 @@ Note: I think there should be another section of questions before section 3 and 
     - how did you come to work here? 
     - why did you join this company?
     - What do you most love about working here?
-- Cuture 
+- Culture 
     - Who's the most successful recent hire here, and why is that person successful?
     - Who did not succeed as a new hire, and why?
 - Challenges 
@@ -57,3 +57,32 @@ Note: I think there should be another section of questions before section 3 and 
 - Where do you see this company in 5 years?
 - What's your favorite part of working here? 
     - (coupled with): what's the least favorite part of working here?
+
+
+
+---
+
+## Questions to ask HR Phone screen
+
+- How did you come to work here?
+	- make an impact, creating, building, from a product perspective
+	- Series D funding a year ago
+- Can you tell me more about the company culture and values?
+- How does the company support work-life balance for its employees?
+- Why is this position open?
+	- Which team does this position belong to?
+		- JB: currently not determined
+	- Which team will I be working with? Edmonton or some other city?
+- Budgeted TC range for this role?
+	- Compensation and benefits at Jobber
+- What does the company ensure employee engagement and job satisfaction?
+- Is this position fully remote? or will it be Hybrid for Edmonton folks?
+- Next steps
+
+- Questions asked
+	- tell me about a time where you had conflicting opinion with a teammate and how was it resolved
+	- how many and what kind of cross-functional team you worked with?
+	- One thing that you specifically suggested that led to change/improvement after being implemented
+
+#### Values
+be humble, be supportive and give a shit

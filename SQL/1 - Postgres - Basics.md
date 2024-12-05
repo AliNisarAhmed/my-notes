@@ -37,6 +37,10 @@ Examples:
     Players - Football Matches 
     Movies - Actors
     Conference Calls - Employees
+
+**Many-to-One**
+Examples:
+	Office Building - Employees
    
 ## Foreign Keys 
  

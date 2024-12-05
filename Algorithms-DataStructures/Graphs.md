@@ -133,6 +133,39 @@ In DFS, we start with a vertex, pick its neighbor, and do DFS on it.
 ![[Pasted image 20230914220728.png]]
 
 
+### DFS Uses
+
+- DFS runs in O(V + E) time
+- In undirected Graph G, DFS can be used to solve:
+	- Computing a path b/w 2 given vertices of G, if one exists
+	- Testing whether G is connected
+	- Computing a spanning tree of G, if G is connected
+	- Computing the connected components of G
+	- Computing a cycle in G, or reporting that G has no cycles
+- In directed Graph G, DFS can be used to solve:
+	- Computing a directed path between two given vertices of G, if one exists
+	- Computing the set of vertices of G that are reachable from a given vertex s
+	- Testing whether G is strongly connected
+		- requires 2 DFS passes
+		- first pass: if any vertex not visited & not reachable -> not strongly connected
+		- second pass: perform DFS but look through all incoming edges to the current node
+	- Computing a directed cycle in G, or reporting that G is acyclic
+	- Computing the transitive closure of G
+
+
+## BFS
+
+![[Pasted image 20240120192529.png]]
+
+
+### BFS Properties
+
+- BFS takes O(V+E) time
+- A path in BFS tree rooted at s to any other vertex v is guaranteed to be the shortest path
+- BFS visits all vertices of G that are reachable from s
+- For each vertex v at level i, the path of the BFS tree T b/w s and v has i edges, and any other path has at least i edges (since BFS path is shortest)
+- if (u,v) is an edge that is not in BFS tree, then the level number of v can be at most 1 greater than the level number of u
+
 ---
 
 ## Data Structures for Graphs
