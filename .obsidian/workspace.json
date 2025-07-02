@@ -4,19 +4,21 @@
     "type": "split",
     "children": [
       {
-        "id": "8448c93bfea86b4b",
+        "id": "05e73f61ca56c853",
         "type": "tabs",
         "children": [
           {
-            "id": "2f96dbd8039a5dc0",
+            "id": "d12702eaf55825d5",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Networks/ccna/01-ios-commands.md",
+                "file": "Untitled.md",
                 "mode": "source",
                 "source": false
-              }
+              },
+              "icon": "lucide-file",
+              "title": "Untitled"
             }
           }
         ]
@@ -39,7 +41,9 @@
               "type": "file-explorer",
               "state": {
                 "sortOrder": "alphabetical"
-              }
+              },
+              "icon": "lucide-folder-closed",
+              "title": "Files"
             }
           },
           {
@@ -54,7 +58,9 @@
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical"
-              }
+              },
+              "icon": "lucide-search",
+              "title": "Search"
             }
           },
           {
@@ -62,7 +68,9 @@
             "type": "leaf",
             "state": {
               "type": "starred",
-              "state": {}
+              "state": {},
+              "icon": "lucide-file",
+              "title": "Plugin no longer active"
             }
           },
           {
@@ -70,14 +78,16 @@
             "type": "leaf",
             "state": {
               "type": "bookmarks",
-              "state": {}
+              "state": {},
+              "icon": "lucide-bookmark",
+              "title": "Bookmarks"
             }
           }
         ]
       }
     ],
     "direction": "horizontal",
-    "width": 300
+    "width": 380.51103591918945
   },
   "right": {
     "id": "384262030b1233be",
@@ -93,7 +103,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Networks/ccna/01-ios-commands.md",
+                "file": "OMSCS/01-GIOS/Lecture-Notes/P1L2-Intro-to-OS.md",
                 "collapseAll": false,
                 "extraContext": true,
                 "sortOrder": "alphabetical",
@@ -101,7 +111,9 @@
                 "searchQuery": "",
                 "backlinkCollapsed": false,
                 "unlinkedCollapsed": true
-              }
+              },
+              "icon": "links-coming-in",
+              "title": "Backlinks for P1L2-Intro-to-OS"
             }
           },
           {
@@ -110,10 +122,12 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Networks/ccna/01-ios-commands.md",
+                "file": "OMSCS/01-GIOS/Lecture-Notes/P1L2-Intro-to-OS.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
-              }
+              },
+              "icon": "links-going-out",
+              "title": "Outgoing links from P1L2-Intro-to-OS"
             }
           },
           {
@@ -124,7 +138,9 @@
               "state": {
                 "sortOrder": "frequency",
                 "useHierarchy": true
-              }
+              },
+              "icon": "lucide-tags",
+              "title": "Tags"
             }
           },
           {
@@ -133,8 +149,10 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Networks/ccna/01-ios-commands.md"
-              }
+                "file": "Untitled.md"
+              },
+              "icon": "lucide-list",
+              "title": "Outline of Untitled"
             }
           },
           {
@@ -142,7 +160,9 @@
             "type": "leaf",
             "state": {
               "type": "advanced-tables-toolbar",
-              "state": {}
+              "state": {},
+              "icon": "lucide-file",
+              "title": "Plugin no longer active"
             }
           }
         ],
@@ -163,21 +183,33 @@
       "table-editor-obsidian:Advanced Tables Toolbar": false
     }
   },
-  "active": "2f96dbd8039a5dc0",
+  "active": "d12702eaf55825d5",
   "lastOpenFiles": [
-    "Networks/ccna/03-STP.md",
-    "Networks/ccna/images/Pasted image 20230505194855.png",
-    "Networks/ccna/images",
+    "Untitled 1.md",
+    "Untitled.md",
+    "OMSCS/01-GIOS/Lecture-Notes/images/Pasted image 20250112213707.png",
+    "OMSCS/01-GIOS/Lecture-Notes/images/Pasted image 20250112213341.png",
+    "OMSCS/01-GIOS/Lecture-Notes/images/Pasted image 20250112212050.png",
+    "OMSCS/01-GIOS/Lecture-Notes/images/Pasted image 20250112203605.png",
+    "OMSCS/01-GIOS/Lecture-Notes/images/Pasted image 20250112203602.png",
+    "OMSCS/01-GIOS/Lecture-Notes/images/Pasted image 20250112200942.png",
+    "OMSCS/01-GIOS/Lecture-Notes/images/Pasted image 20250112195728.png",
+    "OMSCS/01-GIOS/Lecture-Notes/images/Pasted image 20250112195218.png",
+    "OMSCS/01-GIOS/Lecture-Notes/images/Pasted image 20250112174515.png",
+    "OMSCS/01-GIOS/Lecture-Notes/images/Pasted image 20250112174338.png",
+    "OMSCS/01-GIOS/Lecture-Notes/P2L2-Threads.md",
+    "OMSCS/01-GIOS/Lecture-Notes/P2L1-Process-Mgmt.md",
+    "OMSCS/01-GIOS/Lecture-Notes/P1L2-Intro-to-OS.md",
+    "OMSCS/01-GIOS/Lecture-Notes/images",
+    "OMSCS/01-GIOS/Lecture-Notes",
+    "OMSCS/01-GIOS",
+    "OMSCS",
     "Networks/ccna/01-ios-commands.md",
+    "Networks/ccna/03-STP.md",
+    "Networks/ccna/images",
     "Networks/ccna/02-subnetting-examples.md",
-    "Networks/images/Pasted image 20230505165522.png",
-    "Networks/images/Pasted image 20230505165031.png",
-    "images/Pasted image 20230504232619.png",
-    "Networks/images/Pasted image 20230504231935.png",
     "Networks/images",
     "dotnet-C#/1.0 C#.md",
-    "Networks/images/Pasted image 20230504232744.png",
-    "Networks/images/Pasted image 20230504232309.png",
     "Networks/ccna/notes/25 STP - Spanning Tree Protocol/25-04 Spanning Tree Terminology - The Bridge.pdf",
     "Networks/ccna/notes/25 STP - Spanning Tree Protocol/25-03 Why we have the Spanning Tree Protocol.pdf",
     "Networks/ccna/notes/25 STP - Spanning Tree Protocol/25-02 Layer 3 Path Selection and Loop Prevention Review.pdf",
@@ -187,25 +219,17 @@
     "Networks/Intro-to-networks.md",
     "Networks/networks.md",
     "Networks/ccna/notes/12 The Life of a Packet/12-06 The Life of a Packet.pdf",
-    "Networks/ccna/04-04+Navigating+the+Cisco+IOS+Operating+System.pdf",
-    "Networks/ccna/notes/16 Routing Fundamentals/16-06 Summarisation and Default Routes.pdf",
-    "Networks/ccna/notes/16 Routing Fundamentals/16-04 Static Routes.pdf",
-    "Networks/ccna/notes/16 Routing Fundamentals/16-02 Connected and Local Routes.pdf",
     "AWS/Solutions-Arch/15-services-notes.md",
     "Networks/CompTIA+/4-Ethernet.md",
     "Networks/CompTIA+/3-TCP-IP.md",
     "Networks/CompTIA+/2-OSI-Model.md",
     "Philosophy/moralities-of-everyday-life/1-a-the-moral-instint.md",
     "presentation/craft.md",
-    "presentation/9aa0de45077215128b5f6e119d81aef3.png",
     "Networks/CompTIA+/1-basics.md",
     "2023-04-12.md",
     "AWS/Solutions-Arch/100-misc.md",
     "REST.md",
     "Microservices/3. Kubernetes.md",
-    "Microservices/2. docker.md",
-    "Microservices/1. Microservice.md",
-    "AWS/ASG.md",
-    "AWS/AMI.md"
+    "Microservices/2. docker.md"
   ]
 }
